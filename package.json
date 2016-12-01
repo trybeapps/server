@@ -1,0 +1,24 @@
+{
+  "name": "libreread",
+  "version": "0.0.1",
+  "description": "Browser-based Ebook reader with full-text search feature.",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mysticmode/LibreRead.git"
+  },
+  "author": "Nirmal Almara",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/mysticmode/LibreRead/issues"
+  },
+  "homepage": "https://github.com/mysticmode/LibreRead#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.1",
+    "gulp-sass": "^2.3.2"
+  }
+}
