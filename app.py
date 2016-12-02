@@ -74,7 +74,7 @@ def signup():
         </form>
     '''
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/signin', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
@@ -94,7 +94,7 @@ def login():
         </form>
     '''
 
-@app.route('/logout')
+@app.route('/signout')
 def logout():
     # remove the email from the session if it's there
     session.pop('email', None)

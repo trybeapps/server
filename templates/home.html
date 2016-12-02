@@ -3,10 +3,37 @@
   <head>
     <meta charset="utf-8">
     <title>LibreRead</title>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans+Caption" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="static/css/style.css">
   </head>
   <body>
-    Home - Hello Nirmal Almara
+    <header>
+      <div class="container">
+        <a href="/" id="logo">Libre<span>Read</span></a>
+        <div class="search-box">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 48 48">
+            <g fill="none" stroke="#8B8B8B" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" stroke-linejoin="round">
+              <path data-color="color-2" d="M44 44L32.7 32.7"/>
+              <circle cx="20" cy="20" r="18"/>
+            </g>
+          </svg>
+          <input type="text" id="search" placeholder="Type here to search...">
+        </div>
+        <div class="user-item">
+          <img src="static/images/rms.jpeg">
+          <p>Richard</p>
+          <svg class="arrow-down" xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 48 48">
+            <path fill="#8B8B8B" d="M24 33c.3 0 .7-.2.8-.5l10-16c.2-.3.2-.7 0-1-.1-.3-.4-.5-.8-.5H14c-.4 0-.7.2-.9.5-.2.3-.2.7 0 1l10 16c.2.3.6.5.9.5z"/>
+          </svg>
+        </div>
+        <a href="/library" class="library-btn">Library</a>
+        <div class="user-dropdown">
+          <a href="/settings">Account settings</a>
+          <a href="/signout">Sign out</a>
+        </div>
+      </div>
+    </header>
     <script
       src="https://code.jquery.com/jquery-3.1.1.min.js"
       type="text/javascript"
