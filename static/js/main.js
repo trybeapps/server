@@ -1,6 +1,18 @@
+// Disabling autoDiscover, otherwise Dropzone will try to attach twice.
+Dropzone.autoDiscover = false
+
 $(function () {
+  var myDropzone = new Dropzone('body', { url: '/book-upload', clickable: false})
+
+  myDropzone.on('dragover', function () {
+    $('.fl-drop').fadeIn()
+    return setTimeout(function () {
+      $('.fl-drop').fadeOut()
+    }, 2000)
+  })
+
   $('.search-box').on('focusin', '#search', function () {
-    $('.search-icon').children('g').css('stroke', '#0766B4')
+    $('.search-icon').children('g').css('stroke', '#f34a53')
   })
 
   $('.search-box').on('focusout', '#search', function () {
@@ -8,12 +20,12 @@ $(function () {
   })
 
   $('.user-item').click(function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    $('.user-dropdown').toggle();
+    e.preventDefault()
+    e.stopPropagation()
+    $('.user-dropdown').toggle()
   })
 
   $(document).on('click', function () {
-    $('.user-dropdown').hide();
+    $('.user-dropdown').hide()
   })
 })

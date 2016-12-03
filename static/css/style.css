@@ -407,17 +407,17 @@ body {
   height: 100%;
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 16px;
-  color: #444444;
-  background-color: #F5F5F5; }
+  color: #555555;
+  background-color: #F8F8F8; }
 
 header {
   width: 100%;
-  height: 50px;
+  height: 60px;
   background-color: white;
-  box-shadow: 0 1px 2px rgba(102, 102, 102, 0.5); }
+  border-bottom: 1px solid #ccc; }
   header .container {
     position: relative;
-    padding: 10px 0; }
+    padding: 14px 0; }
 
 .container {
   max-width: 1280px;
@@ -428,12 +428,12 @@ header {
   float: left;
   font-family: 'PT Sans Caption', sans-serif;
   font-size: 20px;
-  color: #0766B4;
+  color: #f34a53;
   margin-top: 5px;
   cursor: pointer;
   text-decoration: none; }
   #logo span {
-    color: #333333; }
+    color: #969696; }
 
 .search-box {
   position: relative;
@@ -444,13 +444,12 @@ header {
   width: 420px;
   height: 32px;
   font-family: 'Source Sans Pro', sans-serif;
-  border: 1px solid #454545;
-  border-radius: 3px;
+  border: 1px solid #a2a2a2;
   padding: 0 10px 2px 33px;
   box-sizing: border-box;
   outline: none; }
   #search:focus {
-    border: 1px solid #0766B4; }
+    border: 1px solid #f34a53; }
 
 .search-icon {
   position: absolute;
@@ -458,11 +457,11 @@ header {
 
 .library-btn, .upload-btn {
   float: right;
-  color: #444444;
+  color: #555555;
   text-decoration: none;
   margin: 5px 30px 0 0; }
   .library-btn:hover, .upload-btn:hover {
-    color: #0766B4;
+    color: #f34a53;
     text-decoration: underline; }
 
 .upload-btn svg {
@@ -476,10 +475,10 @@ header {
     text-decoration: underline; }
 
 .upload-btn:hover svg g {
-  fill: #0766B4; }
+  fill: #f34a53; }
 
 .upload-btn:hover p {
-  color: #0766B4; }
+  color: #f34a53; }
 
 .user-item {
   float: right;
@@ -498,9 +497,9 @@ header {
   .user-item svg {
     margin-top: 6px; }
   .user-item:hover svg path {
-    fill: #0766B4; }
+    fill: #f34a53; }
   .user-item:hover p {
-    color: #0766B4; }
+    color: #f34a53; }
 
 .user-dropdown {
   display: none;
@@ -512,20 +511,19 @@ header {
   background: white;
   border: 1px solid #E0E0E0;
   padding: 10px 20px;
-  box-shadow: 0 1px 1px rgba(51, 51, 51, 0.5);
   box-sizing: border-box; }
   .user-dropdown a {
     display: block;
-    color: #444444;
+    color: #555555;
     text-decoration: none;
     margin-bottom: 10px; }
     .user-dropdown a:hover {
-      color: #0766B4;
+      color: #f34a53;
       text-decoration: underline; }
 
 h3 {
-  font-size: 19px;
-  font-weight: bold;
+  font-size: 20px;
+  font-weight: normal;
   line-height: 24px;
   margin: 0 0 20px 0; }
 
@@ -541,15 +539,24 @@ h3 {
   overflow: hidden; }
   .books-list li {
     float: left;
-    margin-right: 57px;
-    margin-bottom: 50px; }
+    margin: 0 55px 50px 0;
+    border: 1px solid #ccc; }
     .books-list li:nth-child(5n) {
       margin-right: 0; }
   .books-list a, .books-list img {
     display: block; }
 
-.book-separator {
-  width: 100%;
-  height: 1px;
-  background: #DDDDDD;
-  margin-bottom: 50px; }
+.fl-drop {
+  display: none;
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  width: 300px;
+  height: 32px;
+  background: #f34a53;
+  color: white;
+  border-radius: 20px;
+  text-align: center;
+  padding-top: 5px;
+  box-sizing: border-box;
+  margin-left: -150px; }
