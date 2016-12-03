@@ -408,7 +408,7 @@ body {
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 16px;
   color: #444444;
-  background-color: #F8F8F8; }
+  background-color: #F5F5F5; }
 
 header {
   width: 100%;
@@ -444,7 +444,7 @@ header {
   width: 420px;
   height: 32px;
   font-family: 'Source Sans Pro', sans-serif;
-  border: 1px solid #B8B8B8;
+  border: 1px solid #454545;
   border-radius: 3px;
   padding: 0 10px 2px 33px;
   box-sizing: border-box;
@@ -456,33 +456,34 @@ header {
   position: absolute;
   margin: 7px 0 0 10px; }
 
-.library-btn {
+.library-btn, .upload-btn {
   float: right;
-  width: 76px;
-  height: 36px;
-  color: white;
-  background-color: #3689CD;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)) left no-repeat, center no-repeat #137cbd;
-  border-color: rgba(16, 22, 26, 0.1) rgba(16, 22, 26, 0.1) rgba(16, 22, 26, 0.3) rgba(16, 22, 26, 0.1);
-  box-shadow: 0 1px 1px rgba(16, 22, 26, 0.2);
+  color: #444444;
   text-decoration: none;
-  text-align: center;
-  border-radius: 3px;
-  padding-top: 7px;
-  box-sizing: border-box;
-  margin-top: -3px; }
-  .library-btn:hover {
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)) left no-repeat, center no-repeat #106ba3;
-    box-shadow: 0 1px 1px rgba(16, 22, 26, 0.2); }
-  .library-btn:active {
-    border-color: rgba(16, 22, 26, 0.6) rgba(16, 22, 26, 0.2) rgba(16, 22, 26, 0.2) rgba(16, 22, 26, 0.2);
-    box-shadow: inset 0 1px 1px rgba(16, 22, 26, 0.2);
-    background-color: #0e5a8a;
-    background-image: none; }
+  margin: 5px 30px 0 0; }
+  .library-btn:hover, .upload-btn:hover {
+    color: #0766B4;
+    text-decoration: underline; }
+
+.upload-btn svg {
+  float: left;
+  margin: -2px 5px 0 0; }
+
+.upload-btn p {
+  float: left;
+  margin: 0; }
+  .upload-btn p:hover {
+    text-decoration: underline; }
+
+.upload-btn:hover svg g {
+  fill: #0766B4; }
+
+.upload-btn:hover p {
+  color: #0766B4; }
 
 .user-item {
   float: right;
-  margin: -3px 0 0 30px;
+  margin: -3px 0 0 0;
   cursor: pointer; }
   .user-item:hover p {
     text-decoration: underline; }
@@ -494,8 +495,12 @@ header {
     float: left;
     margin-left: 5px;
     margin-top: 8px; }
-  .user-item .arrow-down {
+  .user-item svg {
     margin-top: 6px; }
+  .user-item:hover svg path {
+    fill: #0766B4; }
+  .user-item:hover p {
+    color: #0766B4; }
 
 .user-dropdown {
   display: none;
@@ -515,4 +520,36 @@ header {
     text-decoration: none;
     margin-bottom: 10px; }
     .user-dropdown a:hover {
+      color: #0766B4;
       text-decoration: underline; }
+
+h3 {
+  font-size: 19px;
+  font-weight: bold;
+  line-height: 24px;
+  margin: 0 0 20px 0; }
+
+.books-container {
+  margin-top: 30px;
+  overflow: hidden; }
+
+.books-list {
+  display: block;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; }
+  .books-list li {
+    float: left;
+    margin-right: 57px;
+    margin-bottom: 50px; }
+    .books-list li:nth-child(5n) {
+      margin-right: 0; }
+  .books-list a, .books-list img {
+    display: block; }
+
+.book-separator {
+  width: 100%;
+  height: 1px;
+  background: #DDDDDD;
+  margin-bottom: 50px; }
