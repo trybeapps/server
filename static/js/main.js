@@ -2,12 +2,18 @@
 Dropzone.autoDiscover = false
 
 $(function () {
-  var myDropzone = new Dropzone('body', { url: '/book-upload', clickable: false})
+  var myDropzone = new Dropzone('body', {
+    url: '/book-upload',
+    paramName: 'file',
+    acceptedFiles: 'application/pdf',
+    uploadMultiple: true,
+    clickable: false
+  })
 
   myDropzone.on('dragover', function () {
-    $('.fl-drop').fadeIn()
+    $('.dz-message').fadeIn()
     return setTimeout(function () {
-      $('.fl-drop').fadeOut()
+      $('.dz-message').fadeOut()
     }, 2000)
   })
 

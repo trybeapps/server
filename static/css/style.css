@@ -433,7 +433,7 @@ header {
   cursor: pointer;
   text-decoration: none; }
   #logo span {
-    color: #969696; }
+    color: #444444; }
 
 .search-box {
   position: relative;
@@ -546,7 +546,7 @@ h3 {
   .books-list a, .books-list img {
     display: block; }
 
-.fl-drop {
+.dz-message {
   display: none;
   position: absolute;
   top: 70px;
