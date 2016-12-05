@@ -58,9 +58,6 @@ def signup():
         db.session.add(user)
         db.session.commit()
         session['email'] = email
-        users = User.query.all()
-
-        print (users)
 
         return redirect(url_for('index'))
     return '''
@@ -131,7 +128,7 @@ def upload_file():
               cover = cover_path + '-001-000.png'
               print cover
 
-              book = Book(title=info['Title'], author=info['Author'], url=file_path, cover=cover, pages=info['Pages'])
+              book = Book(title=info['Title'], author=info['Author'], url=file_path, cover=cover, pages=info['Pages'], current_page=0)
 
               user = User.query.filter_by(email=session['email']).first()
               user.books.append(book)
