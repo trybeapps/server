@@ -27,5 +27,12 @@ class Book(db.Model):
     pages = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+    def __init__(self, title, author, url, cover, pages):
+        self.title = title
+        self.author = author
+        self.url = url
+        self.cover = cover
+        self.pages = pages
+
     def __repr__(self):
         return '<Book %r>' % (self.title)
