@@ -76,6 +76,7 @@ header {
   color: #555555;
   text-decoration: none;
   margin: 5px 30px 0 0;
+  cursor: pointer;
 
   &:hover {
     color: #f34a53;
@@ -222,4 +223,8 @@ h3 {
   padding-top: 5px;
   box-sizing: border-box;
   margin-left: -150px;
+}
+
+.dz-preview {
+  display: none;
 }

@@ -4,6 +4,7 @@ from functools import wraps
 from flask_sqlalchemy import SQLAlchemy
 import hashlib
 import os
+import subprocess
 import bcrypt
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -21,21 +22,7 @@ app.secret_key = 'ff29b42f8d7d5cbefd272eab3eba6ec8'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/libreread_dev'
 db = SQLAlchemy(app)
 
-# Create our database model
-class User(db.Model):
-    __tablename__ = "users"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200))
-    email = db.Column(db.String(120), unique=True)
-    password_hash = db.Column(db.String(80))
-
-    def __init__(self, name, email, password_hash):
-        self.name = name
-        self.email = email
-        self.password_hash = password_hash
-
-    def __repr__(self):
-        return '<Email %r>' % self.email
+from models import User, Book
 
 @app.before_request
 def before_request():
@@ -130,9 +117,32 @@ def upload_file():
               return redirect(request.url)
           if file and allowed_file(file.filename):
               filename = secure_filename(file.filename)
-              file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+              file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+              file.save(file_path)
+
+              info = _pdfinfo(file_path)
+              print (info)
+
+              img_folder = 'images/' + '_'.join(info['Title'].split(' '))
+              cover_path = os.path.join(app.config['UPLOAD_FOLDER'], img_folder)
+
+              _gen_cover(file_path, cover_path)
+
+              cover = cover_path + '-001-000.png'
+              print cover
+
+              book = Book(title=info['Title'], author=info['Author'], url=file_path, cover=cover, pages=info['Pages'])
+
+              user = User.query.filter_by(email=session['email']).first()
+              user.books.append(book)
+              db.session.add(user)
+              db.session.add(book)
+              db.session.commit()
+
+              print user.books
+
               print ('Book uploaded successfully!')
-        return redirect(url_for('index'))
+        return 'success'
     else:
         return redirect(url_for('index'))
 
@@ -143,3 +153,56 @@ def send_book(filename):
 @app.route('/b/cover/<filename>')
 def send_book_cover(filename):
     return send_from_directory('uploads/images', filename)
+
+def _pdfinfo(infile):
+    """
+    Wraps command line utility pdfinfo to extract the PDF meta information.
+    Returns metainfo in a dictionary.
+    sudo apt-get install poppler-utils
+    This function parses the text output that looks like this:
+        Title:          PUBLIC MEETING AGENDA
+        Author:         Customer Support
+        Creator:        Microsoft Word 2010
+        Producer:       Microsoft Word 2010
+        CreationDate:   Thu Dec 20 14:44:56 2012
+        ModDate:        Thu Dec 20 14:44:56 2012
+        Tagged:         yes
+        Pages:          2
+        Encrypted:      no
+        Page size:      612 x 792 pts (letter)
+        File size:      104739 bytes
+        Optimized:      no
+        PDF version:    1.5
+    """
+    import os.path as osp
+    import subprocess
+
+    cmd = '/usr/bin/pdfinfo'
+    # if not osp.exists(cmd):
+    #     raise RuntimeError('System command not found: %s' % cmd)
+
+    if not osp.exists(infile):
+        raise RuntimeError('Provided input file not found: %s' % infile)
+
+    def _extract(row):
+        """Extracts the right hand value from a : delimited row"""
+        return row.split(':', 1)[1].strip()
+
+    output = {}
+
+    labels = ['Title', 'Author', 'Creator', 'Producer', 'CreationDate',
+              'ModDate', 'Tagged', 'Pages', 'Encrypted', 'Page size',
+              'File size', 'Optimized', 'PDF version']
+
+    cmd_output = subprocess.check_output(['pdfinfo', infile])
+    for line in cmd_output.splitlines():
+        for label in labels:
+            if label in line:
+                output[label] = _extract(line)
+
+    return output
+
+def _gen_cover(file_path, cover_path):
+    print file_path
+    print cover_path
+    subprocess.call('pdfimages -p -png -f 1 -l 2 ' + file_path + ' ' + cover_path, shell=True)
