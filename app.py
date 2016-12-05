@@ -42,7 +42,9 @@ def login_required(f):
 @app.route('/')
 def index():
     if 'email' in session:
-        return render_template('home.html')
+        user = User.query.filter_by(email=session['email']).first()
+        books = user.books.all()
+        return render_template('home.html', user = user, books = books)
     return render_template('landing.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -125,10 +127,11 @@ def upload_file():
 
               _gen_cover(file_path, cover_path)
 
-              cover = cover_path + '-001-000.png'
+              url = '/b/' + filename
+              cover = '/b/cover/' + '_'.join(info['Title'].split(' ')) + '-001-000.png'
               print cover
 
-              book = Book(title=info['Title'], author=info['Author'], url=file_path, cover=cover, pages=info['Pages'], current_page=0)
+              book = Book(title=info['Title'], author=info['Author'], url=url, cover=cover, pages=info['Pages'], current_page=0)
 
               user = User.query.filter_by(email=session['email']).first()
               user.books.append(book)

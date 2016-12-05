@@ -44,6 +44,10 @@
       </div>
     </header>
     <div class="container books-container">
+      {{user}}
+      {% for book in books %}
+        <a href="{{book.url}}"><img src="{{book.cover}}"></a>
+      {% endfor %}
       <h3>Last Read</h3>
       <ul class="books-list last-read">
         <li>
