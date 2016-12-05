@@ -25,6 +25,7 @@ class Book(db.Model):
     pages = db.Column(db.Integer)
     current_page = db.Column(db.Integer)
     created_on = db.Column(db.DateTime, server_default=db.func.now())
+    updated_on = db.Column(db.DateTime, server_default=db.func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __init__(self, title, author, url, cover, pages, current_page):

@@ -44,95 +44,37 @@
       </div>
     </header>
     <div class="container books-container">
-      {{user}}
-      {% for book in books %}
-        <a href="{{book.url}}"><img src="{{book.cover}}"></a>
-      {% endfor %}
       <h3>Last Read</h3>
       <ul class="books-list last-read">
+        {% for book in books %}
         <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
+          <a href="{{ book.url }}" alt="{{ book.title }}">
+            <img src="{{ book.cover }}" width="210px" height="240px">
           </a>
         </li>
-        <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
-          </a>
-        </li>
-        <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
-          </a>
-        </li>
-        <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
-          </a>
-        </li>
-        <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
-          </a>
-        </li>
+        {% endfor %}
       </ul>
       <div class="book-separator"></div>
       <h3>Newly Added</h3>
-      <ul class="books-list newly-added">
+      <ul class="books-list last-read">
+        {% for book in new_books %}
         <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
+          <a href="{{ book.url }}" alt="{{ book.title }}">
+            <img src="{{ book.cover }}" width="210px" height="240px">
           </a>
         </li>
-        <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
-          </a>
-        </li>
-        <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
-          </a>
-        </li>
-        <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
-          </a>
-        </li>
-        <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
-          </a>
-        </li>
+        {% endfor %}
       </ul>
       <div class="book-separator"></div>
       <h3>All Books</h3>
-      <ul class="books-list all-books">
+      <ul class="books-list last-read">
+        {% for book in books %}
         <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
+          <a href="{{ book.url }}" alt="{{ book.title }}">
+            <img src="{{ book.cover }}" width="210px" height="240px">
           </a>
         </li>
-        <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
-          </a>
-        </li>
-        <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
-          </a>
-        </li>
-        <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
-          </a>
-        </li>
-        <li>
-          <a href="/b/Elixir_in_Action_1479020214115.pdf">
-            <img src="/b/cover/Elixir_in_Action_1479020214115.pdf-001-000.png" width="210px" height="240px">
-          </a>
-        </li>
+        {% endfor %}
       </ul>
     </div>
     <script

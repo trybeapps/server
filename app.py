@@ -1,9 +1,11 @@
 from flask import Flask, g, session, abort, redirect, url_for, render_template, request, escape, send_from_directory
 from werkzeug.utils import secure_filename
 from functools import wraps
+from sqlalchemy import desc
 from flask_sqlalchemy import SQLAlchemy
 import hashlib
 import os
+import datetime
 import subprocess
 import bcrypt
 
@@ -44,7 +46,11 @@ def index():
     if 'email' in session:
         user = User.query.filter_by(email=session['email']).first()
         books = user.books.all()
-        return render_template('home.html', user = user, books = books)
+        print books
+        if len(books):
+            new_books = Book.query.filter_by(user_id=user.id).order_by(desc(Book.created_on)).limit(5).all()
+            print new_books
+        return render_template('home.html', user = user, books = books, new_books=new_books)
     return render_template('landing.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
