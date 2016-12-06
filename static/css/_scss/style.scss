@@ -82,7 +82,7 @@ header {
   padding: 10px;
   box-sizing: border-box;
 
-  .atc-style-one {
+  .atc-style {
     display: block;
     list-style: none;
     margin: 0 0 15px 0;
@@ -115,6 +115,19 @@ header {
       .atc-b-author {
         font-size: 15px;
         color: #777777;
+      }
+    }
+
+    .atc-b-full-text {
+      p {
+        width: 328px;
+        margin: 4px 0 0 0;
+        color: #444444;
+
+        em {
+          font-style: normal;
+          font-weight: bold;
+        }
       }
     }
   }

@@ -465,29 +465,36 @@ header {
   border-bottom: 1px solid #e2e2e2;
   padding: 10px;
   box-sizing: border-box; }
-  .autocomplete .atc-style-one {
+  .autocomplete .atc-style {
     display: block;
     list-style: none;
     margin: 0 0 15px 0;
     padding: 0; }
-    .autocomplete .atc-style-one:last-child {
+    .autocomplete .atc-style:last-child {
       margin-bottom: 0; }
-    .autocomplete .atc-style-one a {
+    .autocomplete .atc-style a {
       display: block;
       width: 100%;
       overflow: hidden; }
-    .autocomplete .atc-style-one img {
+    .autocomplete .atc-style img {
       float: left; }
-    .autocomplete .atc-style-one .atc-b-info {
+    .autocomplete .atc-style .atc-b-info {
       float: left;
       margin-left: 10px; }
-      .autocomplete .atc-style-one .atc-b-info .atc-b-title {
+      .autocomplete .atc-style .atc-b-info .atc-b-title {
         font-size: 17px;
         font-weight: bold;
         color: #444444; }
-      .autocomplete .atc-style-one .atc-b-info .atc-b-author {
+      .autocomplete .atc-style .atc-b-info .atc-b-author {
         font-size: 15px;
         color: #777777; }
+    .autocomplete .atc-style .atc-b-full-text p {
+      width: 328px;
+      margin: 4px 0 0 0;
+      color: #444444; }
+      .autocomplete .atc-style .atc-b-full-text p em {
+        font-style: normal;
+        font-weight: bold; }
 
 .library-btn, .upload-btn {
   float: right;
