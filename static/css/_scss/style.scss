@@ -92,6 +92,13 @@ header {
       margin-bottom: 0;
     }
 
+    .atc-c,.atc-m {
+      margin-bottom: 10px;
+      background: #f3f3f3;
+      padding: 6px 10px;
+      text-align: center;
+    }
+
     a {
       display: block;
       width: 100%;
@@ -119,10 +126,19 @@ header {
     }
 
     .atc-b-full-text {
+      width: 328px;
+      margin-top: 9px;
+      overflow: hidden;
+
+      svg {
+        float: left;
+      }
+
       p {
-        width: 328px;
-        margin: 4px 0 0 0;
+        float: left;
+        width: 311px;
         color: #444444;
+        margin: 0 0 0 3px;
 
         em {
           font-style: normal;

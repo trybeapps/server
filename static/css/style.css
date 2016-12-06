@@ -472,6 +472,11 @@ header {
     padding: 0; }
     .autocomplete .atc-style:last-child {
       margin-bottom: 0; }
+    .autocomplete .atc-style .atc-c, .autocomplete .atc-style .atc-m {
+      margin-bottom: 10px;
+      background: #f3f3f3;
+      padding: 6px 10px;
+      text-align: center; }
     .autocomplete .atc-style a {
       display: block;
       width: 100%;
@@ -488,13 +493,20 @@ header {
       .autocomplete .atc-style .atc-b-info .atc-b-author {
         font-size: 15px;
         color: #777777; }
-    .autocomplete .atc-style .atc-b-full-text p {
+    .autocomplete .atc-style .atc-b-full-text {
       width: 328px;
-      margin: 4px 0 0 0;
-      color: #444444; }
-      .autocomplete .atc-style .atc-b-full-text p em {
-        font-style: normal;
-        font-weight: bold; }
+      margin-top: 9px;
+      overflow: hidden; }
+      .autocomplete .atc-style .atc-b-full-text svg {
+        float: left; }
+      .autocomplete .atc-style .atc-b-full-text p {
+        float: left;
+        width: 311px;
+        color: #444444;
+        margin: 0 0 0 3px; }
+        .autocomplete .atc-style .atc-b-full-text p em {
+          font-style: normal;
+          font-weight: bold; }
 
 .library-btn, .upload-btn {
   float: right;

@@ -166,6 +166,8 @@ def upload_file():
                   'thedata': pdf_data,
                   'title': book.title,
                   'author': book.author,
+                  'url': book.url,
+                  'cover': book.cover,
                   'page': 1,
               })
 
