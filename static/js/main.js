@@ -28,12 +28,12 @@ $(function () {
     $('.dz-hidden-input').click()
   })
 
-  myDropzone.on('success', function(file,res) {
+  myDropzone.on('success', function (file, res) {
     console.log(file)
     alert(file.name + ' uploaded successfully')
   })
 
-  uploadBtn.on('success', function(file,res) {
+  uploadBtn.on('success', function (file, res) {
     console.log(file)
     alert(file.name + ' uploaded successfully')
   })
@@ -54,5 +54,20 @@ $(function () {
 
   $(document).on('click', function () {
     $('.user-dropdown').hide()
+  })
+
+  $('#search').on('keyup', function () {
+    if ($(this).val().length >= 3) {
+      $.ajax({
+        url: '/autocomplete',
+        dataType: 'json',
+        data: {
+          term: $(this).val()
+        },
+        success: function (data) {
+          console.log(data)
+        }
+      })
+    }
   })
 })

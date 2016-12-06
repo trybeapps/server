@@ -455,6 +455,40 @@ header {
   position: absolute;
   margin: 7px 0 0 10px; }
 
+.autocomplete {
+  position: absolute;
+  width: 420px;
+  min-height: 100px;
+  background: white;
+  border-left: 1px solid #e2e2e2;
+  border-right: 1px solid #e2e2e2;
+  border-bottom: 1px solid #e2e2e2;
+  padding: 10px;
+  box-sizing: border-box; }
+  .autocomplete .atc-style-one {
+    display: block;
+    list-style: none;
+    margin: 0 0 15px 0;
+    padding: 0; }
+    .autocomplete .atc-style-one:last-child {
+      margin-bottom: 0; }
+    .autocomplete .atc-style-one a {
+      display: block;
+      width: 100%;
+      overflow: hidden; }
+    .autocomplete .atc-style-one img {
+      float: left; }
+    .autocomplete .atc-style-one .atc-b-info {
+      float: left;
+      margin-left: 10px; }
+      .autocomplete .atc-style-one .atc-b-info .atc-b-title {
+        font-size: 17px;
+        font-weight: bold;
+        color: #444444; }
+      .autocomplete .atc-style-one .atc-b-info .atc-b-author {
+        font-size: 15px;
+        color: #777777; }
+
 .library-btn, .upload-btn {
   float: right;
   color: #555555;

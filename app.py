@@ -1,10 +1,13 @@
-from flask import Flask, g, session, abort, redirect, url_for, render_template, request, escape, send_from_directory
+from flask import Flask, g, session, abort, redirect, url_for, render_template, request, escape, send_from_directory, jsonify
 from werkzeug.utils import secure_filename
 from functools import wraps
 from sqlalchemy import desc
 from flask_sqlalchemy import SQLAlchemy
 import hashlib
+import requests
 import os
+import json
+import base64
 import datetime
 import subprocess
 import bcrypt
@@ -145,20 +148,39 @@ def upload_file():
               db.session.add(book)
               db.session.commit()
 
+              print '\n\n\n'
+              print book.id
+              # Feeding pdf content into ElasticSearch
+              # Encode the pdf file and add it to the index
+              pdf_data = _pdf_encode(file_path)
+
+              # Set the payload in json
+              book_info = json.dumps({
+                'title': book.title,
+                'author': book.author,
+                'url': book.url,
+                'cover': book.cover
+              })
+
+              book_detail = json.dumps({
+                  'thedata': pdf_data,
+                  'title': book.title,
+                  'author': book.author,
+                  'page': 1,
+              })
+
+              # Send the request to ElasticSearch on localhost:9200
+              r = requests.put('http://localhost:9200/lr_index/book_info/' + str(book.id), data=book_info)
+              print r.text
+              r = requests.put('http://localhost:9200/lr_index/book_detail/' + str(book.id) + '?pipeline=attachment', data=book_detail)
+              print r.text
+
               print user.books
 
               print ('Book uploaded successfully!')
         return 'success'
     else:
         return redirect(url_for('index'))
-
-@app.route('/b/<filename>')
-def send_book(filename):
-    return send_from_directory('uploads', filename)
-
-@app.route('/b/cover/<filename>')
-def send_book_cover(filename):
-    return send_from_directory('uploads/images', filename)
 
 def _pdfinfo(infile):
     """
@@ -212,3 +234,66 @@ def _gen_cover(file_path, cover_path):
     print file_path
     print cover_path
     subprocess.call('pdfimages -p -png -f 1 -l 2 ' + file_path + ' ' + cover_path, shell=True)
+
+def _pdf_encode(pdf_filename):
+    return base64.b64encode(open(pdf_filename,"rb").read());
+
+@app.route('/b/<filename>')
+def send_book(filename):
+    return send_from_directory('uploads', filename)
+
+@app.route('/b/cover/<filename>')
+def send_book_cover(filename):
+    return send_from_directory('uploads/images', filename)
+
+@app.route('/autocomplete')
+def search_books():
+    query = request.args.get('term')
+    print query
+
+    payload = json.dumps({
+        '_source': ['title', 'author', 'url', 'cover'],
+        'query': {
+            'multi_match': {
+                'query': query,
+                'fields': ['title', 'author']
+            }
+        },
+        'highlight': {
+            'fields': {
+                'title': {
+                    'fragment_size': 150,
+				    'number_of_fragments': 3,
+				    'no_match_size': 150
+                },
+                'author': {
+                    'fragment_size': 150,
+				    'number_of_fragments': 3,
+				    'no_match_size': 150
+                }
+            }
+        }
+    })
+
+    r = requests.get('http://localhost:9200/lr_index/book_info/_search', data=payload)
+    data = json.loads(r.text)
+
+    hits = data['hits']['hits']
+    total = int(data['hits']['total'])
+
+    suggestions = []
+
+    for hit in hits:
+        title = hit['highlight']['title'][0]
+        author = hit['highlight']['author'][0]
+        url = hit['_source']['url']
+        cover = hit['_source']['cover']
+
+        suggestions.append({
+            'title': title, 'author': author, 'url': url, 'cover': cover
+        })
+
+    print '\n\n\n'
+    print suggestions
+
+    return jsonify(suggestions)
