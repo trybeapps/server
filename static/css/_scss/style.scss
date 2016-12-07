@@ -74,29 +74,39 @@ header {
 .autocomplete {
   position: absolute;
   width: 420px;
-  min-height: 100px;
+  min-height: 200px;
+  max-height: 400px;
   background: white;
   border-left: 1px solid #e2e2e2;
   border-right: 1px solid #e2e2e2;
   border-bottom: 1px solid #e2e2e2;
   padding: 10px;
   box-sizing: border-box;
+  overflow-y: auto;
+
+  .auto-metadata {
+    margin-bottom: 20px;
+  }
+
+  .atc-c,.atc-m {
+    margin-bottom: 10px;
+    background: #f3f3f3;
+    padding: 6px 10px;
+    text-align: center;
+  }
 
   .atc-style {
     display: block;
     list-style: none;
-    margin: 0 0 15px 0;
+    margin: 0;
     padding: 0;
 
-    &:last-child {
-      margin-bottom: 0;
-    }
+    li {
+      margin-bottom: 15px;
 
-    .atc-c,.atc-m {
-      margin-bottom: 10px;
-      background: #f3f3f3;
-      padding: 6px 10px;
-      text-align: center;
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
 
     a {
@@ -109,9 +119,11 @@ header {
       float: left;
     }
 
-    .atc-b-info {
+    .atc-b-info,.atc-b-full-text {
       float: left;
+      width: 310px;
       margin-left: 10px;
+      overflow: hidden;
 
       .atc-b-title {
         font-size: 17px;
@@ -122,13 +134,11 @@ header {
       .atc-b-author {
         font-size: 15px;
         color: #777777;
+        margin-bottom: 10px;
       }
     }
 
     .atc-b-full-text {
-      width: 328px;
-      margin-top: 9px;
-      overflow: hidden;
 
       svg {
         float: left;
@@ -136,7 +146,7 @@ header {
 
       p {
         float: left;
-        width: 311px;
+        width: 290px;
         color: #444444;
         margin: 0 0 0 3px;
 

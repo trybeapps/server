@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 import hashlib
 import requests
 import os
+import shutil
 import json
 import base64
 import datetime
@@ -162,20 +163,33 @@ def upload_file():
                 'cover': book.cover
               })
 
-              book_detail = json.dumps({
-                  'thedata': pdf_data,
-                  'title': book.title,
-                  'author': book.author,
-                  'url': book.url,
-                  'cover': book.cover,
-                  'page': 1,
-              })
-
               # Send the request to ElasticSearch on localhost:9200
               r = requests.put('http://localhost:9200/lr_index/book_info/' + str(book.id), data=book_info)
               print r.text
-              r = requests.put('http://localhost:9200/lr_index/book_detail/' + str(book.id) + '?pipeline=attachment', data=book_detail)
-              print r.text
+
+              # Make directory for adding the pdf separated files
+              directory = os.path.join(app.config['UPLOAD_FOLDER'], 'splitpdf')
+              if not os.path.exists(directory):
+                  os.makedirs(directory)
+
+              _pdf_separate(directory, file_path)
+
+              for i in range(1,int(book.pages)+1):
+                  pdf_data = _pdf_encode(directory+'/'+str(i)+'.pdf')
+                  book_detail = json.dumps({
+                      'thedata': pdf_data,
+                      'title': book.title,
+                      'author': book.author,
+                      'url': book.url,
+                      'cover': book.cover,
+                      'page': i,
+                  })
+                  # feed data in id = userid_bookid_pageno
+                  r = requests.put('http://localhost:9200/lr_index/book_detail/' + str(user.id) + '_' + str(book.id) + '_' + str(i) + '?pipeline=attachment', data=book_detail)
+                  print r.text
+
+              # Remove the splitted pdfs as it is useless now
+              shutil.rmtree(directory)
 
               print user.books
 
@@ -183,6 +197,9 @@ def upload_file():
         return 'success'
     else:
         return redirect(url_for('index'))
+
+def _pdf_separate(directory, file_path):
+    subprocess.call('pdfseparate ' + file_path + ' ' + directory + '/%d.pdf', shell=True)
 
 def _pdfinfo(infile):
     """
@@ -253,6 +270,8 @@ def search_books():
     query = request.args.get('term')
     print query
 
+    suggestions = []
+
     payload = json.dumps({
         '_source': ['title', 'author', 'url', 'cover'],
         'query': {
@@ -260,42 +279,70 @@ def search_books():
                 'query': query,
                 'fields': ['title', 'author']
             }
-        },
-        'highlight': {
-            'fields': {
-                'title': {
-                    'fragment_size': 150,
-				    'number_of_fragments': 3,
-				    'no_match_size': 150
-                },
-                'author': {
-                    'fragment_size': 150,
-				    'number_of_fragments': 3,
-				    'no_match_size': 150
-                }
-            }
         }
     })
 
     r = requests.get('http://localhost:9200/lr_index/book_info/_search', data=payload)
     data = json.loads(r.text)
+    print (data)
 
     hits = data['hits']['hits']
     total = int(data['hits']['total'])
 
-    suggestions = []
+    metadata = []
 
     for hit in hits:
-        title = hit['highlight']['title'][0]
-        author = hit['highlight']['author'][0]
+        title = hit['_source']['title']
+        author = hit['_source']['author']
         url = hit['_source']['url']
         cover = hit['_source']['cover']
 
-        suggestions.append({
+        metadata.append({
             'title': title, 'author': author, 'url': url, 'cover': cover
         })
 
-    print '\n\n\n'
-    print suggestions
+
+    suggestions.append(metadata)
+
+    payload = json.dumps({
+        '_source': ['title', 'author', 'url', 'cover'],
+        'query': {
+            'match_phrase': {
+                'attachment.content': query
+            }
+        },
+        'highlight': {
+            'fields': {
+                'attachment.content': {
+                    'fragment_size': 150,
+                    'number_of_fragments': 3,
+                    'no_match_size': 150
+                }
+            }
+        }
+    })
+
+    r = requests.get('http://localhost:9200/lr_index/book_detail/_search', data=payload)
+    data = json.loads(r.text)
+    print (data)
+
+    hits = data['hits']['hits']
+    total = int(data['hits']['total'])
+
+    content = []
+
+    for hit in hits:
+        title = hit['_source']['title']
+        author = hit['_source']['author']
+        url = hit['_source']['url']
+        cover = hit['_source']['cover']
+        data = hit['highlight']['attachment.content']
+        if len(data):
+            for i in data:
+                content.append({
+                    'title': title, 'author': author, 'url': url, 'cover': cover, 'data': i
+                })
+
+    suggestions.append(content)
 
     return jsonify(suggestions)

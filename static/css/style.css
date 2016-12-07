@@ -458,55 +458,60 @@ header {
 .autocomplete {
   position: absolute;
   width: 420px;
-  min-height: 100px;
+  min-height: 200px;
+  max-height: 400px;
   background: white;
   border-left: 1px solid #e2e2e2;
   border-right: 1px solid #e2e2e2;
   border-bottom: 1px solid #e2e2e2;
   padding: 10px;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  overflow-y: auto; }
+  .autocomplete .auto-metadata {
+    margin-bottom: 20px; }
+  .autocomplete .atc-c, .autocomplete .atc-m {
+    margin-bottom: 10px;
+    background: #f3f3f3;
+    padding: 6px 10px;
+    text-align: center; }
   .autocomplete .atc-style {
     display: block;
     list-style: none;
-    margin: 0 0 15px 0;
+    margin: 0;
     padding: 0; }
-    .autocomplete .atc-style:last-child {
-      margin-bottom: 0; }
-    .autocomplete .atc-style .atc-c, .autocomplete .atc-style .atc-m {
-      margin-bottom: 10px;
-      background: #f3f3f3;
-      padding: 6px 10px;
-      text-align: center; }
+    .autocomplete .atc-style li {
+      margin-bottom: 15px; }
+      .autocomplete .atc-style li:last-child {
+        margin-bottom: 0; }
     .autocomplete .atc-style a {
       display: block;
       width: 100%;
       overflow: hidden; }
     .autocomplete .atc-style img {
       float: left; }
-    .autocomplete .atc-style .atc-b-info {
+    .autocomplete .atc-style .atc-b-info, .autocomplete .atc-style .atc-b-full-text {
       float: left;
-      margin-left: 10px; }
-      .autocomplete .atc-style .atc-b-info .atc-b-title {
+      width: 310px;
+      margin-left: 10px;
+      overflow: hidden; }
+      .autocomplete .atc-style .atc-b-info .atc-b-title, .autocomplete .atc-style .atc-b-full-text .atc-b-title {
         font-size: 17px;
         font-weight: bold;
         color: #444444; }
-      .autocomplete .atc-style .atc-b-info .atc-b-author {
+      .autocomplete .atc-style .atc-b-info .atc-b-author, .autocomplete .atc-style .atc-b-full-text .atc-b-author {
         font-size: 15px;
-        color: #777777; }
-    .autocomplete .atc-style .atc-b-full-text {
-      width: 328px;
-      margin-top: 9px;
-      overflow: hidden; }
-      .autocomplete .atc-style .atc-b-full-text svg {
-        float: left; }
-      .autocomplete .atc-style .atc-b-full-text p {
-        float: left;
-        width: 311px;
-        color: #444444;
-        margin: 0 0 0 3px; }
-        .autocomplete .atc-style .atc-b-full-text p em {
-          font-style: normal;
-          font-weight: bold; }
+        color: #777777;
+        margin-bottom: 10px; }
+    .autocomplete .atc-style .atc-b-full-text svg {
+      float: left; }
+    .autocomplete .atc-style .atc-b-full-text p {
+      float: left;
+      width: 290px;
+      color: #444444;
+      margin: 0 0 0 3px; }
+      .autocomplete .atc-style .atc-b-full-text p em {
+        font-style: normal;
+        font-weight: bold; }
 
 .library-btn, .upload-btn {
   float: right;
