@@ -8,8 +8,7 @@ Clone this repo and enable virtualenv. Then run <br/>
 Install node dependencies inside the project <br/>
   `npm install`
   
-Setup Mongo and start the server <br/>
-  `mongod`
+Setup and start the Postgres server <br/>
 
 Download and run Elastic Search <br/>
   `./bin/elasticsearch` <br/>
