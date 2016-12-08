@@ -129,6 +129,7 @@ def uploaded_file(filename):
 @app.route('/book-upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
+        args= []
         for i in range(len(request.files)):
           file = request.files['file['+str(i)+']']
           if file.filename == '':
@@ -178,7 +179,7 @@ def upload_file():
               print r.text
 
               # Feed content to Elastic as a background job with celery
-              args = {'user_id': user.id,
+              args.append({'user_id': user.id,
                 'book': {
                     'book_id': book.id,
                     'book_title': book.title,
@@ -188,43 +189,43 @@ def upload_file():
                     'book_pages': book.pages
                 },
                 'file_path': file_path
-              }
-              _feed_content.delay(args)
+              })
 
               print user.books
 
               print ('Book uploaded successfully!')
+        _feed_content.delay(args=args)
         return 'success'
     else:
         return redirect(url_for('index'))
 
 @celery.task()
 def _feed_content(args):
-    print args
 
-    # Make directory for adding the pdf separated files
-    directory = os.path.join(app.config['UPLOAD_FOLDER'], 'splitpdf')
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    for arg in args:
+        # Make directory for adding the pdf separated files
+        directory = os.path.join(app.config['UPLOAD_FOLDER'], 'splitpdf')
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 
-    _pdf_separate(directory, args['file_path'])
+        _pdf_separate(directory, arg['file_path'])
 
-    for i in range(1,int(args['book']['book_pages'])+1):
-        pdf_data = _pdf_encode(directory+'/'+str(i)+'.pdf')
-        book_detail = json.dumps({
-            'thedata': pdf_data,
-            'title': args['book']['book_title'],
-            'author': args['book']['book_author'],
-            'url': args['book']['book_url'],
-            'cover': args['book']['book_cover'],
-            'page': i,
-        })
-        # feed data in id = userid_bookid_pageno
-        r = requests.put('http://localhost:9200/lr_index/book_detail/' + str(args['user_id']) + '_' + str(args['book']['book_id']) + '_' + str(i) + '?pipeline=attachment', data=book_detail)
-        print r.text
+        for i in range(1,int(arg['book']['book_pages'])+1):
+            pdf_data = _pdf_encode(directory+'/'+str(i)+'.pdf')
+            book_detail = json.dumps({
+                'thedata': pdf_data,
+                'title': arg['book']['book_title'],
+                'author': arg['book']['book_author'],
+                'url': arg['book']['book_url'],
+                'cover': arg['book']['book_cover'],
+                'page': i,
+            })
+            # feed data in id = userid_bookid_pageno
+            r = requests.put('http://localhost:9200/lr_index/book_detail/' + str(arg['user_id']) + '_' + str(arg['book']['book_id']) + '_' + str(i) + '?pipeline=attachment', data=book_detail)
+            print r.text
 
-    # Remove the splitted pdfs as it is useless now
-    shutil.rmtree(directory)
+        # Remove the splitted pdfs as it is useless now
+        shutil.rmtree(directory)
 
 def _pdf_separate(directory, file_path):
     subprocess.call('pdfseparate ' + file_path + ' ' + directory + '/%d.pdf', shell=True)
