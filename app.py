@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 from functools import wraps
 from sqlalchemy import desc
 from flask_sqlalchemy import SQLAlchemy
+from celery import Celery
 import hashlib
 import requests
 import os
@@ -18,6 +19,13 @@ UPLOAD_FOLDER = os.path.join(APP_ROOT, 'uploads')
 ALLOWED_EXTENSIONS = set(['pdf'])
 
 app = Flask(__name__)
+
+# celery config
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
 
 # set the upload path
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -167,29 +175,9 @@ def upload_file():
               r = requests.put('http://localhost:9200/lr_index/book_info/' + str(book.id), data=book_info)
               print r.text
 
-              # Make directory for adding the pdf separated files
-              directory = os.path.join(app.config['UPLOAD_FOLDER'], 'splitpdf')
-              if not os.path.exists(directory):
-                  os.makedirs(directory)
-
-              _pdf_separate(directory, file_path)
-
-              for i in range(1,int(book.pages)+1):
-                  pdf_data = _pdf_encode(directory+'/'+str(i)+'.pdf')
-                  book_detail = json.dumps({
-                      'thedata': pdf_data,
-                      'title': book.title,
-                      'author': book.author,
-                      'url': book.url,
-                      'cover': book.cover,
-                      'page': i,
-                  })
-                  # feed data in id = userid_bookid_pageno
-                  r = requests.put('http://localhost:9200/lr_index/book_detail/' + str(user.id) + '_' + str(book.id) + '_' + str(i) + '?pipeline=attachment', data=book_detail)
-                  print r.text
-
-              # Remove the splitted pdfs as it is useless now
-              shutil.rmtree(directory)
+              # Feed content to Elastic as a background job with celery
+              args = {'user_id': user.id, 'book': {'book_id': book.id, 'book_title': book.title, 'book_author': book.author, 'book_cover': book.cover, 'book_url': book.url, 'book_pages': book.pages}, 'file_path': file_path}
+              _feed_content.delay(args)
 
               print user.books
 
@@ -197,6 +185,37 @@ def upload_file():
         return 'success'
     else:
         return redirect(url_for('index'))
+
+@celery.task()
+def _feed_content(args):
+    print args
+
+    # user = User.query.filter_by(email=args['email']).first()
+    # book = Book.query.filter_by(id=args['book']['book_id']).first()
+
+    # Make directory for adding the pdf separated files
+    directory = os.path.join(app.config['UPLOAD_FOLDER'], 'splitpdf')
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    _pdf_separate(directory, args['file_path'])
+
+    for i in range(1,int(args['book']['book_pages'])+1):
+        pdf_data = _pdf_encode(directory+'/'+str(i)+'.pdf')
+        book_detail = json.dumps({
+            'thedata': pdf_data,
+            'title': args['book']['book_title'],
+            'author': args['book']['book_author'],
+            'url': args['book']['book_url'],
+            'cover': args['book']['book_cover'],
+            'page': i,
+        })
+        # feed data in id = userid_bookid_pageno
+        r = requests.put('http://localhost:9200/lr_index/book_detail/' + str(args['user_id']) + '_' + str(args['book']['book_id']) + '_' + str(i) + '?pipeline=attachment', data=book_detail)
+        print r.text
+
+    # Remove the splitted pdfs as it is useless now
+    shutil.rmtree(directory)
 
 def _pdf_separate(directory, file_path):
     subprocess.call('pdfseparate ' + file_path + ' ' + directory + '/%d.pdf', shell=True)
