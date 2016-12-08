@@ -57,12 +57,14 @@ def login_required(f):
 def index():
     if 'email' in session:
         user = User.query.filter_by(email=session['email']).first()
-        books = user.books.all()
-        print books
-        if len(books):
-            new_books = Book.query.filter_by(user_id=user.id).order_by(desc(Book.created_on)).limit(5).all()
-            print new_books
-        return render_template('home.html', user = user, books = books, new_books=new_books)
+        if user:
+            books = user.books.all()
+            print books
+            if len(books):
+                new_books = Book.query.filter_by(user_id=user.id).order_by(desc(Book.created_on)).limit(5).all()
+                print new_books
+                return render_template('home.html', user = user, books = books, new_books=new_books)
+            return render_template('home.html', user = user, books = books, new_books=[])
     return render_template('landing.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -176,7 +178,17 @@ def upload_file():
               print r.text
 
               # Feed content to Elastic as a background job with celery
-              args = {'user_id': user.id, 'book': {'book_id': book.id, 'book_title': book.title, 'book_author': book.author, 'book_cover': book.cover, 'book_url': book.url, 'book_pages': book.pages}, 'file_path': file_path}
+              args = {'user_id': user.id,
+                'book': {
+                    'book_id': book.id,
+                    'book_title': book.title,
+                    'book_author': book.author,
+                    'book_cover': book.cover,
+                    'book_url': book.url,
+                    'book_pages': book.pages
+                },
+                'file_path': file_path
+              }
               _feed_content.delay(args)
 
               print user.books
@@ -189,9 +201,6 @@ def upload_file():
 @celery.task()
 def _feed_content(args):
     print args
-
-    # user = User.query.filter_by(email=args['email']).first()
-    # book = Book.query.filter_by(id=args['book']['book_id']).first()
 
     # Make directory for adding the pdf separated files
     directory = os.path.join(app.config['UPLOAD_FOLDER'], 'splitpdf')
