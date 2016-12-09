@@ -58,6 +58,7 @@ $(function () {
 
   $('#search').on('keyup', function () {
     if ($(this).val().length >= 3) {
+      $('.autocomplete').show()
       $.ajax({
         url: '/autocomplete',
         dataType: 'json',

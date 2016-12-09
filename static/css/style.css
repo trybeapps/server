@@ -456,6 +456,7 @@ header {
   margin: 7px 0 0 10px; }
 
 .autocomplete {
+  display: none;
   position: absolute;
   width: 420px;
   min-height: 200px;
