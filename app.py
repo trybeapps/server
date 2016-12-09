@@ -288,7 +288,8 @@ def _pdf_encode(pdf_filename):
 
 @app.route('/b/<filename>')
 def send_book(filename):
-    return send_from_directory('uploads', filename)
+    # return send_from_directory('uploads', filename)
+    return render_template('viewer.html')
 
 @app.route('/b/cover/<filename>')
 def send_book_cover(filename):
