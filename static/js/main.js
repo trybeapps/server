@@ -92,10 +92,11 @@ $(function () {
             var author = data[1][i].author
             var url = data[1][i].url
             var cover = data[1][i].cover
+            var page = data[1][i].page
             var content = data[1][i].data
 
             var html = '<li>'
-                          + '<a href="' + url + '">'
+                          + '<a href="' + url + '#page=' + page + '">'
                             + '<img src="' + cover + '" width="60px" height="70px">'
                             + '<div class="atc-b-full-text">'
                               + '<div class="atc-b-title">' + title + '</div>'

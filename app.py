@@ -335,7 +335,7 @@ def search_books():
     suggestions.append(metadata)
 
     payload = json.dumps({
-        '_source': ['title', 'author', 'url', 'cover'],
+        '_source': ['title', 'author', 'url', 'cover', 'page'],
         'query': {
             'match_phrase': {
                 'attachment.content': query
@@ -366,11 +366,12 @@ def search_books():
         author = hit['_source']['author']
         url = hit['_source']['url']
         cover = hit['_source']['cover']
+        page = hit['_source']['page']
         data = hit['highlight']['attachment.content']
         if len(data):
             for i in data:
                 content.append({
-                    'title': title, 'author': author, 'url': url, 'cover': cover, 'data': i
+                    'title': title, 'author': author, 'url': url, 'cover': cover, 'page': page, 'data': i
                 })
 
     suggestions.append(content)
