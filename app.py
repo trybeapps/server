@@ -81,6 +81,14 @@ def signup():
         db.session.commit()
         session['email'] = email
 
+        # Copy all the books that are public
+        books = Book.query.filter_by(public=True)
+        print books
+        for book in books:
+            user.books.append(book)
+            db.session.add(user)
+            db.session.commit()
+
         return redirect(url_for('index'))
     return '''
         <form action="" method="post">
@@ -289,7 +297,15 @@ def _pdf_encode(pdf_filename):
 @app.route('/b/<filename>')
 def send_book(filename):
     # return send_from_directory('uploads', filename)
-    return render_template('viewer.html')
+    file_path = '/b/' + filename
+    if 'email' in session:
+        user = User.query.filter_by(email=session['email']).first()
+        if user:
+            books = user.books.all()
+            for book in books:
+                if book.url == file_path:
+                    return render_template('viewer.html')
+    return redirect(url_for('index'))
 
 @app.route('/b/cover/<filename>')
 def send_book_cover(filename):

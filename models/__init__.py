@@ -1,12 +1,17 @@
 from app import db
 
+books = db.Table('books',
+    db.Column('book_id', db.Integer, db.ForeignKey('book.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+)
+
 # Create our database model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     email = db.Column(db.String(120), unique=True)
     password_hash = db.Column(db.String(80))
-    books = db.relationship('Book', backref='user', lazy='dynamic')
+    books = db.relationship('Book', secondary=books, backref='user', lazy='dynamic')
 
     def __init__(self, name, email, password_hash):
         self.name = name
@@ -25,7 +30,7 @@ class Book(db.Model):
     pages = db.Column(db.Integer)
     current_page = db.Column(db.Integer)
     created_on = db.Column(db.DateTime, server_default=db.func.now())
-    updated_on = db.Column(db.DateTime, server_default=db.func.now())
+    public = db.Column(db.Boolean, default=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __init__(self, title, author, url, cover, pages, current_page):
