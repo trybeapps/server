@@ -1,5 +1,5 @@
-// Disabling autoDiscover, otherwise Dropzone will try to attach twice.
-Dropzone.autoDiscover = false
+// Disable auto discover for all elements:
+Dropzone.autoDiscover = false;
 
 $(function () {
   var myDropzone = new Dropzone('body', {
@@ -26,7 +26,6 @@ $(function () {
 
   $('.upload-books').click(function (e) {
     e.preventDefault()
-    $('.dz-hidden-input').click()
   })
 
   myDropzone.on('success', function (file, res) {
