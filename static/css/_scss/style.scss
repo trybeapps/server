@@ -22,6 +22,10 @@ a {
   background: #f3f3f3;
   min-height: 640px;
   margin: 0 auto;
+
+  &.drag-over {
+    border: 1px dashed #777;
+  }
 }
 
 header {

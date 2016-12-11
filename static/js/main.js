@@ -11,10 +11,15 @@ $(function () {
   })
 
   myDropzone.on('dragover', function () {
-    $('.dz-message').fadeIn()
-    return setTimeout(function () {
-      $('.dz-message').fadeOut()
-    }, 2000)
+    $('.page-container').addClass('drag-over')
+  })
+
+  myDropzone.on('dragleave', function () {
+      $('.page-container').removeClass('drag-over')
+  })
+
+  myDropzone.on('drop', function () {
+      $('.page-container').removeClass('drag-over')
   })
 
   var uploadBtn = new Dropzone('.upload-books', {
@@ -22,10 +27,6 @@ $(function () {
     paramName: 'file',
     acceptedFiles: 'application/pdf',
     uploadMultiple: true
-  })
-
-  $('.upload-books').click(function (e) {
-    e.preventDefault()
   })
 
   myDropzone.on('success', function (file, res) {
