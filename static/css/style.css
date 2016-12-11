@@ -1,7 +1,7 @@
 body, input {
   font-family: "Open Sans", sans-serif !important;
   font-size: 13px;
-  color: #444; }
+  color: #555; }
 
 * {
   margin: 0;
@@ -70,6 +70,50 @@ header {
     .management .user:hover .first-name {
       text-decoration: underline; }
 
+.search-dropdown {
+  position: absolute;
+  width: 420px;
+  background: white;
+  color: #555;
+  border: 1px solid #d6d6d6;
+  margin: 37px 0 0 105px;
+  padding: 10px; }
+  .search-dropdown .metadata, .search-dropdown .content {
+    overflow: hidden; }
+    .search-dropdown .metadata .title, .search-dropdown .content .title {
+      background: #f3f3f3;
+      text-align: center;
+      padding: 3px 0;
+      margin-bottom: 10px; }
+  .search-dropdown .none {
+    display: none; }
+  .search-dropdown .content {
+    margin-top: 30px; }
+  .search-dropdown ul {
+    list-style: none; }
+    .search-dropdown ul li {
+      margin-bottom: 20px;
+      overflow: hidden; }
+      .search-dropdown ul li:last-child {
+        margin-bottom: 0; }
+  .search-dropdown .sd-item img {
+    float: left; }
+  .search-dropdown .sd-item .sdi-info {
+    float: left;
+    width: 328px;
+    color: #555;
+    margin-left: 10px; }
+  .search-dropdown .sd-item .sdii-title {
+    font-weight: 600; }
+  .search-dropdown .sd-item .sdii-author {
+    color: #777; }
+  .search-dropdown .sd-item .sdii-content {
+    margin-top: 4px; }
+    .search-dropdown .sd-item .sdii-content em {
+      color: #5082B3;
+      font-weight: 600;
+      font-style: normal; }
+
 .user-dropdown {
   display: none;
   position: absolute;
@@ -81,7 +125,7 @@ header {
   padding: 10px; }
   .user-dropdown a {
     display: block;
-    color: #444;
+    color: #555;
     margin-top: 15px; }
     .user-dropdown a:first-child {
       margin-top: 0; }
