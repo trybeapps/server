@@ -20,6 +20,7 @@ a {
   margin: 0 auto; }
 
 header {
+  position: relative;
   width: 100%;
   height: 44px;
   background: #5082B3;
@@ -32,6 +33,8 @@ header {
   color: white;
   text-decoration: none;
   padding-top: 9px; }
+  .logo:hover {
+    text-decoration: none; }
 
 .search-box {
   float: left;
@@ -66,3 +69,19 @@ header {
       margin-top: 18px; }
     .management .user:hover .first-name {
       text-decoration: underline; }
+
+.user-dropdown {
+  display: none;
+  position: absolute;
+  width: 130px;
+  background: white;
+  border: 1px solid #d6d6d6;
+  right: 0;
+  margin: 44px 15px 0 0;
+  padding: 10px; }
+  .user-dropdown a {
+    display: block;
+    color: #444;
+    margin-top: 15px; }
+    .user-dropdown a:first-child {
+      margin-top: 0; }
