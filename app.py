@@ -393,3 +393,30 @@ def search_books():
     suggestions.append(content)
 
     return jsonify(suggestions)
+
+@app.route('/invite', methods=['GET', 'POST'])
+def invite():
+    if request.method == 'POST':
+        emails = request.form['email']
+        print emails
+        # name = request.form['name']
+        # email = request.form['email']
+        # password = request.form['password']
+        #
+        # password_hash = bcrypt.hashpw(password, bcrypt.gensalt())
+        #
+        # user = User(name, email, password_hash)
+        # db.session.add(user)
+        # db.session.commit()
+        # session['email'] = email
+        #
+        # # Copy all the books that are public
+        # books = Book.query.filter_by(public=True)
+        # print books
+        # for book in books:
+        #     user.books.append(book)
+        #     db.session.add(user)
+        #     db.session.commit()
+
+        return redirect(url_for('index'))
+    return render_template('invite.html')
