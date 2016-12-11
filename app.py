@@ -58,13 +58,9 @@ def index():
     if 'email' in session:
         user = User.query.filter_by(email=session['email']).first()
         if user:
-            books = user.books.all()
+            books = user.books.order_by(desc(Book.created_on)).all()
             print books
-            if len(books):
-                new_books = Book.query.filter_by(user_id=user.id).order_by(desc(Book.created_on)).limit(5).all()
-                print new_books
-                return render_template('home.html', user = user, books = books, new_books=new_books)
-            return render_template('home.html', user = user, books = books, new_books=[])
+            return render_template('home2.html', user = user, books = books, new_books=[])
     return render_template('landing.html')
 
 @app.route('/signup', methods=['GET', 'POST'])

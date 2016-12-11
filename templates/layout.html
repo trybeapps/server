@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% block head %}
+    <meta charset="utf-8">
+    <title>LibreRead - {% block title %}{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="static/css/style.css">
+    {% endblock %}
+  </head>
+  <body>
+    <div class="page-container">
+      <header>
+        <a href="/" class="logo">LibreRead</a>
+        <input type="text" class="search-box" id="search" placeholder="Type here to search...">
+        <div class="management">
+          <a href="" class="upload-books">Add new books</a>
+          <a href="/collections" class="collections">Collections</a>
+          <a href="" class="user">
+            <img src="static/images/rms.jpeg" width="28px" height="28px">
+            <div class="first-name">Richard</div>
+            <svg width="12" height="8" viewBox="0 0 12 8" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 8L0 0h12z" fill="#D8D8D8" fill-rule="evenodd"/>
+            </svg>
+          </a>
+        </div>
+      </header>
+    </div>
+  </body>
+</html>
