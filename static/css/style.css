@@ -71,6 +71,7 @@ header {
       text-decoration: underline; }
 
 .search-dropdown {
+  display: none;
   position: absolute;
   width: 420px;
   background: white;
@@ -129,3 +130,14 @@ header {
     margin-top: 15px; }
     .user-dropdown a:first-child {
       margin-top: 0; }
+
+.book-list {
+  display: block;
+  list-style: none;
+  padding: 30px 15px; }
+  .book-list li {
+    float: left;
+    margin-right: 20px;
+    margin-bottom: 20px; }
+    .book-list li:nth-child(7n) {
+      margin-right: 0; }

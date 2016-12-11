@@ -98,6 +98,7 @@ header {
 }
 
 .search-dropdown {
+  display: none;
   position: absolute;
   width: 420px;
   background: white;
@@ -190,5 +191,21 @@ header {
     display: block;
     color: #555;
     margin-top: 15px;
+  }
+}
+
+.book-list {
+  display: block;
+  list-style: none;
+  padding: 30px 15px;
+
+  li {
+    float: left;
+    margin-right: 20px;
+    margin-bottom: 20px;
+
+    &:nth-child(7n) {
+      margin-right: 0;
+    }
   }
 }
