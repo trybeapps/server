@@ -2,65 +2,12 @@
 {% block title %}Home{% endblock %}
 {% block content %}
   <ul class="book-list">
-    <li>
-      <a href="/b/">
-        <img src="/b/cover/Elixir.book-001-000.png" width="110px" height="132px">
-      </a>
-    </li>
-    <li>
-      <a href="/b/">
-        <img src="/b/cover/Elixir.book-001-000.png" width="110px" height="132px">
-      </a>
-    </li>
-    <li>
-      <a href="/b/">
-        <img src="/b/cover/Elixir.book-001-000.png" width="110px" height="132px">
-      </a>
-    </li>
-    <li>
-      <a href="/b/">
-        <img src="/b/cover/Elixir.book-001-000.png" width="110px" height="132px">
-      </a>
-    </li>
-    <li>
-      <a href="/b/">
-        <img src="/b/cover/Elixir.book-001-000.png" width="110px" height="132px">
-      </a>
-    </li>
-    <li>
-      <a href="/b/">
-        <img src="/b/cover/Programming_Elixir_1.3-001-000.png" width="110px" height="132px">
-      </a>
-    </li>
-    <li>
-      <a href="/b/">
-        <img src="/b/cover/Elixir.book-001-000.png" width="110px" height="132px">
-      </a>
-    </li>
-    <li>
-      <a href="/b/">
-        <img src="/b/cover/Programming_Elixir_1.3-001-000.png" width="110px" height="132px">
-      </a>
-    </li>
-    <li>
-      <a href="/b/">
-        <img src="/b/cover/Elixir.book-001-000.png" width="110px" height="132px">
-      </a>
-    </li>
-    <li>
-      <a href="/b/">
-        <img src="/b/cover/Elixir.book-001-000.png" width="110px" height="132px">
-      </a>
-    </li>
-    <li>
-      <a href="/b/">
-        <img src="/b/cover/Elixir.book-001-000.png" width="110px" height="132px">
-      </a>
-    </li>
-    <li>
-      <a href="/b/">
-        <img src="/b/cover/Elixir.book-001-000.png" width="110px" height="132px">
-      </a>
-    </li>
+    {% for book in books %}
+      <li>
+        <a href="{{ book.url }}">
+          <img src="{{ book.cover }}" width="110px" height="132px">
+        </a>
+      </li>
+    {% endfor %}
   </ul>
 {% endblock %}

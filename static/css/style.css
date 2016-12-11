@@ -29,7 +29,7 @@ header {
 
 .logo {
   float: left;
-  font-size: 18px;
+  font-size: 16px;
   color: white;
   text-decoration: none;
   padding-top: 9px; }
@@ -135,9 +135,12 @@ header {
   display: block;
   list-style: none;
   padding: 30px 15px; }
+  .book-list a {
+    display: block;
+    height: 132px; }
   .book-list li {
     float: left;
-    margin-right: 20px;
-    margin-bottom: 20px; }
+    margin: 0 17.6px 20px 0;
+    border: 1px solid #d6d6d6; }
     .book-list li:nth-child(7n) {
       margin-right: 0; }

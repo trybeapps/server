@@ -17,14 +17,15 @@ $(function () {
     }, 2000)
   })
 
-  var uploadBtn = new Dropzone('.upload-btn', {
+  var uploadBtn = new Dropzone('.upload-books', {
     url: '/book-upload',
     paramName: 'file',
     acceptedFiles: 'application/pdf',
     uploadMultiple: true
   })
 
-  $('.upload-btn').click(function (e) {
+  $('.upload-books').click(function (e) {
+    e.preventDefault()
     $('.dz-hidden-input').click()
   })
 
