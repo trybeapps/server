@@ -163,7 +163,6 @@ def upload_file():
               db.session.add(book)
               db.session.commit()
 
-              print '\n\n\n'
               print book.id
               # Feeding pdf content into ElasticSearch
               # Encode the pdf file and add it to the index
