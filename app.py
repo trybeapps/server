@@ -212,7 +212,8 @@ def _feed_content(args):
 
     for arg in args:
         # Make directory for adding the pdf separated files
-        directory = os.path.join(app.config['UPLOAD_FOLDER'], 'splitpdf')
+        directory = os.path.join(app.config['UPLOAD_FOLDER'], 'splitpdf' + '_' + str(arg['user_id']) + '_' + "{:%M%S%s}".format(datetime.now()))
+        print directory
         if not os.path.exists(directory):
             os.makedirs(directory)
 
