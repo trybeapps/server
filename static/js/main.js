@@ -110,7 +110,7 @@ $(function () {
             var content = data[1][i].data
 
             var html = '<li>'
-                        + '<a href="' + url + '" class="sd-item">'
+                        + '<a href="' + url + '#page=' + page + '" class="sd-item">'
                           + '<img src="' + cover + '" width="60px" height="72px">'
                           + '<div class="sdi-info">'
                             + '<div class="sdii-title">' + title + '</div>'
