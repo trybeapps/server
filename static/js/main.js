@@ -54,7 +54,7 @@ $(function () {
   })
 
   $(document).on('click', function () {
-    $('.user-dropdown').hide()
+    $('.user-dropdown,.search-dropdown').hide()
   })
 
   $('#search').on('keyup', function () {
