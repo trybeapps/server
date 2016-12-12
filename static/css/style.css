@@ -50,12 +50,15 @@ header {
 
 .management {
   float: right; }
-  .management a {
+  .management a, .management div {
     float: left;
     color: white;
     margin-top: 12px;
-    margin-right: 20px; }
-    .management a:last-child {
+    margin-right: 20px;
+    cursor: pointer; }
+    .management a:hover, .management div:hover {
+      text-decoration: underline; }
+    .management a:last-child, .management div:last-child {
       margin-right: 0; }
   .management .user {
     margin-top: 0; }

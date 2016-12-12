@@ -39,15 +39,15 @@ $(function () {
     alert(file.name + ' uploaded successfully')
   })
 
-  $('.search-box').on('focusin', '#search', function () {
-    $('.search-icon').children('g').css('stroke', '#f34a53')
+  uploadBtn.on('addedFile', function () {
+    console.log('yes')
   })
 
-  $('.search-box').on('focusout', '#search', function () {
-    $('.search-icon').children('g').css('stroke', '#8B8B8B')
+  uploadBtn.on('error', function (file, err) {
+    console.log(err)
   })
 
-  $('.user-item').click(function (e) {
+  $('.user').click(function (e) {
     e.preventDefault()
     e.stopPropagation()
     $('.user-dropdown').toggle()

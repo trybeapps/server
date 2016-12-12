@@ -13,6 +13,7 @@ import base64
 import datetime
 import subprocess
 import bcrypt
+from datetime import datetime
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(APP_ROOT, 'uploads')
@@ -133,6 +134,7 @@ def uploaded_file(filename):
 @app.route('/book-upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
+        print 'coming'
         args= []
         for i in range(len(request.files)):
           file = request.files['file['+str(i)+']']
@@ -141,6 +143,8 @@ def upload_file():
               return redirect(request.url)
           if file and allowed_file(file.filename):
               filename = secure_filename(file.filename)
+              filename = filename.split('.pdf')[0] + '_' + "{:%M%S%s}".format(datetime.now()) + '.pdf'
+              print filename
               file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
               file.save(file_path)
 
