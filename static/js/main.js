@@ -39,14 +39,6 @@ $(function () {
     window.location.reload(false);
   })
 
-  uploadBtn.on('addedFile', function () {
-    console.log('yes')
-  })
-
-  uploadBtn.on('error', function (file, err) {
-    console.log(err)
-  })
-
   $('.user').click(function (e) {
     e.preventDefault()
     e.stopPropagation()
