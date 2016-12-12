@@ -82,7 +82,7 @@ header {
   border: 1px solid #d6d6d6;
   margin: 37px 0 0 95px;
   padding: 10px;
-  overflow-y: scroll; }
+  overflow-y: auto; }
   .search-dropdown .metadata, .search-dropdown .content {
     overflow: hidden; }
     .search-dropdown .metadata .title, .search-dropdown .content .title {
