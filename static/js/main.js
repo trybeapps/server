@@ -31,12 +31,12 @@ $(function () {
 
   myDropzone.on('success', function (file, res) {
     console.log(file)
-    alert(file.name + ' uploaded successfully')
+    window.location.reload(false);
   })
 
   uploadBtn.on('success', function (file, res) {
     console.log(file)
-    alert(file.name + ' uploaded successfully')
+    window.location.reload(false); 
   })
 
   uploadBtn.on('addedFile', function () {

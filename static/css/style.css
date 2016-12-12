@@ -63,10 +63,6 @@ header {
       margin-right: 0; }
   .management .user {
     margin-top: 0; }
-    .management .user img {
-      float: left;
-      margin-top: 7px;
-      margin: 7px 5px 0 0; }
     .management .user .first-name {
       float: left;
       margin: 12px 5px 0 0; }
