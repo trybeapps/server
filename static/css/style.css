@@ -17,7 +17,8 @@ a {
   width: 920px;
   background: #f3f3f3;
   min-height: 640px;
-  margin: 0 auto; }
+  margin: 0 auto;
+  overflow: hidden; }
   .page-container.drag-over {
     border: 1px dashed #777; }
 
