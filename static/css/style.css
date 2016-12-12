@@ -102,7 +102,8 @@ header {
       .search-dropdown ul li:last-child {
         margin-bottom: 0; }
   .search-dropdown .sd-item img {
-    float: left; }
+    float: left;
+    border: 1px solid #d6d6d6; }
   .search-dropdown .sd-item .sdi-info {
     float: left;
     width: 310px;
