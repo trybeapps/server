@@ -205,6 +205,7 @@ header {
   display: block;
   list-style: none;
   padding: 30px 15px;
+  overflow: hidden;
 
   a {
     display: block;
@@ -219,5 +220,41 @@ header {
     &:nth-child(7n) {
       margin-right: 0;
     }
+  }
+}
+
+.g-title {
+  font-weight: 600;
+}
+
+.btn {
+  background: #d6d6d6;
+  background: linear-gradient(#ededed,#d6d6d6);
+  color: #444;
+  border: 1px solid #aaa;
+  padding: 4px 8px;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:active {
+    outline: none;
+    background: #d6d6d6;
+  }
+}
+
+.collections-container {
+  padding: 30px 15px;
+  overflow: hidden;
+
+  .g-title {
+    margin-bottom: 10px;
+  }
+
+  .no-collection {
+    color: #777;
+    margin-bottom: 20px;
   }
 }

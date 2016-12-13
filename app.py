@@ -306,7 +306,7 @@ def send_book(filename):
 def send_book_cover(filename):
     return send_from_directory('uploads/images', filename)
 
-@app.route('/autocomplete')
+@app.route('/autocomplete', methods=['POST'])
 def search_books():
     query = request.args.get('term')
     print query
@@ -388,3 +388,9 @@ def search_books():
     suggestions.append(content)
 
     return jsonify(suggestions)
+
+@app.route('/collections', methods=['GET', 'POST'])
+def collections():
+    if request.method == 'GET':
+        collections = []
+        return render_template('collection.html', collections=collections)

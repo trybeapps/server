@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+  <div class="collections-container">
+    <div class="g-title">Collections</div>
+    {% if collections == [] %}
+      <p class="no-collection">You have no collections</p>
+    {% endif %}
+    <a href="/collections/new" class="btn new-collection-btn">Add new collection</a>
+  </div>
+{% endblock %}
