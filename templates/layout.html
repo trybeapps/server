@@ -4,8 +4,8 @@
     {% block head %}
     <meta charset="utf-8">
     <title>LibreRead - {% block title %}{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="static/css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     {% endblock %}
   </head>
   <body>
@@ -27,7 +27,11 @@
         </div>
         <div class="management">
           <div class="upload-books">Add new books</div>
-          <a href="/collections" class="collections">Collections</a>
+          {% if current_page == 'collections' %}
+            <a href="/collections" class="collections" style="text-decoration: underline;">Collections</a>
+          {% else %}
+            <a href="/collections" class="collections">Collections</a>
+          {% endif %}
           <a href="" class="user">
             <div class="first-name">Richard</div>
             <svg width="12" height="8" viewBox="0 0 12 8" xmlns="http://www.w3.org/2000/svg">
@@ -43,7 +47,7 @@
       {% block content %}{% endblock %}
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <script src="static/js/dropzone.js" type="text/javascript"></script>
-    <script src="static/js/main.js" type="text/javascript"></script>
+    <script src="/static/js/dropzone.js" type="text/javascript"></script>
+    <script src="/static/js/main.js" type="text/javascript"></script>
   </body>
 </html>

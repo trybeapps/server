@@ -1,5 +1,10 @@
 from app import db
 
+collections = db.Table('collections',
+    db.Column('collection_id', db.Integer, db.ForeignKey('collection.id')),
+    db.Column('book_id', db.Integer, db.ForeignKey('book.id'))
+)
+
 # Create our database model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -38,3 +43,14 @@ class Book(db.Model):
 
     def __repr__(self):
         return '<Book %r>' % (self.title)
+
+class Collection(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200))
+    books = db.relationship('Book', secondary=collections, backref=db.backref('collections', lazy='dynamic'))
+
+    def __init(self, title):
+        self.title = title
+
+    def __repr__(self):
+        return '<Collection %r>' % (self.title)

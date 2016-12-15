@@ -29,6 +29,16 @@ a {
   }
 }
 
+.g-title {
+  font-weight: 600;
+}
+
+input[type="text"] {
+  outline: none;
+  border: 1px solid #d6d6d6;
+  padding: 4px 8px;
+}
+
 header {
   position: relative;
   width: 100%;
@@ -53,9 +63,7 @@ header {
 .search-box {
   float: left;
   width: 420px;
-  height: 28px;
   background: white;
-  border: 1px solid #d6d6d6;
   margin: 7px 0 0 20px;
   padding: 0 10px;
   outline: none;
@@ -223,10 +231,6 @@ header {
   }
 }
 
-.g-title {
-  font-weight: 600;
-}
-
 .btn {
   background: #d6d6d6;
   background: linear-gradient(#ededed,#d6d6d6);
@@ -234,15 +238,18 @@ header {
   border: 1px solid #aaa;
   padding: 4px 8px;
   text-decoration: none;
+  cursor: pointer;
+  outline: none;
 
   &:hover {
     text-decoration: none;
   }
 
   &:active {
-    outline: none;
     background: #d6d6d6;
   }
+
+
 }
 
 .collections-container {
@@ -251,10 +258,83 @@ header {
 
   .g-title {
     margin-bottom: 10px;
+    clear: both;
   }
 
   .no-collection {
     color: #777;
     margin-bottom: 20px;
+  }
+
+  .new-collection-btn {
+      float: left;
+      margin-bottom: 30px;
+  }
+
+  .collection-item {
+    float: left;
+    margin: 0 22px 20px 0;
+    overflow: hidden;
+
+    .collection-cover {
+      width: 130px;
+      height: 144px;
+      background: #d6d6d6;
+
+      img {
+        float: left;
+        width: 60px;
+        height: 72px;
+      }
+    }
+
+    p {
+      width: 120px;
+      color: #555;
+      margin-top: 10px;
+    }
+
+    &:nth-child(6n) {
+      margin-right: 0;
+    }
+  }
+}
+
+.nc-form {
+  .nc-title {
+    width: 478px;
+  }
+
+  .nc-book-list {
+    display: block;
+    list-style: none;
+    width: 478px;
+    height: 306px;
+    background: white;
+    border: 1px solid #d6d6d6;
+    margin: 20px 0 20px;
+    padding: 10px;
+    overflow-y: auto;
+  }
+
+  li {
+    float: left;
+    margin-right: 20px;
+    margin: 0 20px 20px 0;
+    overflow: hidden;
+
+    &:nth-child(3n) {
+      margin-right: 0;
+    }
+  }
+
+  .nc-checkbox {
+    float: left;
+    margin-right: 10px;
+  }
+
+  .nc-img {
+    float: left;
+    border: 1px solid #d6d6d6;
   }
 }

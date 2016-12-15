@@ -37,7 +37,7 @@ app.secret_key = 'ff29b42f8d7d5cbefd272eab3eba6ec8'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/libreread_dev'
 db = SQLAlchemy(app)
 
-from models import User, Book
+from models import User, Book, Collection
 
 @app.before_request
 def before_request():
@@ -306,7 +306,7 @@ def send_book(filename):
 def send_book_cover(filename):
     return send_from_directory('uploads/images', filename)
 
-@app.route('/autocomplete', methods=['POST'])
+@app.route('/autocomplete', methods=['GET'])
 def search_books():
     query = request.args.get('term')
     print query
@@ -386,11 +386,34 @@ def search_books():
                 })
 
     suggestions.append(content)
+    print suggestions
 
     return jsonify(suggestions)
 
 @app.route('/collections', methods=['GET', 'POST'])
 def collections():
     if request.method == 'GET':
-        collections = []
-        return render_template('collection.html', collections=collections)
+        collections = Collection.query.order_by(desc(Collection.id)).all()
+        return render_template('collection.html', current_page='collections', collections=collections)
+
+@app.route('/collections/new', methods=['GET', 'POST'])
+def new_collection():
+    if 'email' in session:
+        if request.method == 'GET':
+            user = User.query.filter_by(email=session['email']).first()
+            books = user.books.order_by(desc(Book.created_on)).all()
+            print books
+            return render_template('new_collection.html', current_page='collections', books=books)
+        else:
+            title = request.form.get('title', None)
+            checked_list = request.form.getlist('book')
+            for i in checked_list:
+                book = Book.query.filter_by(id=i).first()
+                collection = Collection(title=title)
+                collection.books.append(book)
+                print collection
+                db.session.add(collection)
+                db.session.add(book)
+                db.session.commit()
+            return 'success'
+    return redirect(url_for('login'))

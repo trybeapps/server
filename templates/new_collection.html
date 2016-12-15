@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}Collections{% endblock %}
+{% block content %}
+  <div class="collections-container">
+    <div class="g-title">Add new collection</div>
+    <form action="/collections/new" method="post" class="nc-form">
+      <input type="text" name="title" class="nc-title" placeholder="Title">
+      <ul class="nc-book-list">
+        {% for book in books %}
+          <li>
+            <input type="checkbox" name="book" class="nc-checkbox" value="{{book.id}}">
+            <img src="{{ book.cover }}" width="110px" height="132px" class="nc-img">
+          </li>
+        {% endfor %}
+      </ul>
+      <input type="submit" class="btn" value="Submit">
+    </form>
+  </div>
+{% endblock %}

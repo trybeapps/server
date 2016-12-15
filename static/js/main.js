@@ -45,6 +45,10 @@ $(function () {
     $('.user-dropdown').toggle()
   })
 
+  $('.nc-img').click(function() {
+    $(this).siblings('.nc-checkbox').click()
+  })
+
   $(document).on('click', function () {
     $('.user-dropdown,.search-dropdown').hide()
   })
