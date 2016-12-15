@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block title %}Collections{% endblock %}
+{% block content %}
+  <div class="collections-container">
+    <div class="g-title">{{ collection.title }}</div>
+    <ul class="book-list">
+    {% for book in collection.books %}
+        <li>
+          <a href="{{ book.url }}">
+            <img src="{{ book.cover }}" width="110px" height="132px">
+          </a>
+        </li>
+    {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

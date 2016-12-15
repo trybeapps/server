@@ -177,6 +177,8 @@ header {
   .collections-container .g-title {
     margin-bottom: 10px;
     clear: both; }
+  .collections-container .book-list {
+    padding: 0; }
   .collections-container .no-collection {
     color: #777;
     margin-bottom: 20px; }

@@ -418,3 +418,9 @@ def new_collection():
                 db.session.commit()
             return 'success'
     return redirect(url_for('login'))
+
+@app.route('/collections/<id>', methods=['GET'])
+def collection_detail(id):
+    if 'email' in session:
+        collection = Collection.query.filter_by(id=int(id)).first()
+        return render_template('collection_detail.html', collection=collection)
