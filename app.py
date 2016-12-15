@@ -72,7 +72,7 @@ def signup():
         if request.method == 'POST':
             name = request.form['name']
             email = request.form['email']
-            password = request.form['password']
+            password = request.form['password'].encode('utf-8')
 
             password_hash = bcrypt.hashpw(password, bcrypt.gensalt())
 
@@ -95,12 +95,12 @@ def signup():
 def login():
     if request.method == 'POST':
         email = request.form['email']
-        password = request.form['password']
+        password = request.form['password'].encode('utf-8')
 
         user = User.query.filter_by(email=email).first()
 
         if user is not None:
-            if bcrypt.hashpw(password, user.password_hash) == user.password_hash:
+            if bcrypt.hashpw(password, user.password_hash.encode('utf-8')) == user.password_hash:
                 session['email'] = email
                 return redirect(url_for('index'))
     return '''
