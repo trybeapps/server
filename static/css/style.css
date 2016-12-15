@@ -189,12 +189,12 @@ header {
     overflow: hidden; }
     .collections-container .collection-item .collection-cover {
       width: 130px;
-      height: 144px;
+      height: 156px;
       background: #d6d6d6; }
       .collections-container .collection-item .collection-cover img {
         float: left;
-        width: 60px;
-        height: 72px; }
+        width: 65px;
+        height: 78px; }
     .collections-container .collection-item p {
       width: 120px;
       color: #555;

@@ -394,6 +394,7 @@ def search_books():
 def collections():
     if request.method == 'GET':
         collections = Collection.query.order_by(desc(Collection.id)).all()
+        print collections
         return render_template('collection.html', current_page='collections', collections=collections)
 
 @app.route('/collections/new', methods=['GET', 'POST'])
@@ -407,9 +408,9 @@ def new_collection():
         else:
             title = request.form.get('title', None)
             checked_list = request.form.getlist('book')
+            collection = Collection(title=title)
             for i in checked_list:
                 book = Book.query.filter_by(id=i).first()
-                collection = Collection(title=title)
                 collection.books.append(book)
                 print collection
                 db.session.add(collection)
