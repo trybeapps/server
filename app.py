@@ -34,7 +34,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # set the secret key.  keep this really secret:
 app.secret_key = 'ff29b42f8d7d5cbefd272eab3eba6ec8'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/libreread_dev'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://libreread:libreread@localhost/libreread_dev'
 db = SQLAlchemy(app)
 
 from models import User, Book, Collection
