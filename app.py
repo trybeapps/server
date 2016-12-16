@@ -476,4 +476,4 @@ def collection_detail(id):
         return render_template('collection_detail.html', collection=collection)
 
 if __name__ == "__main__":
-    application.run(host='0.0.0.0')
+    app.run(host='0.0.0.0')
