@@ -474,3 +474,6 @@ def collection_detail(id):
     if 'email' in session:
         collection = Collection.query.filter_by(id=int(id)).first()
         return render_template('collection_detail.html', collection=collection)
+
+if __name__ == "__main__":
+    application.run(host='0.0.0.0')
