@@ -66,30 +66,27 @@ def index():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    if 'email' in session:
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password'].encode('utf-8')
+
+        password_hash = bcrypt.hashpw(password, bcrypt.gensalt())
+
+        user = User(name, email, password_hash)
+        db.session.add(user)
+        db.session.commit()
+        session['email'] = email
+
         return redirect(url_for('index'))
-    else:
-        if request.method == 'POST':
-            name = request.form['name']
-            email = request.form['email']
-            password = request.form['password'].encode('utf-8')
-
-            password_hash = bcrypt.hashpw(password, bcrypt.gensalt())
-
-            user = User(name, email, password_hash)
-            db.session.add(user)
-            db.session.commit()
-            session['email'] = email
-
-            return redirect(url_for('index'))
-        return '''
-            <form action="" method="post">
-                <p><input type=text name=name></p>
-                <p><input type=text name=email></p>
-                <p><input type=text name=password></p>
-                <p><input type=submit value=sign up></p>
-            </form>
-            '''
+    return '''
+        <form action="" method="post">
+            <p><input type=text name=name></p>
+            <p><input type=text name=email></p>
+            <p><input type=text name=password></p>
+            <p><input type=submit value=sign up></p>
+        </form>
+        '''
 
 @app.route('/signin', methods=['GET', 'POST'])
 def login():
