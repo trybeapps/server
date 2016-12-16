@@ -129,7 +129,6 @@ def uploaded_file(filename):
 @app.route('/book-upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
-        print 'coming'
         args= []
         for i in range(len(request.files)):
           file = request.files['file['+str(i)+']']
