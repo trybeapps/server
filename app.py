@@ -475,5 +475,9 @@ def collection_detail(id):
         collection = Collection.query.filter_by(id=int(id)).first()
         return render_template('collection_detail.html', collection=collection)
 
+@app.route('/templates/<path:path>')
+def send_js(path):
+    return send_from_directory('templates', path)
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0')

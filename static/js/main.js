@@ -7,6 +7,7 @@ $(function () {
     paramName: 'file',
     acceptedFiles: 'application/pdf',
     uploadMultiple: true,
+    previewsContainer: '.dropzone-container',
     clickable: false
   })
 
@@ -15,11 +16,17 @@ $(function () {
   })
 
   myDropzone.on('dragleave', function () {
-      $('.page-container').removeClass('drag-over')
+    $('.page-container').removeClass('drag-over')
   })
 
   myDropzone.on('drop', function () {
-      $('.page-container').removeClass('drag-over')
+    $('.page-container').removeClass('drag-over')
+  })
+
+  myDropzone.on('error', function(file, err) {
+    console.log(file)
+    console.log(err)
+    if (!file.accepted) alert('wrong file format')
   })
 
   var uploadBtn = new Dropzone('.upload-books', {
@@ -31,7 +38,7 @@ $(function () {
 
   myDropzone.on('success', function (file, res) {
     console.log(file)
-    window.location.reload(false);
+    //window.location.reload(false);
   })
 
   uploadBtn.on('success', function (file, res) {

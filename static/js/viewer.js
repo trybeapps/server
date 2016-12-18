@@ -13,6 +13,11 @@
  * limitations under the License.
  */
 'use strict';
+
+$(window).bind("load", function() {
+   $("html, body").animate({ scrollTop: 0 }, "slow");
+});
+
 var pdf = window.location.pathname.split('/b/').pop();
 var DEFAULT_URL = '/uploads/' + pdf;
 var pdfjsWebLibs;

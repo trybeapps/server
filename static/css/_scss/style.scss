@@ -342,3 +342,61 @@ header {
     border: 1px solid #d6d6d6;
   }
 }
+
+.dz-preview {
+  position: absolute;
+  top: 0;
+
+  .dz-progress {
+    width: 200px;
+    height: 13px;
+    background: black;
+
+    .dz-upload {
+      float: left;
+      height: 13px;
+      background: green;
+    }
+  }
+}
+
+#mainContainer {
+  background: white;
+
+  .toolbar {
+    width: 920px;
+    margin: 0 auto;
+
+    #toolbarContainer {
+      box-shadow: none;
+      background: #999;
+    }
+  }
+
+  .page {
+    border: none;
+    margin-bottom: 30px;
+
+    .canvasWrapper {
+      border: 1px solid #d6d6d6;
+    }
+  }
+}
+
+#pdfBody {
+  overflow: hidden;
+
+  header {
+    position: fixed!important;
+    width: 920px!important;
+    left: 50%;
+    margin-left: -460px;
+    z-index: 9999999;
+  }
+
+
+  .toolbar {
+    position: fixed!important;
+    top: 44px!important;
+  }
+}
