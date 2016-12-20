@@ -1,4 +1,6 @@
 *pyc
 venv
 node_modules
+uploads
+dump.rdb
 *.DS_Store
