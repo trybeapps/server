@@ -344,18 +344,34 @@ header {
 }
 
 .dz-preview {
-  position: absolute;
-  top: 0;
+  position: relative;
+  float: left;
+  width: 110px;
+  height: 132px;
+  margin: 0 17.6px 20px 0;
+
+  .dz-size,.dz-filename,.dz-error-message,.dz-success-mark,.dz-error-mark {
+    display: none;
+  }
+
+  .dz-image {
+    img {
+      width: 110px;
+      height: 132px;
+    }
+  }
 
   .dz-progress {
-    width: 200px;
-    height: 13px;
-    background: black;
+    width: 110px;
+    height: 8px;
+    background: #b3b3b3;
+    position: absolute;
+    top: 124px;
 
     .dz-upload {
       float: left;
-      height: 13px;
-      background: green;
+      height: 8px;
+      background: #22a764;
     }
   }
 }

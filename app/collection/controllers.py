@@ -10,12 +10,10 @@ import os
 import shutil
 import json
 import base64
-import datetime
 import subprocess
 from datetime import datetime
 
-collection = Blueprint('collection', __name__,
-                        template_folder='templates')
+collection = Blueprint('collection', __name__, template_folder='templates')
 
 @collection.route('/collections', methods=['GET', 'POST'])
 def collections():

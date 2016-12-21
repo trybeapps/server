@@ -8,12 +8,10 @@ import os
 import shutil
 import json
 import base64
-import datetime
 import subprocess
 from datetime import datetime
 
-book = Blueprint('book', __name__,
-                        template_folder='templates')
+book = Blueprint('book', __name__, template_folder='templates')
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -152,7 +150,6 @@ def _pdfinfo(infile):
         PDF version:    1.5
     """
     import os.path as osp
-    import subprocess
 
     cmd = '/usr/bin/pdfinfo'
     # if not osp.exists(cmd):

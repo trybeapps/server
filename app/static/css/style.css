@@ -235,16 +235,26 @@ header {
   border: 1px solid #d6d6d6; }
 
 .dz-preview {
-  position: absolute;
-  top: 0; }
+  position: relative;
+  float: left;
+  width: 110px;
+  height: 132px;
+  margin: 0 17.6px 20px 0; }
+  .dz-preview .dz-size, .dz-preview .dz-filename, .dz-preview .dz-error-message, .dz-preview .dz-success-mark, .dz-preview .dz-error-mark {
+    display: none; }
+  .dz-preview .dz-image img {
+    width: 110px;
+    height: 132px; }
   .dz-preview .dz-progress {
-    width: 200px;
-    height: 13px;
-    background: black; }
+    width: 110px;
+    height: 8px;
+    background: #b3b3b3;
+    position: absolute;
+    top: 124px; }
     .dz-preview .dz-progress .dz-upload {
       float: left;
-      height: 13px;
-      background: green; }
+      height: 8px;
+      background: #22a764; }
 
 #mainContainer {
   background: white; }

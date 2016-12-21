@@ -27,6 +27,12 @@ $(function () {
     console.log(file)
     console.log(err)
     if (!file.accepted) alert('wrong file format')
+    window.location.reload(false);
+  })
+
+  myDropzone.on('success', function (file, res) {
+    console.log(file)
+    window.location.reload(false);
   })
 
   var uploadBtn = new Dropzone('.upload-books', {
@@ -36,9 +42,11 @@ $(function () {
     uploadMultiple: true
   })
 
-  myDropzone.on('success', function (file, res) {
+  uploadBtn.on('error', function(file, err) {
     console.log(file)
-    //window.location.reload(false);
+    console.log(err)
+    if (!file.accepted) alert('wrong file format')
+    window.location.reload(false);
   })
 
   uploadBtn.on('success', function (file, res) {

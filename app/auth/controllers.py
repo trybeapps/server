@@ -6,8 +6,7 @@ from functools import wraps
 from sqlalchemy import desc
 import bcrypt
 
-auth = Blueprint('auth', __name__,
-                        template_folder='templates')
+auth = Blueprint('auth', __name__, template_folder='templates')
 
 @auth.route('/')
 def index():

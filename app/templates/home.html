@@ -2,6 +2,7 @@
 {% block title %}Home{% endblock %}
 {% block content %}
   <ul class="book-list">
+  	<div class="dropzone-container"></div>
     {% for book in books %}
       <li>
         <a href="{{ book.url }}">
