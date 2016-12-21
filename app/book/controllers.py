@@ -33,6 +33,16 @@ def upload_file():
               print ('No selected file')
               return redirect(request.url)
           if file and allowed_file(file.filename):
+
+              # Check if the file already exists then return
+              user = User.query.filter_by(email=session['email']).first()
+              book = Book.query.filter_by(user_id=user.id, filename=file.filename).first()
+              print book
+              if book:
+                  print 'book already exists'
+                  return 'book already exists'
+
+              # Generate a new filename with datetime for uniqueness when other user has the same filename
               filename = secure_filename(file.filename)
               filename_gen = filename.split('.pdf')[0] + '_' + "{:%M%S%s}".format(datetime.now()) + '.pdf'
               print filename_gen
@@ -42,18 +52,32 @@ def upload_file():
               info = _pdfinfo(file_path)
               print (info)
 
-              img_folder = 'images/' + '_'.join(info['Title'].split(' '))
+              # Check if info['Title'] exists else pass the filename as the title in the db
+              try:
+                  title = info['Title']
+              except KeyError, e:
+                  print 'No Title found, so passing the filename as title'
+                  title = filename.split('.pdf')[0]
+
+              # Check if info['Author'] exists else pass Unknown as the author in the db
+              try:
+                  author = info['Author']
+              except KeyError, e:
+                  print 'No Author found, so passing unknown'
+                  author = 'unknown'
+
+
+              img_folder = 'images/' + '_'.join(title.split(' '))
               cover_path = os.path.join(app.config['UPLOAD_FOLDER'], img_folder)
 
               _gen_cover(file_path, cover_path)
 
               url = '/b/' + filename_gen
-              cover = '/b/cover/' + '_'.join(info['Title'].split(' ')) + '-001-000.png'
+              cover = '/b/cover/' + '_'.join(title.split(' ')) + '-001-000.png'
               print cover
 
-              book = Book(title=info['Title'], filename=filename, author=info['Author'], url=url, cover=cover, pages=info['Pages'], current_page=0)
+              book = Book(title=title, filename=file.filename, author=author, url=url, cover=cover, pages=info['Pages'], current_page=0)
 
-              user = User.query.filter_by(email=session['email']).first()
               user.books.append(book)
               db.session.add(user)
               db.session.add(book)

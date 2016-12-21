@@ -32,6 +32,7 @@ $(function () {
 
   myDropzone.on('success', function (file, res) {
     console.log(file)
+    if (res == 'book already exists') alert(res)
     window.location.reload(false);
   })
 
@@ -52,6 +53,7 @@ $(function () {
 
   uploadBtn.on('success', function (file, res) {
     console.log(file)
+    if (res == 'book already exists') alert(res)
     window.location.reload(false);
   })
 
