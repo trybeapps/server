@@ -7,7 +7,7 @@ $(function () {
     paramName: 'file',
     acceptedFiles: 'application/pdf',
     uploadMultiple: true,
-    previewsContainer: '.dropzone-container',
+    previewsContainer: '#dropzone_container',
     clickable: false
   })
 
@@ -39,14 +39,15 @@ $(function () {
     url: '/book-upload',
     paramName: 'file',
     acceptedFiles: 'application/pdf',
-    uploadMultiple: true
+    uploadMultiple: true,
+    previewsContainer: '#dropzone_container'
   })
 
   uploadBtn.on('error', function(file, err) {
     console.log(file)
     console.log(err)
     if (!file.accepted) alert('wrong file format')
-    window.location.reload(false);
+    window.location.reload(false)
   })
 
   uploadBtn.on('success', function (file, res) {

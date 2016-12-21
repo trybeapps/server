@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
+  <div id="dropzone_container"></div>
   <ul class="book-list">
-  	<div class="dropzone-container"></div>
     {% for book in books %}
       <li>
         <a href="{{ book.url }}">

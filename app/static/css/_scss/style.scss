@@ -21,7 +21,7 @@ a {
   width: 920px;
   background: #f3f3f3;
   min-height: 640px;
-  margin: 0 auto;
+  margin: 0 auto 50px;
   overflow: hidden;
 
   &.drag-over {
@@ -212,7 +212,7 @@ header {
 .book-list {
   display: block;
   list-style: none;
-  padding: 30px 15px;
+  padding: 0 15px 30px;
   overflow: hidden;
 
   a {
@@ -341,6 +341,12 @@ header {
     float: left;
     border: 1px solid #d6d6d6;
   }
+}
+
+#dropzone_container {
+  display: block;
+  padding: 30px 0 0 15px;
+  overflow: hidden;
 }
 
 .dz-preview {

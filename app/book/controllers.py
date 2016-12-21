@@ -34,9 +34,9 @@ def upload_file():
               return redirect(request.url)
           if file and allowed_file(file.filename):
               filename = secure_filename(file.filename)
-              filename = filename.split('.pdf')[0] + '_' + "{:%M%S%s}".format(datetime.now()) + '.pdf'
-              print filename
-              file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+              filename_gen = filename.split('.pdf')[0] + '_' + "{:%M%S%s}".format(datetime.now()) + '.pdf'
+              print filename_gen
+              file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename_gen)
               file.save(file_path)
 
               info = _pdfinfo(file_path)
@@ -47,11 +47,11 @@ def upload_file():
 
               _gen_cover(file_path, cover_path)
 
-              url = '/b/' + filename
+              url = '/b/' + filename_gen
               cover = '/b/cover/' + '_'.join(info['Title'].split(' ')) + '-001-000.png'
               print cover
 
-              book = Book(title=info['Title'], author=info['Author'], url=url, cover=cover, pages=info['Pages'], current_page=0)
+              book = Book(title=info['Title'], filename=filename, author=info['Author'], url=url, cover=cover, pages=info['Pages'], current_page=0)
 
               user = User.query.filter_by(email=session['email']).first()
               user.books.append(book)
