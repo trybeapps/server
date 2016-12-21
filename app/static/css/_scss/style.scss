@@ -218,6 +218,7 @@ header {
   a {
     display: block;
     height: 132px;
+    background: #ccc;
   }
 
   li {
@@ -227,6 +228,20 @@ header {
 
     &:nth-child(7n) {
       margin-right: 0;
+    }
+
+    img {
+      position: relative;
+      z-index: 1;
+    }
+
+    p {
+      width: 100px;
+      height: 90px;
+      color: #555;
+      word-wrap: break-word;
+      margin: -102px 0 0 5px;
+      overflow: hidden;
     }
   }
 }

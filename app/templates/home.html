@@ -6,7 +6,8 @@
     {% for book in books %}
       <li>
         <a href="{{ book.url }}">
-          <img src="{{ book.cover }}" width="110px" height="132px">
+          <img src="{{ book.cover }}" onerror="imgError(this);" width="110px" height="132px">
+          <p class="no-image">{{book.title}}</p>
         </a>
       </li>
     {% endfor %}

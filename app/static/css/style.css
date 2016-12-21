@@ -149,13 +149,24 @@ header {
   overflow: hidden; }
   .book-list a {
     display: block;
-    height: 132px; }
+    height: 132px;
+    background: #ccc; }
   .book-list li {
     float: left;
     margin: 0 17.6px 20px 0;
     border: 1px solid #d6d6d6; }
     .book-list li:nth-child(7n) {
       margin-right: 0; }
+    .book-list li img {
+      position: relative;
+      z-index: 1; }
+    .book-list li p {
+      width: 100px;
+      height: 90px;
+      color: #555;
+      word-wrap: break-word;
+      margin: -102px 0 0 5px;
+      overflow: hidden; }
 
 .btn {
   background: #d6d6d6;

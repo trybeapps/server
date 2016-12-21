@@ -1,6 +1,13 @@
 // Disable auto discover for all elements:
 Dropzone.autoDiscover = false;
 
+function imgError (image) {
+  image.onerror = ''
+  image.style = 'opacity: 0;'
+  image.nextSibling.style = 'display: block;'
+  return true
+}
+
 $(function () {
   var myDropzone = new Dropzone('body', {
     url: '/book-upload',
