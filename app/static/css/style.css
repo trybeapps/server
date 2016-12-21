@@ -36,7 +36,8 @@ header {
   height: 44px;
   background: #5082B3;
   color: white;
-  padding: 0 15px; }
+  padding: 0 15px;
+  z-index: 999; }
 
 .logo {
   float: left;
@@ -88,7 +89,6 @@ header {
   border: 1px solid #d6d6d6;
   margin: 37px 0 0 95px;
   padding: 10px;
-  z-index: 999;
   overflow-y: auto; }
   .search-dropdown .metadata, .search-dropdown .content {
     overflow: hidden; }
