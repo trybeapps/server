@@ -227,7 +227,8 @@ def send_book_cover(filename):
 
 @book.route('/b/delete/<id>')
 def delete_book(id):
-    Book.query.filter_by(id=id).delete()
+    book = db.session.query(Book).get(id)
+    db.session.delete(book)
     db.session.commit()
     return 'successfully deleted'
 
