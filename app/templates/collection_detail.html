@@ -8,6 +8,9 @@
     </div>
     <div class="g-title">{{ collection.title }}</div>
     <ul class="book-list">
+    {% if collection.books == [] %}
+      You have no books in this collection.
+    {% endif %}
     {% for book in collection.books %}
         <li>
           <a href="{{ book.url }}">
