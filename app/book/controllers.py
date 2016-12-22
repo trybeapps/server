@@ -17,12 +17,6 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
 
-@book.route('/uploads/<filename>')
-def uploaded_file(filename):
-    print app.config['UPLOAD_FOLDER']
-    return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename)
-
 @book.route('/book-upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
@@ -208,6 +202,12 @@ def _gen_cover(file_path, cover_path):
 def _pdf_encode(pdf_filename):
     return base64.b64encode(open(pdf_filename,"rb").read());
 
+@book.route('/uploads/<filename>')
+def uploaded_file(filename):
+    print app.config['UPLOAD_FOLDER']
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
+
 @book.route('/b/<filename>')
 def send_book(filename):
     # return send_from_directory('uploads', filename)
@@ -218,12 +218,18 @@ def send_book(filename):
             books = user.books.all()
             for book in books:
                 if book.url == file_path:
-                    return render_template('viewer.html')
+                    return render_template('viewer.html', book_id=book.id)
     return redirect(url_for('index'))
 
 @book.route('/b/cover/<filename>')
 def send_book_cover(filename):
     return send_from_directory('uploads/images', filename)
+
+@book.route('/b/delete/<id>')
+def delete_book(id):
+    Book.query.filter_by(id=id).delete()
+    db.session.commit()
+    return 'successfully deleted'
 
 @book.route('/autocomplete', methods=['GET'])
 def search_books():

@@ -52,37 +52,7 @@ See https://github.com/adobe-type-tools/cmap-resources
   <body tabindex="1" id="pdfBody" class="loadingInProgress">
     <header>
       <a href="/" class="logo">LibreRead</a>
-      <input type="text" class="search-box" id="search" placeholder="Type here to search...">
-      <div class="search-dropdown">
-        <div class="metadata">
-          <div class="title">Metadata</div>
-          <div class="metadata-none">None</div>
-          <ul></ul>
-        </div>
-        <div class="content">
-          <div class="title">Content</div>
-          <div class="content-none">None</div>
-          <ul></ul>
-        </div>
-      </div>
-      <div class="management">
-        <div class="upload-books">Add new books</div>
-        {% if current_page == 'collections' %}
-          <a href="/collections" class="collections" style="text-decoration: underline;">Collections</a>
-        {% else %}
-          <a href="/collections" class="collections">Collections</a>
-        {% endif %}
-        <a href="" class="user">
-          <div class="first-name">Richard</div>
-          <svg width="12" height="8" viewBox="0 0 12 8" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6 8L0 0h12z" fill="#D8D8D8" fill-rule="evenodd"/>
-          </svg>
-        </a>
-      </div>
-      <div class="user-dropdown">
-        <a href="/account-settings" class="account-settings">Account settings</a>
-        <a href="/signout" class="sign-out">Sign out</a>
-      </div>
+      <a href="/b/delete/{{book_id}}" class="btn del-book-btn">Delete book</a>
     </header>
     <div id="outerContainer">
 

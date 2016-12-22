@@ -298,3 +298,7 @@ header {
   #pdfBody .toolbar {
     position: fixed !important;
     top: 44px !important; }
+
+.del-book-btn {
+  float: right;
+  margin-top: 8px; }
