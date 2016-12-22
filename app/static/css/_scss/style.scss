@@ -272,6 +272,18 @@ header {
   padding: 30px 15px;
   overflow: hidden;
 
+  .cc-manage {
+    margin-bottom: 30px;
+    overflow: hidden;
+
+    a {
+      float: left;
+      &:last-child {
+        margin-left: 10px;
+      }
+    }
+  }
+
   .g-title {
     margin-bottom: 10px;
     clear: both;

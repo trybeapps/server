@@ -186,6 +186,13 @@ header {
 .collections-container {
   padding: 30px 15px;
   overflow: hidden; }
+  .collections-container .cc-manage {
+    margin-bottom: 30px;
+    overflow: hidden; }
+    .collections-container .cc-manage a {
+      float: left; }
+      .collections-container .cc-manage a:last-child {
+        margin-left: 10px; }
   .collections-container .g-title {
     margin-bottom: 10px;
     clear: both; }

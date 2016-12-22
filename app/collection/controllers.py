@@ -20,7 +20,8 @@ def collections():
     if request.method == 'GET':
         collections = Collection.query.order_by(desc(Collection.id)).all()
         print collections
-        return render_template('collection.html', current_page='collections', collections=collections)
+        user = User.query.filter_by(email=session['email']).first()
+        return render_template('collection.html', user=user, current_page='collections', collections=collections)
 
 @collection.route('/collections/new', methods=['GET', 'POST'])
 def new_collection():
@@ -29,7 +30,7 @@ def new_collection():
             user = User.query.filter_by(email=session['email']).first()
             books = user.books.order_by(desc(Book.created_on)).all()
             print books
-            return render_template('new_collection.html', current_page='collections', books=books)
+            return render_template('new_collection.html', user=user, current_page='collections', books=books)
         else:
             title = request.form.get('title', None)
             checked_list = request.form.getlist('book')
@@ -48,7 +49,8 @@ def new_collection():
 def collection_detail(id):
     if 'email' in session:
         collection = Collection.query.filter_by(id=int(id)).first()
-        return render_template('collection_detail.html', collection=collection)
+        user = User.query.filter_by(email=session['email']).first()
+        return render_template('collection_detail.html', user=user, collection=collection)
 
 @collection.route('/templates/<path:path>')
 def send_js(path):
