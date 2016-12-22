@@ -33,6 +33,7 @@ def signup():
         session['email'] = email
 
         return redirect(url_for('auth.index'))
+    return render_template('signup.html')
     return '''
         <form action="" method="post">
             <p><input type=text name=name></p>
