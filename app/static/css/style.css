@@ -23,6 +23,13 @@ a {
     border: 1px dashed #777; }
   .page-container.landing-container {
     background: white; }
+    .page-container.landing-container .sign-link:last-child {
+      margin-right: 20px; }
+
+.sign-link {
+  float: right;
+  color: white;
+  margin-top: 12px; }
 
 .sign-form {
   display: block;

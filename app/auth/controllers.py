@@ -34,14 +34,6 @@ def signup():
 
         return redirect(url_for('auth.index'))
     return render_template('signup.html')
-    return '''
-        <form action="" method="post">
-            <p><input type=text name=name></p>
-            <p><input type=text name=email></p>
-            <p><input type=text name=password></p>
-            <p><input type=submit value=sign up></p>
-        </form>
-        '''
 
 @auth.route('/signin', methods=['GET', 'POST'])
 def login():
@@ -55,13 +47,7 @@ def login():
             if bcrypt.hashpw(password, user.password_hash.encode('utf-8')) == user.password_hash:
                 session['email'] = email
                 return redirect(url_for('auth.index'))
-    return '''
-        <form action="" method="post">
-            <p><input type=text name=email></p>
-            <p><input type=text name=password></p>
-            <p><input type=submit value=Login></p>
-        </form>
-    '''
+    return render_template('signin.html')
 
 @auth.route('/signout')
 def logout():
