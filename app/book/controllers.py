@@ -217,9 +217,11 @@ def send_book(filename):
         if user:
             books = user.books.all()
             for book in books:
+                print book.url
+                print file_path
                 if book.url == file_path:
                     return render_template('viewer.html', book_id=book.id)
-    return redirect(url_for('index'))
+    return redirect(url_for('auth.index'))
 
 @book.route('/b/cover/<filename>')
 def send_book_cover(filename):
@@ -228,6 +230,16 @@ def send_book_cover(filename):
 @book.route('/b/delete/<id>')
 def delete_book(id):
     book = db.session.query(Book).get(id)
+
+    # Delete the book from elastic search
+    r = requests.delete('http://localhost:9200/lr_index/book_info/' + str(book.id))
+    print r.text
+
+    # Delete all pages from the elastic search
+    user = User.query.filter_by(email=session['email']).first()
+    for i in range(1,book.pages+1):
+        r = requests.delete('http://localhost:9200/lr_index/book_detail/' + str(user.id) + '_' + str(book.id) + '_' + str(i))
+        print r.text
     db.session.delete(book)
     db.session.commit()
     return 'successfully deleted'
