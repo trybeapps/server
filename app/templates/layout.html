@@ -26,10 +26,10 @@
           </div>
         </div>
         <div class="management">
-          <div class="upload-books">Add new books</div>
           {% if current_page == 'collections' %}
             <a href="/collections" class="collections" style="text-decoration: underline;">Collections</a>
           {% else %}
+            <div class="upload-books">Add new books</div>
             <a href="/collections" class="collections">Collections</a>
           {% endif %}
           <a href="" class="user">

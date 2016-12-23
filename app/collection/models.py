@@ -8,9 +8,9 @@ collections = db.Table('collections',
 class Collection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200))
-    books = db.relationship('Book', secondary=collections, backref=db.backref('collections', lazy='dynamic'))
+    books = db.relationship('Book', secondary=collections, lazy='dynamic')
 
-    def __init(self, title):
+    def __init__(self, title):
         self.title = title
 
     def __repr__(self):

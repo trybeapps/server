@@ -3,8 +3,8 @@
 {% block content %}
   <div class="collections-container">
     <div class="cc-manage">
-      <a href="/collection/edit/" class="btn edit-collection-btn">Edit</a>
-      <a href="/collection/delete" class="btn delete-collection-btn">Delete</a>
+      <a href="/collections/edit/{{collection.id}}" class="btn edit-collection-btn">Edit</a>
+      <a href="/collections/delete/{{collection.id}}" class="btn delete-collection-btn">Delete</a>
     </div>
     <div class="g-title">{{ collection.title }}</div>
     <ul class="book-list">

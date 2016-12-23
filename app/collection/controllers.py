@@ -30,11 +30,12 @@ def new_collection():
             user = User.query.filter_by(email=session['email']).first()
             books = user.books.order_by(desc(Book.created_on)).all()
             print books
-            return render_template('new_collection.html', user=user, current_page='collections', books=books)
+            return render_template('new_collection.html', user=user, current_page='collections', collection=None, edit_collection=False, books=books)
         else:
             title = request.form.get('title', None)
             checked_list = request.form.getlist('book')
             collection = Collection(title=title)
+            db.session.commit()
             for i in checked_list:
                 book = Book.query.filter_by(id=i).first()
                 collection.books.append(book)
@@ -43,7 +44,42 @@ def new_collection():
                 db.session.add(book)
                 db.session.commit()
             return 'success'
-    return redirect(url_for('login'))
+    return redirect(url_for('auth.login'))
+
+@collection.route('/collections/edit/<id>', methods=['GET', 'POST'])
+def edit_collection(id):
+    if 'email' in session:
+        if request.method == 'GET':
+            user = User.query.filter_by(email=session['email']).first()
+            collection = Collection.query.filter_by(id=id).first()
+            c_books = collection.books
+            print c_books
+            books = user.books.order_by(desc(Book.created_on)).all()
+            print books
+            return render_template('new_collection.html', user=user, current_page='collections', collection=collection, edit_collection=True, books=books, c_books=c_books)
+        else:
+            title = request.form.get('title', None)
+            checked_list = request.form.getlist('book')
+            collection = db.session.query(Collection).get(id)
+            collection.title = title
+            collection.books = []
+            db.session.commit()
+            for i in checked_list:
+                book = Book.query.filter_by(id=i).first()
+                collection.books.append(book)
+                print collection
+                db.session.add(collection)
+                db.session.add(book)
+                db.session.commit()
+            return redirect(url_for('collection.collections'))
+    return redirect(url_for('auth.login'))
+
+@collection.route('/collections/delete/<id>')
+def delete_collection(id):
+    collection = db.session.query(Collection).get(id)
+    db.session.delete(collection)
+    db.session.commit()
+    return redirect(url_for('collection.collections'))
 
 @collection.route('/collections/<id>', methods=['GET'])
 def collection_detail(id):
