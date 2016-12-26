@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.config['DEBUG'] = True
 
 # Set the secret key.  keep this really secret:
-app.config['SECRET_KEY'] = 'ff29b42f8d7d5cbefd272eab3eba6ec8'
+app.config['SECRET_KEY'] = 'ff29b42f8d7d5cbefd272eab3eba6ec'
 
 # Set the SECURITY_PASSWORD_SALT for email confirmation
 app.config['SECURITY_PASSWORD_SALT'] = 'precious'

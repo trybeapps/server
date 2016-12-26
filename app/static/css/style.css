@@ -254,6 +254,15 @@ header {
   .collections-container .collection-item:nth-child(6n) {
     margin-right: 0; }
 
+.invite-container .invite-box, .invite-container .tagsinput {
+  display: block;
+  width: 350px;
+  height: 28px;
+  margin-bottom: 20px; }
+
+.invite-container .tagsInput div {
+  height: 28px; }
+
 .nc-form .nc-title {
   width: 478px; }
 
@@ -340,8 +349,3 @@ header {
 .del-book-btn {
   float: right;
   margin-top: 8px; }
-
-.invite-box {
-  display: block;
-  width: 350px;
-  margin-bottom: 20px; }

@@ -4,8 +4,12 @@
   <div class="invite-container">
     <div class="g-title">Invite users</div>
     <form action="" method="post" class="invite-form">
-      <input type="text" class="invite-box" placeholder="Enter emails separated by comma">
+      <input type="text" name="users" class="invite-box" placeholder="Enter emails separated by comma">
       <input type="submit" class="btn" value="Submit">
     </form>
   </div>
+  <link rel="stylesheet" type="text/css" href="/static/css/jquery.tagsinput.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src="/static/js/jquery.tagsinput.min.js"></script>
+  <script src="/static/js/invite.js"></script>
 {% endblock %}
