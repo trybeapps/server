@@ -18,6 +18,8 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         if 'email' not in session:
             return redirect(url_for('auth.login'))
+        elif 'email_confirmed' not in session:
+            return redirect(url_for('auth.unconfirmed'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -48,10 +50,10 @@ def confirm_email(token):
         return 'Account already confirmed. Please login.'
     else:
         user.confirmed = True
+        session['email_confirmed'] = True
         db.session.add(user)
         db.session.commit()
         return 'You have confirmed your account. Thanks!'
-
 
 def send_email(to, subject, template):
     msg = Message(
@@ -61,6 +63,26 @@ def send_email(to, subject, template):
         sender=app.config['MAIL_DEFAULT_SENDER']
     )
     mail.send(msg)
+
+@auth.route('/unconfirmed')
+def unconfirmed():
+    if 'email' not in session:
+        return redirect(url_for('auth.login'))
+    elif 'email_confirmed' in session:
+        return redirect(url_for('auth.index'))
+    print('Please confirm your account!')
+    return render_template('unconfirmed.html')
+
+@auth.route('/resend-confirmation')
+def resend_confirmation():
+    if 'email' in session:
+        token = generate_confirmation_token(session['email'])
+        confirm_url = url_for('auth.confirm_email', token=token, _external=True)
+        html = render_template('activate.html', confirm_url=confirm_url)
+        subject = "Please confirm your email"
+        send_email(session['email'], subject, html)
+        print ('A new confirmation email has been sent.')
+    return redirect(url_for('auth.unconfirmed'))
 
 @auth.route('/')
 @login_required
