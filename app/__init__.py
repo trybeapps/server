@@ -1,4 +1,5 @@
 from flask import Flask, g, session, abort, redirect, url_for, render_template, request, escape, send_from_directory, jsonify
+from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from celery import Celery
 import os
@@ -6,8 +7,22 @@ import os
 # Define the WSGI application object
 app = Flask(__name__)
 
+# Debug mode on
+app.config['DEBUG'] = True
+
 # Set the secret key.  keep this really secret:
-app.secret_key = 'ff29b42f8d7d5cbefd272eab3eba6ec8'
+app.config['SECRET_KEY'] = 'ff29b42f8d7d5cbefd272eab3eba6ec8'
+
+# Set the SECURITY_PASSWORD_SALT for email confirmation
+app.config['SECURITY_PASSWORD_SALT'] = 'precious'
+
+# Configure mail SMTP
+app.config['MAIL_SERVER'] = 'smtp.zoho.com',
+app.config['MAIL_PORT'] = 465,
+app.config['MAIL_USE_SSL'] = True,
+app.config['MAIL_DEFAULT_SENDER'] = 'testing@zoho.com',
+
+mail = Mail(app)
 
 # Set the postgres config
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://libreread:libreread@localhost/libreread_dev'
