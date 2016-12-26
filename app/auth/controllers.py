@@ -135,3 +135,9 @@ def logout():
     # remove the email from the session if it's there
     session.pop('email', None)
     return redirect(url_for('auth.index'))
+
+@auth.route('/invite')
+@login_required
+def invite():
+    user = User.query.filter_by(email=session['email']).first()
+    return render_template('invite.html', user=user)

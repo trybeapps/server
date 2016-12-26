@@ -306,9 +306,17 @@ header {
 
 }
 
-.collections-container {
+.collections-container,.invite-container {
   padding: 30px 15px;
   overflow: hidden;
+
+  .g-title {
+    margin-bottom: 10px;
+    clear: both;
+  }
+}
+
+.collections-container {
 
   .cc-manage {
     margin-bottom: 30px;
@@ -320,11 +328,6 @@ header {
         margin-left: 10px;
       }
     }
-  }
-
-  .g-title {
-    margin-bottom: 10px;
-    clear: both;
   }
 
   .book-list {
@@ -492,4 +495,10 @@ header {
 .del-book-btn {
   float: right;
   margin-top: 8px;
+}
+
+.invite-box {
+  display: block;
+  width: 350px;
+  margin-bottom: 20px;
 }
