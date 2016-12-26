@@ -4,6 +4,7 @@ from app.book.models import Book
 from app import app
 from app import db
 from app import mail
+from functools import wraps
 from flask_mail import Message
 from functools import wraps
 from sqlalchemy import desc
@@ -11,6 +12,14 @@ import bcrypt
 from itsdangerous import URLSafeTimedSerializer
 
 auth = Blueprint('auth', __name__, template_folder='templates')
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'email' not in session:
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 def generate_confirmation_token(email):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -54,13 +63,13 @@ def send_email(to, subject, template):
     mail.send(msg)
 
 @auth.route('/')
+@login_required
 def index():
-    if 'email' in session:
-        user = User.query.filter_by(email=session['email']).first()
-        if user:
-            books = user.books.order_by(desc(Book.created_on)).all()
-            print books
-            return render_template('home.html', user = user, books = books, new_books=[])
+    user = User.query.filter_by(email=session['email']).first()
+    if user:
+        books = user.books.order_by(desc(Book.created_on)).all()
+        print books
+        return render_template('home.html', user = user, books = books, new_books=[])
     return render_template('landing.html')
 
 @auth.route('/signup', methods=['GET', 'POST'])

@@ -1,4 +1,5 @@
 from flask import Blueprint, g, session, abort, redirect, url_for, render_template, request, escape, send_from_directory, jsonify
+from app.auth.controllers import login_required
 from app.auth.models import User
 from app.book.models import Book
 from app import app, celery, db
@@ -78,7 +79,7 @@ def upload_file():
               db.session.commit()
 
               print book.id
-              
+
               # Feeding pdf content into ElasticSearch
               # Encode the pdf file and add it to the index
               pdf_data = _pdf_encode(file_path)
@@ -204,12 +205,14 @@ def _pdf_encode(pdf_filename):
     return base64.b64encode(open(pdf_filename,"rb").read());
 
 @book.route('/uploads/<filename>')
+@login_required
 def uploaded_file(filename):
     print app.config['UPLOAD_FOLDER']
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
 
 @book.route('/b/<filename>')
+@login_required
 def send_book(filename):
     # return send_from_directory('uploads', filename)
     file_path = '/b/' + filename
@@ -229,6 +232,7 @@ def send_book_cover(filename):
     return send_from_directory('uploads/images', filename)
 
 @book.route('/b/delete/<id>')
+@login_required
 def delete_book(id):
     book = db.session.query(Book).get(id)
 
@@ -246,6 +250,7 @@ def delete_book(id):
     return 'successfully deleted'
 
 @book.route('/autocomplete', methods=['GET'])
+@login_required
 def search_books():
     query = request.args.get('term')
     print query
