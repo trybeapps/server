@@ -42,7 +42,6 @@ def confirm_email(token):
         db.session.add(user)
         db.session.commit()
         return 'You have confirmed your account. Thanks!'
-    return redirect(url_for('main.home'))
 
 
 def send_email(to, subject, template):
