@@ -17,10 +17,13 @@ app.config['SECRET_KEY'] = 'ff29b42f8d7d5cbefd272eab3eba6ec8'
 app.config['SECURITY_PASSWORD_SALT'] = 'precious'
 
 # Configure mail SMTP
-app.config['MAIL_SERVER'] = 'smtp.zoho.com',
-app.config['MAIL_PORT'] = 465,
-app.config['MAIL_USE_SSL'] = True,
-app.config['MAIL_DEFAULT_SENDER'] = 'testing@zoho.com',
+app.config['MAIL_SERVER'] = 'smtp.zoho.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME')
 
 mail = Mail(app)
 
