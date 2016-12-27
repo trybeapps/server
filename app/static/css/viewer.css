@@ -1363,7 +1363,7 @@ html[dir='rtl'] .verticalToolbarSeparator {
 
 #thumbnailView {
   position: absolute;
-  width: 120px;
+  width: 100%;
   top: 0;
   bottom: 0;
   padding: 10px 40px 0;
