@@ -22,7 +22,7 @@ RUN apt-get install -y python python-dev python-distribute python-pip
 RUN apt-get install -y postgresql-9.4 postgresql-client-9.4
 
 # Install dependencies for psycopg2 and py-bcrypt
-RUN apt-get install -y libssl-dev libffi-dev
+RUN apt-get install -y libpq-dev libssl-dev libffi-dev
 
 # Clone the repository from github
 RUN git clone https://github.com/mysticmode/LibreRead.git home/LibreRead
