@@ -12,15 +12,6 @@ MAINTAINER LibreRead Nirmal
 # Update the repository sources list
 RUN apt-get update
 
-# Install basic applications
-RUN apt-get install -y tar git curl nano wget dialog net-tools build-essential
-
-# Install Python and Basic Python Tools
-RUN apt-get install -y python python-dev python-distribute python-pip
-
-# Install Postgres
-# RUN apt-get install -y postgresql-9.4 postgresql-client-9.4
-
 # Docker add init.sql for create user, password and database
 FROM library/postgres
 ENV POSTGRES_USER libreread
@@ -29,6 +20,15 @@ ENV POSTGRES_DB libreread_dev
 
 # Update the repository sources list
 RUN apt-get update
+
+# Install basic applications
+RUN apt-get install -y tar git curl nano wget dialog net-tools build-essential
+
+# Install Python and Basic Python Tools
+RUN apt-get install -y python python-dev python-distribute python-pip
+
+# Install Postgres
+# RUN apt-get install -y postgresql-9.4 postgresql-client-9.4
 
 # Install dependencies for psycopg2 and py-bcrypt
 RUN apt-get install -y libpq-dev libssl-dev libffi-dev
