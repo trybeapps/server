@@ -1,6 +1,7 @@
 *pyc
 venv
 node_modules
+libreread.db
 uploads
 dump.rdb
 *.DS_Store

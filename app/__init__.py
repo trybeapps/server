@@ -28,7 +28,11 @@ app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME')
 mail = Mail(app)
 
 # Set the postgres config
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://libreread:libreread@localhost/libreread_dev'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://libreread:libreread@localhost/libreread_dev'
+db_path = os.path.join(os.path.dirname(__file__), 'libreread.db')
+db_uri = 'sqlite:///{}'.format(db_path)
+print db_uri
+app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 db = SQLAlchemy(app)
 
 # Set the upload path
