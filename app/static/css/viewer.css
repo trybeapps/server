@@ -434,6 +434,7 @@ html[dir='rtl'] .innerCenter {
   -webkit-transition-timing-function: ease;
   transition-duration: 200ms;
   transition-timing-function: ease;
+  z-index: 1;
 
 }
 html[dir='ltr'] #sidebarContainer {
@@ -1405,6 +1406,9 @@ html[dir='rtl'] .verticalToolbarSeparator {
 .thumbnailSelectionRing {
   border-radius: 2px;
   padding: 7px;
+  width: 114px!important;
+  height: 138px!important;
+  margin: 7px 0 -6px;
 }
 
 a:focus > .thumbnail > .thumbnailSelectionRing > .thumbnailImage,
@@ -1421,6 +1425,10 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
               0 0 1px hsla(0,0%,100%,.2) inset,
               0 0 1px hsla(0,0%,0%,.2);
   color: hsla(0,0%,100%,.9);
+  border: 1px solid black;
+  width: 114px!important;
+  height: 138px!important;
+  margin: 7px 0 -6px;
 }
 
 .thumbnail.selected > .thumbnailSelectionRing > .thumbnailImage {
@@ -1436,6 +1444,10 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
               0 0 1px hsla(0,0%,100%,.1) inset,
               0 0 1px hsla(0,0%,0%,.2);
   color: hsla(0,0%,100%,1);
+  border: 1px solid black;
+  width: 114px!important;
+  height: 138px!important;
+  margin: 7px 0 -6px;
 }
 
 #outlineView,
@@ -1452,6 +1464,7 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
 
 #outlineView {
   padding: 4px 4px 0;
+  width: 100%;
 }
 #attachmentsView {
   padding: 3px 4px 0;
@@ -1477,7 +1490,7 @@ html[dir='rtl'] .outlineItem > .outlineItems {
   height: auto;
   margin-bottom: 1px;
   border-radius: 2px;
-  color: hsla(0,0%,100%,.8);
+  color: #555;
   font-size: 13px;
   line-height: 15px;
   -moz-user-select: none;
@@ -1548,11 +1561,8 @@ html[dir='rtl'] .outlineItemToggler::before {
   background-color: hsla(0,0%,100%,.02);
   background-image: linear-gradient(hsla(0,0%,100%,.05), hsla(0,0%,100%,0));
   background-clip: padding-box;
-  box-shadow: 0 1px 0 hsla(0,0%,100%,.05) inset,
-              0 0 1px hsla(0,0%,100%,.2) inset,
-              0 0 1px hsla(0,0%,0%,.2);
   border-radius: 2px;
-  color: hsla(0,0%,100%,.9);
+  color: #555;
 }
 
 .outlineItem.selected {
