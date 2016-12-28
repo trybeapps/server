@@ -320,6 +320,16 @@ header {
       height: 8px;
       background: #22a764; }
 
+#outerContainer header, #outerContainer .toolbar {
+  /* Safari */
+  transition: left 0.2s; }
+
+#outerContainer.sidebarOpen header {
+  left: 56.8%; }
+
+#outerContainer.sidebarOpen .toolbar {
+  left: 13.6%; }
+
 #mainContainer {
   background: white; }
   #mainContainer .toolbar {

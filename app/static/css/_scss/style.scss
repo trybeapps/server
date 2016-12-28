@@ -466,6 +466,21 @@ header {
   }
 }
 
+#outerContainer {
+  header,.toolbar {
+    -webkit-transition: left 0.2s; /* Safari */
+    transition: left 0.2s;
+  }
+  &.sidebarOpen {
+    header {
+      left: 56.8%;
+    }
+    .toolbar {
+      left: 13.6%;
+    }
+  }
+}
+
 #mainContainer {
   background: white;
 
