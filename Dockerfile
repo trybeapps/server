@@ -27,6 +27,9 @@ ENV POSTGRES_USER libreread
 ENV POSTGRES_PASSWORD libreread
 ENV POSTGRES_DB libreread_dev
 
+# Update the repository sources list
+RUN apt-get update
+
 # Install dependencies for psycopg2 and py-bcrypt
 RUN apt-get install -y libpq-dev libssl-dev libffi-dev
 
