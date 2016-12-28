@@ -36,6 +36,11 @@ RUN touch app/libreread.db
 # File permission for db file
 RUN chmod 777 app/libreread.db
 
+# Set the environment variables for smtp mail server
+ENV MAIL_USERNAME email_address
+ENV MAIL_PASSWORD password
+ENV MAIL_DEFAULT_SENDER email_address
+
 # Set the command to create db
 RUN python db_create.py
 
