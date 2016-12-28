@@ -31,13 +31,13 @@ WORKDIR home/LibreRead
 RUN pip install -r requirements.txt
 
 # Create db file
-CMD touch app/libreread.db
+RUN touch app/libreread.db
 
 # File permission for db file
-CMD chmod 777 app/libreread.db
+RUN chmod 777 app/libreread.db
 
 # Set the command to create db
-CMD python db_create.py
+RUN python db_create.py
 
 # Expose ports
 EXPOSE 8000
