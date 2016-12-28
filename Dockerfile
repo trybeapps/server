@@ -19,7 +19,13 @@ RUN apt-get install -y tar git curl nano wget dialog net-tools build-essential
 RUN apt-get install -y python python-dev python-distribute python-pip
 
 # Install Postgres
-RUN apt-get install -y postgresql-9.4 postgresql-client-9.4
+# RUN apt-get install -y postgresql-9.4 postgresql-client-9.4
+
+# Docker add init.sql for create user, password and database
+FROM library/postgres
+ENV POSTGRES_USER libreread
+ENV POSTGRES_PASSWORD libreread
+ENV POSTGRES_DB libreread_dev
 
 # Install dependencies for psycopg2 and py-bcrypt
 RUN apt-get install -y libpq-dev libssl-dev libffi-dev
