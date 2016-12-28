@@ -24,6 +24,10 @@
   line-height: 1.0;
 }
 
+#scaleSelectContainer {
+  margin-top: 5px;
+}
+
 .textLayer > div {
   color: transparent;
   position: absolute;
