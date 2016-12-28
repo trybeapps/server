@@ -22,7 +22,7 @@ RUN apt-get install -y python python-dev python-distribute python-pip
 RUN apt-get install -y libssl-dev libffi-dev
 
 # Clone the repository from github
-RUN git clone git@github.com:mysticmode/LibreRead.git home/LibreRead
+RUN git clone https://github.com/mysticmode/LibreRead.git home/LibreRead
 
 # Set the default directory where CMD will execute
 WORKDIR home/LibreRead
