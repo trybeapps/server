@@ -22,10 +22,10 @@ RUN apt-get install -y python python-dev python-distribute python-pip
 RUN apt-get install -y libssl-dev libffi-dev
 
 # Clone the repository from github
-RUN git clone git@github.com:mysticmode/LibreRead.git root/LibreRead
+RUN git clone git@github.com:mysticmode/LibreRead.git home/LibreRead
 
 # Set the default directory where CMD will execute
-WORKDIR root/LibreRead
+WORKDIR home/LibreRead
 
 # Get pip to download and install requirements:
 RUN pip install -r requirements.txt
