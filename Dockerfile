@@ -12,7 +12,7 @@ MAINTAINER LibreRead Nirmal
 # Update the repository sources list
 RUN apt-get update
 
-# Docker add init.sql for create user, password and database
+# Docker postgres - for create user, password and database
 FROM library/postgres
 ENV POSTGRES_USER libreread
 ENV POSTGRES_PASSWORD libreread
@@ -41,6 +41,9 @@ WORKDIR home/LibreRead
 
 # Get pip to download and install requirements:
 RUN pip install -r requirements.txt
+
+# Set the command to create db
+CMD python db_create.py
 
 # Expose ports
 EXPOSE 8000
