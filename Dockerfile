@@ -18,6 +18,9 @@ RUN apt-get install -y tar git curl nano wget dialog net-tools build-essential
 # Install Python and Basic Python Tools
 RUN apt-get install -y python python-dev python-distribute python-pip
 
+# Install Postgres
+RUN apt-get install postgresql-9.4 postgresql-client-9.4
+
 # Install dependencies for psycopg2 and py-bcrypt
 RUN apt-get install -y libssl-dev libffi-dev
 
