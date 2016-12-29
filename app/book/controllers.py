@@ -41,6 +41,8 @@ def upload_file():
               filename = secure_filename(file.filename)
               filename_gen = filename.split('.pdf')[0] + '_' + "{:%M%S%s}".format(datetime.now()) + '.pdf'
               print filename_gen
+              if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                  os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'images/'))
               file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename_gen)
               file.save(file_path)
 
