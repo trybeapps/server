@@ -95,7 +95,7 @@ def upload_file():
                 'cover': book.cover
               })
 
-              # Send the request to ElasticSearch on localhost:9200
+              # Send the request to ElasticSearch on elasticsearch:9200
               r = requests.put('http://elasticsearch:9200/lr_index/book_info/' + str(book.id), data=book_info)
               print r.text
 
@@ -240,13 +240,13 @@ def delete_book(id):
     book = db.session.query(Book).get(id)
 
     # Delete the book from elastic search
-    r = requests.delete('http://localhost:9200/lr_index/book_info/' + str(book.id))
+    r = requests.delete('http://elasticsearch:9200/lr_index/book_info/' + str(book.id))
     print r.text
 
     # Delete all pages from the elastic search
     user = User.query.filter_by(email=session['email']).first()
     for i in range(1,book.pages+1):
-        r = requests.delete('http://localhost:9200/lr_index/book_detail/' + str(user.id) + '_' + str(book.id) + '_' + str(i))
+        r = requests.delete('http://elasticsearch:9200/lr_index/book_detail/' + str(user.id) + '_' + str(book.id) + '_' + str(i))
         print r.text
     db.session.delete(book)
     db.session.commit()
@@ -270,7 +270,7 @@ def search_books():
         }
     })
 
-    r = requests.get('http://localhost:9200/lr_index/book_info/_search', data=payload)
+    r = requests.get('http://elasticsearch:9200/lr_index/book_info/_search', data=payload)
     data = json.loads(r.text)
     print (data)
 
@@ -310,7 +310,7 @@ def search_books():
         }
     })
 
-    r = requests.get('http://localhost:9200/lr_index/book_detail/_search', data=payload)
+    r = requests.get('http://elasticsearch:9200/lr_index/book_detail/_search', data=payload)
     data = json.loads(r.text)
     print (data)
 
