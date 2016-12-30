@@ -16,7 +16,7 @@ RUN apt-get update
 RUN apt-get install -y tar git curl nano wget dialog net-tools build-essential
 
 # Install Python and Basic Python Tools
-RUN apt-get install -y python python-dev python-distribute python-pip
+RUN apt-get install -y python python-dev python-distribute python-pip poppler-utils
 
 # Install dependencies for py-bcrypt
 RUN apt-get install -y libssl-dev libffi-dev
