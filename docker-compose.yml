@@ -10,14 +10,38 @@ services:
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
     networks:
       - docker_lr
+  
+  # RabbitMQ
+  rabbit:
+    hostname: rabbit
+    image: rabbitmq:3.6.0
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    ports:
+      - "5672:5672"  # we forward this port because it's useful for debugging
+      - "15672:15672"  # here, we can access rabbitmq management plugin
+  
   web:
     build: .
     ports:
       - "8000:8000"
+    links:
+      - rabbit
     networks:
       - docker_lr
     depends_on:
       - elasticsearch
+      - rabbit
+
+  # Celery worker
+  worker:
+    build: .
+    command: celery -A app.celery worker --loglevel=info --purge
+    links:
+      - rabbit
+    depends_on:
+      - web
 
 networks:
   docker_lr:
