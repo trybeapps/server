@@ -44,10 +44,6 @@ ENV MAIL_DEFAULT_SENDER email_address
 # Set the command to create db
 RUN python db_create.py
 
-# Set the command to init elasticsearch index and attachment
-RUN python config/elastic/init_attachment.py
-RUN python config/elastic/init_index.py
-
 # Expose ports
 EXPOSE 8000
 

@@ -59,3 +59,54 @@ from app.collection.controllers import collection
 app.register_blueprint(auth)
 app.register_blueprint(book)
 app.register_blueprint(collection)
+
+
+# testing
+
+import requests
+import json
+
+payload = json.dumps({
+    'description': 'Process documents',
+    'processors': [
+        {
+            'attachment': {
+                'field': 'thedata',
+                'indexed_chars': -1
+            }
+        },
+        {
+            'set': {
+                'field': 'attachment.title',
+                'value': '{{ title }}'
+            }
+        },
+        {
+            'set': {
+                'field': 'attachment.page',
+                'value': '{{ page }}'
+            }
+        }
+    ]
+})
+
+print payload
+
+r = requests.put('http://elasticsearch:9200/_ingest/pipeline/attachment', data=payload)
+
+print r.text
+
+
+
+payload = json.dumps({
+    'settings': {
+        'number_of_shards': 4,
+        'number_of_replicas': 0
+    }
+})
+
+print payload
+
+r = requests.put('http://elasticsearch:9200/lr_index', data=payload)
+
+print r.text
