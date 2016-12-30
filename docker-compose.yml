@@ -21,6 +21,8 @@ services:
     ports:
       - "5672:5672"  # we forward this port because it's useful for debugging
       - "15672:15672"  # here, we can access rabbitmq management plugin
+    networks:
+      - docker_lr
   
   web:
     build: .
@@ -40,6 +42,8 @@ services:
     command: celery -A app.celery worker --loglevel=info --purge
     links:
       - rabbit
+    networks:
+      - docker_lr
     depends_on:
       - web
 
