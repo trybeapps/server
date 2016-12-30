@@ -45,6 +45,7 @@ def upload_file():
                   os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'images/'))
               file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename_gen)
               file.save(file_path)
+              print 'file saved successfully'
 
               info = _pdfinfo(file_path)
               print (info)
@@ -174,8 +175,8 @@ def _pdfinfo(infile):
     import os.path as osp
 
     cmd = '/usr/bin/pdfinfo'
-    # if not osp.exists(cmd):
-    #     raise RuntimeError('System command not found: %s' % cmd)
+    if not osp.exists(cmd):
+        raise RuntimeError('System command not found: %s' % cmd)
 
     if not osp.exists(infile):
         raise RuntimeError('Provided input file not found: %s' % infile)
