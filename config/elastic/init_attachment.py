@@ -27,6 +27,6 @@ payload = json.dumps({
 
 print payload
 
-r = requests.put('http://localhost:9200/_ingest/pipeline/attachment', data=payload)
+r = requests.put('http://elasticsearch:9200/_ingest/pipeline/attachment', data=payload)
 
 print r.text

@@ -10,6 +10,6 @@ payload = json.dumps({
 
 print payload
 
-r = requests.put('http://localhost:9200/lr_index', data=payload)
+r = requests.put('http://elasticsearch:9200/lr_index', data=payload)
 
 print r.text
