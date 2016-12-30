@@ -96,7 +96,7 @@ def upload_file():
               })
 
               # Send the request to ElasticSearch on localhost:9200
-              r = requests.put('http://localhost:9200/lr_index/book_info/' + str(book.id), data=book_info)
+              r = requests.put('http://0.0.0.0:9200/lr_index/book_info/' + str(book.id), data=book_info)
               print r.text
 
               # Feed content to Elastic as a background job with celery
@@ -143,7 +143,7 @@ def _feed_content(args):
                 'page': i,
             })
             # feed data in id = userid_bookid_pageno
-            r = requests.put('http://localhost:9200/lr_index/book_detail/' + str(arg['user_id']) + '_' + str(arg['book']['book_id']) + '_' + str(i) + '?pipeline=attachment', data=book_detail)
+            r = requests.put('http://0.0.0.0:9200/lr_index/book_detail/' + str(arg['user_id']) + '_' + str(arg['book']['book_id']) + '_' + str(i) + '?pipeline=attachment', data=book_detail)
             print r.text
 
         # Remove the splitted pdfs as it is useless now
