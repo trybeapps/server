@@ -44,8 +44,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ALLOWED_EXTENSIONS'] = set(['pdf'])
 
 # Celery config
-app.config['CELERY_BROKER_URL'] = 'amqp://guest:guest@rabbit:5672//'
-app.config['CELERY_RESULT_BACKEND'] = 'amqp://guest:guest@rabbit:5672//'
+app.config['CELERY_BROKER_URL'] = 'amqp://admin:admin@rabbit:5672//'
+app.config['CELERY_RESULT_BACKEND'] = 'amqp://admin:admin@rabbit:5672//'
 
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
