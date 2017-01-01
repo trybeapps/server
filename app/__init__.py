@@ -29,6 +29,7 @@ mail = Mail(app)
 
 # Set the postgres config
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://libreread:libreread@localhost/libreread_dev'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db_path = os.path.join(os.path.dirname(__file__), 'libreread.db')
 db_uri = 'sqlite:///{}'.format(db_path)
 print db_uri
