@@ -22,10 +22,10 @@ RUN apt-get install -y python python-dev python-distribute python-pip poppler-ut
 RUN apt-get install -y libssl-dev libffi-dev
 
 # Clone the repository from github
-RUN git clone https://github.com/mysticmode/LibreRead.git /LibreRead
+RUN git clone https://github.com/mysticmode/LibreRead.git LibreRead
 
 # Set the default directory where CMD will execute
-WORKDIR /LibreRead
+WORKDIR LibreRead
 
 # Get pip to download and install requirements:
 RUN pip install -r requirements.txt
