@@ -19,7 +19,7 @@ def login_required(f):
             return redirect(url_for('auth.login'))
         else:
             user = User.query.filter_by(email=session['email']).first()
-            if not user.confirmed
+            if not user.confirmed:
                 return redirect(url_for('auth.unconfirmed'))
         return f(*args, **kwargs)
     return decorated_function
