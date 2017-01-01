@@ -4,7 +4,7 @@
 ############################################################
 
 # Set the base image to Debian
-FROM debian
+FROM debian:8
 
 # File Author / Maintainer
 MAINTAINER LibreRead Nirmal
