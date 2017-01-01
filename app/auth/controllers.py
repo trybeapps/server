@@ -17,8 +17,10 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         if 'email' not in session:
             return redirect(url_for('auth.login'))
-        elif 'email_confirmed' not in session:
-            return redirect(url_for('auth.unconfirmed'))
+        else:
+            user = User.query.filter_by(email=session['email']).first()
+            if not user.confirmed
+                return redirect(url_for('auth.unconfirmed'))
         return f(*args, **kwargs)
     return decorated_function
 
