@@ -20,6 +20,23 @@ def allowed_file(filename):
 
 @book.route('/book-upload', methods=['GET', 'POST'])
 def upload_file():
+
+    import requests
+    import json
+
+    payload = json.dumps({
+      'settings': {
+        'number_of_shards': 4,
+        'number_of_replicas': 0
+      }
+    })
+
+    print payload
+
+    r = requests.put('http://elasticsearch:9200/lr_index', data=payload)
+
+    print r.text
+
     if request.method == 'POST':
         args= []
         for i in range(len(request.files)):
