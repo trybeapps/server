@@ -40,6 +40,18 @@ services:
       - elasticsearch
       - rabbit
 
+  # Celery worker
+  worker:
+    build: .
+    command: celery -A app.celery worker --loglevel=info --purge
+    links:
+      - rabbit
+      - web
+    networks:
+      - docker_lr
+    depends_on:
+      - rabbit
+
 networks:
   docker_lr:
     driver: bridge
