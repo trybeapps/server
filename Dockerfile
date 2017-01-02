@@ -48,4 +48,4 @@ RUN python db_create.py
 EXPOSE 8000
 
 # Set the command to execute python server
-CMD python wsgi.py
+CMD python wsgi.py ; celery -A app.celery worker --loglevel=info --purge
