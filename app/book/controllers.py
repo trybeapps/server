@@ -67,6 +67,10 @@ def upload_file():
 
     print r.text
 
+    result = add_together.delay(23, 42)
+    print '\n\n\n\n\n\n'
+    result.wait()
+
     if request.method == 'POST':
         args= []
         for i in range(len(request.files)):
@@ -167,6 +171,10 @@ def upload_file():
         return 'success'
     else:
         return redirect(url_for('index'))
+
+@celery.task()
+def add_together(a, b):
+    return a + b
 
 @celery.task()
 def _feed_content(args):
