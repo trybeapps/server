@@ -34,6 +34,7 @@ services:
       - ./uploads/images:/opt/LibreRead/app/uploads/images
     links:
       - rabbit
+      - worker
     networks:
       - docker_lr
     depends_on:
@@ -43,10 +44,10 @@ services:
   # Celery worker
   worker:
     build: .
-    command: celery -A app.celery worker --loglevel=info --purge
+    command: celery -A app.celery worker --loglevel=info
+    user: nobody
     links:
       - rabbit
-      - web
     networks:
       - docker_lr
     depends_on:
