@@ -29,9 +29,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./app/libreread.db:/opt/LibreRead/app/libreread.db
-      - ./uploads:/opt/LibreRead/app/uploads
-      - ./uploads/images:/opt/LibreRead/app/uploads/images
+      - .:/opt/LibreRead
     links:
       - rabbit
       - worker
