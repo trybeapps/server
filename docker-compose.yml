@@ -44,11 +44,10 @@ services:
   worker:
     build: .
     command: celery -A app.celery worker --loglevel=info --purge
-    links:
-      - rabbit
     networks:
       - docker_lr
     depends_on:
+      - rabbit
       - web
 
 networks:
