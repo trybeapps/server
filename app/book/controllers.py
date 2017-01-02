@@ -115,13 +115,13 @@ def upload_file():
               print user.books
 
               print ('Book uploaded successfully!')
-        # _feed_content.delay(args=args)
-        _feed_content(args=args)
+         _feed_content.delay(args=args)
+        # _feed_content(args=args)
         return 'success'
     else:
         return redirect(url_for('index'))
 
-# @celery.task()
+@celery.task()
 def _feed_content(args):
 
     for arg in args:
