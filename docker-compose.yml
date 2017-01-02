@@ -37,9 +37,6 @@ services:
       - worker
     networks:
       - docker_lr
-    depends_on:
-      - elasticsearch
-      - rabbit
 
   # Celery worker
   worker:
@@ -50,8 +47,6 @@ services:
       - rabbit
     networks:
       - docker_lr
-    depends_on:
-      - rabbit
 
 networks:
   docker_lr:
