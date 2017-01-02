@@ -44,12 +44,6 @@ ENV MAIL_DEFAULT_SENDER email_address
 # Set the command to create db
 RUN python db_create.py
 
-# Init ES attachment
-RUN python config/elastic/init_attachment.py
-
-# Init ES Index
-RUN python config/elastic/init_index.py
-
 # Expose ports
 EXPOSE 8000
 

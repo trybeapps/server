@@ -60,3 +60,19 @@ from app.collection.controllers import collection
 app.register_blueprint(auth)
 app.register_blueprint(book)
 app.register_blueprint(collection)
+
+import requests
+import json
+
+payload = json.dumps({
+    'settings': {
+        'number_of_shards': 4,
+        'number_of_replicas': 0
+    }
+})
+
+print payload
+
+r = requests.put('http://elasticsearch:9200/lr_index', data=payload)
+
+print r.text
