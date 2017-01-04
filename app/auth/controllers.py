@@ -166,10 +166,30 @@ def invite():
             return 'Sent invitation successfully!'
     return render_template('invite.html', user=user)
 
-@auth.route('/invitation/<email>', methods=['GET'])
+@auth.route('/invitation/<email>', methods=['GET', 'POST'])
 def invitation(email):
-    email = Invite.query.filter_by(email=email).first()
-    if email:
-        return render_template('signup.html')
-    else:
-        return 'Sorry, You have no invitation'
+    if request.method == 'GET':
+        email = Invite.query.filter_by(email=email).first()
+        if email:
+            return render_template('signup.html')
+        else:
+            return 'Sorry, You have no invitation'
+
+    elif request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password'].encode('utf-8')
+
+        password_hash = bcrypt.hashpw(password, bcrypt.gensalt())
+
+        user = User(name, email, password_hash, False)
+        db.session.add(user)
+        db.session.commit()
+        session['email'] = email
+        token = generate_confirmation_token(email)
+        confirm_url = url_for('auth.confirm_email', token=token, _external=True)
+        html = render_template('activate.html', confirm_url=confirm_url)
+        subject = "Please confirm your email"
+        send_email(user.email, subject, html)
+
+        return redirect(url_for('auth.index'))
