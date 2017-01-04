@@ -21,56 +21,6 @@ def allowed_file(filename):
 @book.route('/book-upload', methods=['GET', 'POST'])
 def upload_file():
 
-    import requests
-    import json
-
-    payload = json.dumps({
-        'description': 'Process documents',
-        'processors': [
-            {
-                'attachment': {
-                    'field': 'thedata',
-                    'indexed_chars': -1
-                }
-            },
-            {
-                'set': {
-                    'field': 'attachment.title',
-                    'value': '{{ title }}'
-                }
-            },
-            {
-                'set': {
-                    'field': 'attachment.page',
-                    'value': '{{ page }}'
-                }
-            }
-        ]
-    })
-
-    print payload
-
-    r = requests.put('http://elasticsearch:9200/_ingest/pipeline/attachment', data=payload)
-
-    print r.text
-
-    payload = json.dumps({
-        'settings': {
-            'number_of_shards': 4,
-            'number_of_replicas': 0
-        }
-    })
-
-    print payload
-
-    r = requests.put('http://elasticsearch:9200/lr_index', data=payload)
-
-    print r.text
-
-    result = add_together.delay(23, 42)
-    print '\n\n\n\n\n\n'
-    result.wait()
-
     if request.method == 'POST':
         args= []
         for i in range(len(request.files)):
@@ -147,7 +97,7 @@ def upload_file():
               })
 
               # Send the request to ElasticSearch on elasticsearch:9200
-              r = requests.put('http://elasticsearch:9200/lr_index/book_info/' + str(book.id), data=book_info)
+              r = requests.put('http://localhost:9200/lr_index/book_info/' + str(book.id), data=book_info)
               print r.text
 
               # Feed content to Elastic as a background job with celery
@@ -173,10 +123,6 @@ def upload_file():
         return redirect(url_for('index'))
 
 @celery.task()
-def add_together(a, b):
-    return a + b
-
-@celery.task()
 def _feed_content(args):
 
     for arg in args:
@@ -199,7 +145,7 @@ def _feed_content(args):
                 'page': i,
             })
             # feed data in id = userid_bookid_pageno
-            r = requests.put('http://elasticsearch:9200/lr_index/book_detail/' + str(arg['user_id']) + '_' + str(arg['book']['book_id']) + '_' + str(i) + '?pipeline=attachment', data=book_detail)
+            r = requests.put('http://localhost:9200/lr_index/book_detail/' + str(arg['user_id']) + '_' + str(arg['book']['book_id']) + '_' + str(i) + '?pipeline=attachment', data=book_detail)
             print r.text
 
         # Remove the splitted pdfs as it is useless now
@@ -230,9 +176,9 @@ def _pdfinfo(infile):
     """
     import os.path as osp
 
-    cmd = '/usr/bin/pdfinfo'
-    if not osp.exists(cmd):
-        raise RuntimeError('System command not found: %s' % cmd)
+    # cmd = '/usr/bin/pdfinfo'
+    # if not osp.exists(cmd):
+    #     raise RuntimeError('System command not found: %s' % cmd)
 
     if not osp.exists(infile):
         raise RuntimeError('Provided input file not found: %s' % infile)
@@ -296,13 +242,13 @@ def delete_book(id):
     book = db.session.query(Book).get(id)
 
     # Delete the book from elastic search
-    r = requests.delete('http://elasticsearch:9200/lr_index/book_info/' + str(book.id))
+    r = requests.delete('http://localhost:9200/lr_index/book_info/' + str(book.id))
     print r.text
 
     # Delete all pages from the elastic search
     user = User.query.filter_by(email=session['email']).first()
     for i in range(1,book.pages+1):
-        r = requests.delete('http://elasticsearch:9200/lr_index/book_detail/' + str(user.id) + '_' + str(book.id) + '_' + str(i))
+        r = requests.delete('http://localhost:9200/lr_index/book_detail/' + str(user.id) + '_' + str(book.id) + '_' + str(i))
         print r.text
     db.session.delete(book)
     db.session.commit()
@@ -326,7 +272,7 @@ def search_books():
         }
     })
 
-    r = requests.get('http://elasticsearch:9200/lr_index/book_info/_search', data=payload)
+    r = requests.get('http://localhost:9200/lr_index/book_info/_search', data=payload)
     data = json.loads(r.text)
     print (data)
 
@@ -366,7 +312,7 @@ def search_books():
         }
     })
 
-    r = requests.get('http://elasticsearch:9200/lr_index/book_detail/_search', data=payload)
+    r = requests.get('http://localhost:9200/lr_index/book_detail/_search', data=payload)
     data = json.loads(r.text)
     print (data)
 
