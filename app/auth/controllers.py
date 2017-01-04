@@ -19,7 +19,7 @@ def login_required(f):
             return redirect(url_for('auth.login'))
         elif 'email' in session and not User.query.filter_by(email=session['email']).first():
             session.clear()
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth.signup'))
         elif User.query.filter_by(email=session['email']).first():
             if not user.confirmed:
                 return redirect(url_for('auth.unconfirmed'))
