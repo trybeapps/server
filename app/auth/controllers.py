@@ -15,10 +15,12 @@ auth = Blueprint('auth', __name__, template_folder='templates')
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        user = User.query.filter_by(email=session['email']).first()
         if 'email' not in session:
             return redirect(url_for('auth.login'))
-        elif user:
+        elif 'email' in session and not User.query.filter_by(email=session['email']).first():
+            session.clear()
+            return redirect(url_for('auth.login'))
+        elif User.query.filter_by(email=session['email']).first():
             if not user.confirmed:
                 return redirect(url_for('auth.unconfirmed'))
         return f(*args, **kwargs)
