@@ -18,7 +18,7 @@ a {
 }
 
 .page-container {
-  width: 920px;
+  width: 1024px;
   background: #f3f3f3;
   min-height: 640px;
   margin: 0 auto 50px;
@@ -485,7 +485,7 @@ header {
   background: white;
 
   .toolbar {
-    width: 920px;
+    width: 1024px;
     margin: 0 auto;
 
     #toolbarContainer {
@@ -509,9 +509,9 @@ header {
 
   header {
     position: fixed!important;
-    width: 920px!important;
+    width: 1024px!important;
     left: 50%;
-    margin-left: -460px;
+    margin-left: -512px;
     z-index: 9999999;
   }
 
