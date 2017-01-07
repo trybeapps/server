@@ -12,7 +12,7 @@
     <div class="page-container">
       <header>
         <a href="/" class="logo">LibreRead</a>
-        <input type="text" class="search-box" id="search" placeholder="Type here to search...">
+        <input type="text" class="search-box" id="search" placeholder="Type here to search">
         <div class="search-dropdown">
           <div class="metadata">
             <div class="title">Metadata</div>
@@ -27,7 +27,7 @@
         </div>
         <div class="management">
           {% if current_page == 'collections' %}
-            <a href="/collections" class="collections" style="text-decoration: underline;">Collections</a>
+            <a href="/collections" class="collections" style="text-decoration: underline;">collections</a>
           {% else %}
             <div class="upload-books">Add new books</div>
             <a href="/collections" class="collections">Collections</a>
