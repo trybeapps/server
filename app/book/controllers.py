@@ -282,14 +282,18 @@ def search_books():
     metadata = []
 
     for hit in hits:
-        title = hit['_source']['title']
-        author = hit['_source']['author']
-        url = hit['_source']['url']
-        cover = hit['_source']['cover']
+        id = int(hit['_id'])
+        book = db.session.query(Book).get(id)
+        user = User.query.filter_by(email=session['email']).first()
+        if book.user_id == user.id:
+            title = hit['_source']['title']
+            author = hit['_source']['author']
+            url = hit['_source']['url']
+            cover = hit['_source']['cover']
 
-        metadata.append({
-            'title': title, 'author': author, 'url': url, 'cover': cover
-        })
+            metadata.append({
+                'title': title, 'author': author, 'url': url, 'cover': cover
+            })
 
 
     suggestions.append(metadata)
@@ -322,17 +326,20 @@ def search_books():
     content = []
 
     for hit in hits:
-        title = hit['_source']['title']
-        author = hit['_source']['author']
-        url = hit['_source']['url']
-        cover = hit['_source']['cover']
-        page = hit['_source']['page']
-        data = hit['highlight']['attachment.content']
-        if len(data):
-            for i in data:
-                content.append({
-                    'title': title, 'author': author, 'url': url, 'cover': cover, 'page': page, 'data': i
-                })
+        id = int(hit['_id'].split('_')[0])
+        user = User.query.filter_by(email=session['email']).first()
+        if id == user.id:
+            title = hit['_source']['title']
+            author = hit['_source']['author']
+            url = hit['_source']['url']
+            cover = hit['_source']['cover']
+            page = hit['_source']['page']
+            data = hit['highlight']['attachment.content']
+            if len(data):
+                for i in data:
+                    content.append({
+                        'title': title, 'author': author, 'url': url, 'cover': cover, 'page': page, 'data': i
+                    })
 
     suggestions.append(content)
     print suggestions
