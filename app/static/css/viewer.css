@@ -1408,7 +1408,7 @@ html[dir='rtl'] .verticalToolbarSeparator {
   padding: 7px;
   width: 114px!important;
   height: 138px!important;
-  margin: 7px 0 -6px;
+  margin: 7px 0 24px;
 }
 
 a:focus > .thumbnail > .thumbnailSelectionRing > .thumbnailImage,
@@ -1427,7 +1427,7 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
   color: hsla(0,0%,100%,.9);
   border: 1px solid black;
   width: 114px!important;
-  height: 138px!important;
+  height: 173px!important;
   margin: 7px 0 -6px;
 }
 
@@ -1446,7 +1446,7 @@ a:focus > .thumbnail > .thumbnailSelectionRing,
   color: hsla(0,0%,100%,1);
   border: 1px solid black;
   width: 114px!important;
-  height: 138px!important;
+  height: 173px!important;
   margin: 7px 0 -6px;
 }
 
