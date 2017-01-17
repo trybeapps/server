@@ -30,11 +30,7 @@ gulp.task('sass', function () {
 
 gulp.task('autoprefixer', function () {
   return gulp.src('design/static/css/style.css')
-  .pipe(autoprefixer({
-    browsers: ['last 2 versions'],
-    cascade: false
-  }))
-  .pipe(gulp.dest('design/static/css'))
+  .pipe(autoprefixer())
 })
 
 gulp.task('watch', function () {
