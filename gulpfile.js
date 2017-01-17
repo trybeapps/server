@@ -31,6 +31,7 @@ gulp.task('sass', function () {
 gulp.task('autoprefixer', function () {
   return gulp.src('design/static/css/style.css')
   .pipe(autoprefixer())
+  .pipe(gulp.dest('design/static/css'))
 })
 
 gulp.task('watch', function () {

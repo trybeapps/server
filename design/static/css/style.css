@@ -35,6 +35,7 @@ header {
     padding: 0 12px;
     margin-top: 17px;
     outline: none;
+    -webkit-transition: border 0.1s ease-in-out;
     transition: border 0.1s ease-in-out; }
     header .search-box:focus {
       border: 1px solid #F05D3F; }
@@ -75,11 +76,13 @@ header {
         float: left;
         margin-top: 24px;
         margin-right: 4px;
+        -webkit-transition: color 0.1s ease-in-out;
         transition: color 0.1s ease-in-out; }
       header .header-menu .dd-profile svg {
         float: left;
         margin-top: 27px; }
         header .header-menu .dd-profile svg path {
+          -webkit-transition: all 0.1s ease-in-out;
           transition: all 0.1s ease-in-out; }
   header .dd-p-box {
     position: absolute;
@@ -111,6 +114,7 @@ header {
 a {
   text-decoration: none;
   color: #444;
+  -webkit-transition: color 0.1s ease-in-out;
   transition: color 0.1s ease-in-out; }
   a:hover {
     color: #F05D3F; }
