@@ -81,6 +81,20 @@ header {
         margin-top: 27px; }
         header .header-menu .dd-profile svg path {
           transition: all 0.1s ease-in-out; }
+  header .dd-p-box {
+    position: absolute;
+    width: 170px;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 0px 2px rgba(0, 0, 0, 0.4);
+    margin-top: 58px;
+    margin-left: 1010px;
+    padding: 20px; }
+    header .dd-p-box a {
+      display: block;
+      margin-bottom: 20px; }
+      header .dd-p-box a:last-child {
+        margin-bottom: 0; }
 
 .btn {
   background: #F05D3F;
