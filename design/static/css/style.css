@@ -39,7 +39,28 @@ header {
     transition: border 0.1s ease-in-out; }
     header .search-box:focus {
       border: 1px solid #F05D3F; }
+
+@-webkit-keyframes drop-down-search {
+  0% {
+    margin-top: 74px;
+    -webkit-transform: scaleX(0.8);
+            transform: scaleX(0.8); }
+  100% {
+    margin-top: 54px;
+    -webkit-transform: scaleX(1);
+            transform: scaleX(1); } }
+
+@keyframes drop-down-search {
+  0% {
+    margin-top: 74px;
+    -webkit-transform: scaleX(0.8);
+            transform: scaleX(0.8); }
+  100% {
+    margin-top: 54px;
+    -webkit-transform: scaleX(1);
+            transform: scaleX(1); } }
   header .search-results {
+    display: block;
     position: absolute;
     width: 440px;
     height: 300px;
@@ -47,7 +68,29 @@ header {
     border-radius: 4px;
     box-shadow: 0 0px 2px rgba(0, 0, 0, 0.4);
     margin-top: 54px;
-    margin-left: 147px; }
+    margin-left: 147px;
+    -webkit-animation: drop-down-search 0.1s ease-in-out;
+            animation: drop-down-search 0.1s ease-in-out; }
+
+@-webkit-keyframes drop-down-profile {
+  0% {
+    margin-top: 48px;
+    -webkit-transform: scaleX(0.8);
+            transform: scaleX(0.8); }
+  100% {
+    margin-top: 68px;
+    -webkit-transform: scaleX(1);
+            transform: scaleX(1); } }
+
+@keyframes drop-down-profile {
+  0% {
+    margin-top: 48px;
+    -webkit-transform: scaleX(0.8);
+            transform: scaleX(0.8); }
+  100% {
+    margin-top: 68px;
+    -webkit-transform: scaleX(1);
+            transform: scaleX(1); } }
   header .header-menu {
     float: right; }
     header .header-menu .btn {
@@ -85,6 +128,7 @@ header {
           -webkit-transition: all 0.1s ease-in-out;
           transition: all 0.1s ease-in-out; }
   header .dd-p-box {
+    display: none;
     position: absolute;
     width: 170px;
     background: white;
@@ -92,7 +136,9 @@ header {
     box-shadow: 0 0px 2px rgba(0, 0, 0, 0.4);
     margin-top: 68px;
     margin-left: 1043px;
-    padding: 20px; }
+    padding: 20px;
+    -webkit-animation: drop-down-profile 0.1s ease-in-out;
+            animation: drop-down-profile 0.1s ease-in-out; }
     header .dd-p-box::after {
       position: absolute;
       content: "";

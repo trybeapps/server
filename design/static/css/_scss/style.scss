@@ -51,7 +51,13 @@ header {
     }
   }
 
+  @keyframes drop-down-search {
+    0% { margin-top: 74px; transform: scaleX(0.8); }
+    100% { margin-top: 54px; transform: scaleX(1); }
+  }
+
   .search-results {
+    display: block;
     position: absolute;
     width: 440px;
     height: 300px;
@@ -60,6 +66,12 @@ header {
     box-shadow: 0 0px 2px rgba(0, 0, 0, 0.4);
     margin-top: 54px;
     margin-left: 147px;
+    animation: drop-down-search 0.1s ease-in-out;
+  }
+
+  @keyframes drop-down-profile {
+    0% { margin-top: 48px; transform: scaleX(0.8); }
+    100% { margin-top: 68px; transform: scaleX(1); }
   }
 
   .header-menu {
@@ -120,6 +132,7 @@ header {
   }
 
   .dd-p-box {
+    display: none;
     position: absolute;
     width: 170px;
     background: white;
@@ -128,6 +141,7 @@ header {
     margin-top: 68px;
     margin-left: 1043px;
     padding: 20px;
+    animation: drop-down-profile 0.1s ease-in-out;
 
     &::after {
       position: absolute;
