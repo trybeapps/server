@@ -1,5 +1,5 @@
 body {
-  font-family: 'Open Sans', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Open Sans', sans-serif;
   font-size: 15px;
   color: #444; }
 
@@ -18,6 +18,7 @@ header {
     margin: 0 auto; }
   header .logo {
     float: left;
+    font-family: 'Open Sans', sans-serif;
     font-size: 22px;
     font-weight: 600;
     color: #F05D3F;
@@ -60,7 +61,7 @@ header {
     -webkit-transform: scaleX(1);
             transform: scaleX(1); } }
   header .search-results {
-    display: block;
+    display: none;
     position: absolute;
     width: 440px;
     height: 300px;
@@ -123,7 +124,7 @@ header {
         transition: color 0.1s ease-in-out; }
       header .header-menu .dd-profile svg {
         float: left;
-        margin-top: 27px; }
+        margin-top: 26px; }
         header .header-menu .dd-profile svg path {
           -webkit-transition: all 0.1s ease-in-out;
           transition: all 0.1s ease-in-out; }
@@ -178,3 +179,23 @@ a {
   transition: color 0.1s ease-in-out; }
   a:hover {
     color: #F05D3F; }
+
+.page-container {
+  width: 1170px;
+  margin: 20px auto; }
+
+.book-list {
+  overflow: hidden; }
+
+.book-item {
+  float: left;
+  width: 201px;
+  height: 230px;
+  margin-right: 40px;
+  margin-bottom: 40px;
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.2); }
+  .book-item:nth-child(5n) {
+    margin-right: 0; }
+  .book-item img {
+    width: 100%;
+    height: 100%; }
