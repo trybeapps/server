@@ -90,9 +90,23 @@ header {
     background: white;
     border-radius: 4px;
     box-shadow: 0 0px 2px rgba(0, 0, 0, 0.4);
-    margin-top: 58px;
-    margin-left: 1010px;
+    margin-top: 68px;
+    margin-left: 1043px;
     padding: 20px; }
+    header .dd-p-box::after {
+      position: absolute;
+      content: "";
+      top: 0;
+      width: 15px;
+      height: 15px;
+      background: white;
+      -webkit-transform: rotate(45deg);
+              transform: rotate(45deg);
+      margin-top: -9px;
+      margin-left: 57px;
+      border-top: 1px solid #ccc;
+      border-left: 1px solid #ccc;
+      border-top-left-radius: 3px; }
     header .dd-p-box a {
       display: block;
       margin-bottom: 20px; }
