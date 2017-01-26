@@ -172,7 +172,7 @@ header {
 .book-list {
   display: block;
   list-style: none;
-  padding: 0 15px 30px;
+  padding: 15px;
   overflow: hidden; }
   .book-list a {
     display: block;
@@ -295,7 +295,7 @@ header {
 
 #dropzone_container {
   display: block;
-  padding: 30px 0 0 15px;
+  padding: 0;
   overflow: hidden; }
 
 .dz-preview {
