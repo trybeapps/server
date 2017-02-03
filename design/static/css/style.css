@@ -20,11 +20,11 @@ header {
     overflow: hidden; }
   header .logo {
     float: left;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Roboto', sans-serif;
     font-size: 22px;
-    font-weight: 600;
+    font-weight: 500;
     color: #F05D3F;
-    margin-top: 20px;
+    margin-top: 24px;
     margin-right: 30px; }
     header .logo span {
       color: #4E4E4E; }
@@ -34,7 +34,7 @@ header {
     height: 38px;
     font-size: 15px;
     font-weight: 400;
-    border-radius: 20px;
+    border-radius: 4px;
     border: 1px solid #BFBFBF;
     padding: 0 12px;
     margin-top: 17px;
@@ -78,23 +78,19 @@ header {
 
 @-webkit-keyframes drop-down-profile {
   0% {
-    margin-top: 48px;
-    -webkit-transform: scaleX(0.8);
-            transform: scaleX(0.8); }
+    -webkit-transform: rotateX(-20deg);
+            transform: rotateX(-20deg); }
   100% {
-    margin-top: 68px;
-    -webkit-transform: scaleX(1);
-            transform: scaleX(1); } }
+    -webkit-transform: rotateX(0deg);
+            transform: rotateX(0deg); } }
 
 @keyframes drop-down-profile {
   0% {
-    margin-top: 48px;
-    -webkit-transform: scaleX(0.8);
-            transform: scaleX(0.8); }
+    -webkit-transform: rotateX(-20deg);
+            transform: rotateX(-20deg); }
   100% {
-    margin-top: 68px;
-    -webkit-transform: scaleX(1);
-            transform: scaleX(1); } }
+    -webkit-transform: rotateX(0deg);
+            transform: rotateX(0deg); } }
   header .header-menu {
     float: right; }
     header .header-menu .btn {
@@ -139,7 +135,7 @@ header {
     border-radius: 4px;
     box-shadow: 0 0px 2px rgba(0, 0, 0, 0.4);
     margin-top: 68px;
-    margin-left: 1043px;
+    margin-left: 943px;
     padding: 20px;
     -webkit-animation: drop-down-profile 0.1s ease-in-out;
             animation: drop-down-profile 0.1s ease-in-out; }

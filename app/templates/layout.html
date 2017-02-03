@@ -9,8 +9,7 @@
     {% endblock %}
   </head>
   <body>
-    <div class="page-container">
-      <header>
+    <header>
         <a href="/" class="logo">LibreRead</a>
         <input type="text" class="search-box" id="search" placeholder="Type here to search">
         <div class="search-dropdown">
@@ -34,9 +33,7 @@
           {% endif %}
           <a href="" class="user">
             <div class="first-name">{{user.name}}</div>
-            <svg width="12" height="8" viewBox="0 0 12 8" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6 8L0 0h12z" fill="#D8D8D8" fill-rule="evenodd"/>
-            </svg>
+            <svg class="nc-icon outline" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 48 48"><path fill="none" stroke="#fff" stroke-width="6" stroke-linecap="square" stroke-miterlimit="10" d="M4 14l20 20 20-20"/></svg>
           </a>
         </div>
         <div class="user-dropdown">
@@ -45,6 +42,7 @@
           <a href="/signout" class="sign-out">Sign out</a>
         </div>
       </header>
+    <div class="page-container">
       {% block content %}{% endblock %}
     </div>
   </body>

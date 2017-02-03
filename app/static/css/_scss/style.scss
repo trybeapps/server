@@ -19,7 +19,9 @@ a {
 
 .page-container {
   width: 1024px;
-  background: #f3f3f3;
+  background: #fafafb;
+  border: 1px solid #e6eaef;
+  border-top: none;
   min-height: 640px;
   margin: 0 auto 50px;
   overflow: hidden;
@@ -73,16 +75,21 @@ a {
 
 input[type="text"] {
   outline: none;
-  border: 1px solid #d6d6d6;
+  border: 1px solid #cfd3d6;
   padding: 4px 8px;
+
+  &:focus {
+    border: 1px solid #558cc1;
+  }
 }
 
 header {
   position: relative;
-  width: 100%;
+  width: 1024px;
   height: 44px;
-  background: #5082B3;
+  background: #558cc1;
   color: white;
+  margin: 0 auto;
   padding: 0 15px;
   z-index: 999;
 }
@@ -103,9 +110,14 @@ header {
   float: left;
   width: 420px;
   background: white;
+  border: 1px solid #fff!important;
   margin: 7px 0 0 20px;
   padding: 0 10px;
   outline: none;
+
+  &:focus {
+    border: 1px solid #fff!important;
+  }
 }
 
 .management {
@@ -137,7 +149,7 @@ header {
 
     svg {
       float: left;
-      margin-top: 18px;
+      margin-top: 16px;
     }
 
     &:hover {
@@ -155,7 +167,8 @@ header {
   height: 400px;
   background: white;
   color: #555;
-  border: 1px solid #d6d6d6;
+  border: 1px solid #cfd3d6;
+  border-top: none;
   margin: 37px 0 0 95px;
   padding: 10px;
   overflow-y: auto;
@@ -198,7 +211,7 @@ header {
   .sd-item {
       img {
         float: left;
-        border: 1px solid #d6d6d6;
+        border: 1px solid #cfd3d6;
       }
 
       .sdi-info {
@@ -233,7 +246,8 @@ header {
   position: absolute;
   width: 130px;
   background: white;
-  border: 1px solid #d6d6d6;
+  border: 1px solid #cfd3d6;
+  border-top: none;
   right: 0;
   margin: 44px 15px 0 0;
   padding: 10px;
@@ -263,7 +277,7 @@ header {
   li {
     float: left;
     margin: 0 17.6px 20px 0;
-    border: 1px solid #d6d6d6;
+    border: 1px solid #cfd3d6;
 
     &:nth-child(7n) {
       margin-right: 0;
@@ -286,8 +300,8 @@ header {
 }
 
 .btn {
-  background: #d6d6d6;
-  background: linear-gradient(#ededed,#d6d6d6);
+  background: #cfd3d6;
+  background: linear-gradient(#ededed,#cfd3d6);
   color: #444;
   border: 1px solid #aaa;
   padding: 4px 8px;
@@ -300,7 +314,7 @@ header {
   }
 
   &:active {
-    background: #d6d6d6;
+    background: #cfd3d6;
   }
 
 
@@ -352,7 +366,7 @@ header {
     .collection-cover {
       width: 130px;
       height: 156px;
-      background: #d6d6d6;
+      background: #cfd3d6;
 
       img {
         float: left;
@@ -399,7 +413,7 @@ header {
     width: 478px;
     height: 306px;
     background: white;
-    border: 1px solid #d6d6d6;
+    border: 1px solid #cfd3d6;
     margin: 20px 0 20px;
     padding: 10px;
     overflow-y: auto;
@@ -423,7 +437,7 @@ header {
 
   .nc-img {
     float: left;
-    border: 1px solid #d6d6d6;
+    border: 1px solid #cfd3d6;
   }
 }
 
@@ -499,7 +513,7 @@ header {
     margin-bottom: 30px;
 
     .canvasWrapper {
-      border: 1px solid #d6d6d6;
+      border: 1px solid #cfd3d6;
     }
   }
 }
