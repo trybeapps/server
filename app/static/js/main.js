@@ -12,7 +12,7 @@ $(function () {
   var myDropzone = new Dropzone('body', {
     url: '/book-upload',
     paramName: 'file',
-    acceptedFiles: 'application/pdf',
+    acceptedFiles: 'application/pdf,.epub',
     uploadMultiple: true,
     previewsContainer: '#dropzone_container',
     clickable: false
@@ -46,7 +46,7 @@ $(function () {
   var uploadBtn = new Dropzone('.upload-books', {
     url: '/book-upload',
     paramName: 'file',
-    acceptedFiles: 'application/pdf',
+    acceptedFiles: 'application/pdf,.epub',
     uploadMultiple: true,
     previewsContainer: '#dropzone_container'
   })

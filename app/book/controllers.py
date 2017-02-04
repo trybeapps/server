@@ -14,9 +14,12 @@ from datetime import datetime
 
 book = Blueprint('book', __name__, template_folder='templates')
 
-def allowed_file(filename):
+def _allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+
+def _file_extension(filename):
+    return filename.rsplit('.', 1)[1] if '.' in filename else ''
 
 @book.route('/book-upload', methods=['GET', 'POST'])
 def upload_file():
@@ -28,7 +31,7 @@ def upload_file():
           if file.filename == '':
               print ('No selected file')
               return redirect(request.url)
-          if file and allowed_file(file.filename):
+          if file and _allowed_file(file.filename):
 
               # Check if the file already exists then return
               user = User.query.filter_by(email=session['email']).first()
@@ -116,6 +119,7 @@ def upload_file():
               print user.books
 
               print ('Book uploaded successfully!')
+
         _feed_content.delay(args=args)
         # _feed_content(args=args)
         return 'success'

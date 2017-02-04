@@ -42,7 +42,7 @@ UPLOAD_FOLDER = os.path.join(APP_ROOT, 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Allowed extensions for file upload
-app.config['ALLOWED_EXTENSIONS'] = set(['pdf'])
+app.config['ALLOWED_EXTENSIONS'] = set(['pdf','epub'])
 
 # Celery config
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379'
