@@ -21,104 +21,120 @@ def _allowed_file(filename):
 def _file_extension(filename):
     return filename.rsplit('.', 1)[1] if '.' in filename else ''
 
+def _if_book_exists(filename):
+    # Check if the file already exists then return
+    user = User.query.filter_by(email=session['email']).first()
+    book = Book.query.filter_by(user_id=user.id, filename=filename).first()
+    print book
+    return True if book else False
+
+def _gen_filename(filename):
+    filename = secure_filename(file.filename)
+    filename_gen = filename.split('.pdf')[0] + '_' + "{:%M%S%s}".format(datetime.now()) + '.pdf'
+    print filename_gen
+    return filename_gen
+
 @book.route('/book-upload', methods=['GET', 'POST'])
 def upload_file():
 
     if request.method == 'POST':
         args= []
         for i in range(len(request.files)):
-          file = request.files['file['+str(i)+']']
-          if file.filename == '':
-              print ('No selected file')
-              return redirect(request.url)
-          if file and _allowed_file(file.filename):
+            file = request.files['file['+str(i)+']']
+            if file.filename == '':
+                print ('No selected file')
+                return redirect(request.url)
+            if file and _allowed_file(file.filename):
 
-              # Check if the file already exists then return
-              user = User.query.filter_by(email=session['email']).first()
-              book = Book.query.filter_by(user_id=user.id, filename=file.filename).first()
-              print book
-              if book:
-                  print 'book already exists'
-                  return 'book already exists'
+                if _if_book_exists(file.filename):
+                    print 'book already exists'
+                    return 'book already exists'
 
-              # Generate a new filename with datetime for uniqueness when other user has the same filename
-              filename = secure_filename(file.filename)
-              filename_gen = filename.split('.pdf')[0] + '_' + "{:%M%S%s}".format(datetime.now()) + '.pdf'
-              print filename_gen
-              if not os.path.exists(app.config['UPLOAD_FOLDER']):
-                  os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'images/'))
-              file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename_gen)
-              file.save(file_path)
-              print 'file saved successfully'
+                # Generate a new filename with datetime for uniqueness when other user has the same filename
+                filename_gen = _gen_filename(file.filename)
 
-              info = _pdfinfo(file_path)
-              print (info)
+                # if uploads/images doesn't exist, create one
+                if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'images/'))
 
-              # Check if info['Title'] exists else pass the filename as the title in the db
-              try:
-                  title = info['Title']
-              except KeyError, e:
-                  print 'No Title found, so passing the filename as title'
-                  title = filename.split('.pdf')[0]
+                # save file    
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename_gen)
+                file.save(file_path)
+                print 'file saved successfully'
 
-              # Check if info['Author'] exists else pass Unknown as the author in the db
-              try:
-                  author = info['Author']
-              except KeyError, e:
-                  print 'No Author found, so passing unknown'
-                  author = 'unknown'
+                # Get PDF metadata
+                info = _pdfinfo(file_path)
+                print (info)
+
+                # Check if info['Title'] exists else pass the filename as the title in the db
+                try:
+                    title = info['Title']
+                except KeyError, e:
+                    print 'No Title found, so passing the filename as title'
+                    title = filename.split('.pdf')[0]
+
+                # Check if info['Author'] exists else pass Unknown as the author in the db
+                try:
+                    author = info['Author']
+                except KeyError, e:
+                    print 'No Author found, so passing unknown'
+                    author = 'unknown'
 
 
-              img_folder = 'images/' + '_'.join(title.split(' '))
-              cover_path = os.path.join(app.config['UPLOAD_FOLDER'], img_folder)
+                img_folder = 'images/' + '_'.join(title.split(' '))
+                cover_path = os.path.join(app.config['UPLOAD_FOLDER'], img_folder)
 
-              _gen_cover(file_path, cover_path)
+                _gen_cover(file_path, cover_path)
 
-              url = '/b/' + filename_gen
-              cover = '/b/cover/' + '_'.join(title.split(' ')) + '-001-000.png'
-              print cover
+                url = '/b/' + filename_gen
+                cover = '/b/cover/' + '_'.join(title.split(' ')) + '-001-000.png'
+                print cover
 
-              book = Book(title=title, filename=file.filename, author=author, url=url, cover=cover, pages=info['Pages'], current_page=0)
+                book = Book(
+                    title=title, 
+                    filename=file.filename, 
+                    author=author, 
+                    url=url, 
+                    cover=cover, 
+                    pages=info['Pages'], 
+                    current_page=0
+                )
 
-              user.books.append(book)
-              db.session.add(user)
-              db.session.add(book)
-              db.session.commit()
+                user.books.append(book)
+                db.session.add(user)
+                db.session.add(book)
+                db.session.commit()
 
-              print book.id
+                print book.id
 
-              # Feeding pdf content into ElasticSearch
-              # Encode the pdf file and add it to the index
-              pdf_data = _pdf_encode(file_path)
+                # Set the payload in json
+                book_info = json.dumps({
+                    'title': book.title,
+                    'author': book.author,
+                    'url': book.url,
+                    'cover': book.cover
+                })
 
-              # Set the payload in json
-              book_info = json.dumps({
-                'title': book.title,
-                'author': book.author,
-                'url': book.url,
-                'cover': book.cover
-              })
+                # Send the request to ElasticSearch on elasticsearch:9200
+                r = requests.put('http://localhost:9200/lr_index/book_info/' + str(book.id), data=book_info)
+                print r.text
 
-              # Send the request to ElasticSearch on elasticsearch:9200
-              r = requests.put('http://localhost:9200/lr_index/book_info/' + str(book.id), data=book_info)
-              print r.text
+                # Feed content to Elastic as a background job with celery
+                args.append({'user_id': user.id,
+                    'book': {
+                        'book_id': book.id,
+                        'book_title': book.title,
+                        'book_author': book.author,
+                        'book_cover': book.cover,
+                        'book_url': book.url,
+                        'book_pages': book.pages
+                    },
+                    'file_path': file_path
+                })
 
-              # Feed content to Elastic as a background job with celery
-              args.append({'user_id': user.id,
-                'book': {
-                    'book_id': book.id,
-                    'book_title': book.title,
-                    'book_author': book.author,
-                    'book_cover': book.cover,
-                    'book_url': book.url,
-                    'book_pages': book.pages
-                },
-                'file_path': file_path
-              })
+                print user.books
 
-              print user.books
-
-              print ('Book uploaded successfully!')
+                print ('Book uploaded successfully!')
 
         _feed_content.delay(args=args)
         # _feed_content(args=args)
