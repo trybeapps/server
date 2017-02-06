@@ -29,7 +29,7 @@ def _if_book_exists(filename):
     return True if book else False
 
 def _gen_filename(filename):
-    filename = secure_filename(file.filename)
+    filename = secure_filename(filename)
     filename_gen = filename.split('.pdf')[0] + '_' + "{:%M%S%s}".format(datetime.now()) + '.pdf'
     print filename_gen
     return filename_gen
@@ -99,7 +99,8 @@ def upload_file():
                     pages=info['Pages'], 
                     current_page=0
                 )
-
+                
+                user = User.query.filter_by(email=session['email']).first()
                 user.books.append(book)
                 db.session.add(user)
                 db.session.add(book)
