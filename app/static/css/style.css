@@ -313,7 +313,7 @@ header {
   float: left;
   width: 110px;
   height: 132px;
-  margin: 0 17.6px 20px 0; }
+  margin: 15px 17.6px 20px 15px; }
   .dz-preview .dz-size, .dz-preview .dz-filename, .dz-preview .dz-error-message, .dz-preview .dz-success-mark, .dz-preview .dz-error-mark {
     display: none; }
   .dz-preview .dz-image img {
