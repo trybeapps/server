@@ -1,5 +1,5 @@
 body, input {
-  font-family: "Source Sans Pro", sans-serif !important;
+  font-family: 'Source Sans Pro', sans-serif;
   font-size: 15px;
   color: #555; }
 
@@ -31,7 +31,7 @@ a {
 .sign-link {
   float: right;
   color: white;
-  margin-top: 12px; }
+  margin-top: 11px; }
 
 .sign-form {
   display: block;
@@ -53,11 +53,11 @@ a {
 .g-title {
   font-weight: 600; }
 
-input[type="text"] {
+input[type="text"], input[type="password"] {
   outline: none;
   border: 1px solid #cfd3d6;
   padding: 4px 8px; }
-  input[type="text"]:focus {
+  input[type="text"]:focus, input[type="password"]:focus {
     border: 1px solid #558cc1; }
 
 header {
@@ -72,11 +72,11 @@ header {
 
 .logo {
   float: left;
-  font-family: 'Caveat Brush', cursive;
-  font-size: 26px;
+  font-family: 'Droid Sans', sans-serif;
+  font-size: 18px;
   color: white;
   text-decoration: none;
-  padding-top: 4px; }
+  padding-top: 11px; }
   .logo:hover {
     text-decoration: none; }
 
