@@ -1,6 +1,6 @@
 body, input {
-  font-family: "Open Sans", sans-serif !important;
-  font-size: 13px;
+  font-family: "Source Sans Pro", sans-serif !important;
+  font-size: 15px;
   color: #555; }
 
 * {
@@ -72,10 +72,11 @@ header {
 
 .logo {
   float: left;
-  font-size: 16px;
+  font-family: 'Caveat Brush', cursive;
+  font-size: 26px;
   color: white;
   text-decoration: none;
-  padding-top: 10px; }
+  padding-top: 4px; }
   .logo:hover {
     text-decoration: none; }
 
@@ -95,7 +96,7 @@ header {
   .management a, .management div {
     float: left;
     color: white;
-    margin-top: 12px;
+    margin-top: 11px;
     margin-right: 20px;
     cursor: pointer; }
     .management a:hover, .management div:hover {
@@ -106,7 +107,7 @@ header {
     margin-top: 0; }
     .management .user .first-name {
       float: left;
-      margin: 12px 5px 0 0; }
+      margin: 11px 5px 0 0; }
     .management .user svg {
       float: left;
       margin-top: 16px; }
@@ -210,7 +211,7 @@ header {
   background: linear-gradient(#ededed, #cfd3d6);
   color: #444;
   border: 1px solid #aaa;
-  padding: 4px 8px;
+  padding: 4px 8px 6px;
   text-decoration: none;
   cursor: pointer;
   outline: none; }
@@ -368,4 +369,4 @@ header {
 
 .del-book-btn {
   float: right;
-  margin-top: 8px; }
+  margin-top: 6px; }
