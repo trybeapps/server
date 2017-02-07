@@ -99,7 +99,7 @@ def upload_file():
                     pages=info['Pages'], 
                     current_page=0
                 )
-                
+
                 user = User.query.filter_by(email=session['email']).first()
                 user.books.append(book)
                 db.session.add(user)
@@ -240,7 +240,6 @@ def uploaded_file(filename):
 @book.route('/b/<filename>')
 @login_required
 def send_book(filename):
-    # return send_from_directory('uploads', filename)
     file_path = '/b/' + filename
     if 'email' in session:
         user = User.query.filter_by(email=session['email']).first()
