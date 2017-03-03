@@ -36,7 +36,6 @@ def _gen_filename(filename):
 
 @book.route('/book-upload', methods=['GET', 'POST'])
 def upload_file():
-
     if request.method == 'POST':
         args= []
         for i in range(len(request.files)):
