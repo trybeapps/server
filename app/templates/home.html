@@ -7,7 +7,7 @@
       <li>
         <a href="{{ book.url }}">
           {% if book.cover %}
-            <img src="{{ book.cover }}" onerror="imgError(this);" width="130px">
+            <img src="{{ book.cover }}" width="130px">
           {% else %}
             <p class="no-image">{{book.title}}</p>
           {% endif %}
