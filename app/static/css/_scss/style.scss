@@ -170,7 +170,7 @@ header {
   color: #555;
   border: 1px solid #cfd3d6;
   border-top: none;
-  margin: 37px 0 0 101px;
+  margin: 37px 0 0 97px;
   padding: 10px;
   overflow-y: auto;
 
@@ -510,7 +510,7 @@ header {
   background: white;
 
   .toolbar {
-    width: 1024px;
+    width: 1102px;
     margin: 0 auto;
 
     #toolbarContainer {
@@ -534,9 +534,9 @@ header {
 
   header {
     position: fixed!important;
-    width: 1024px!important;
+    width: 1102px!important;
     left: 50%;
-    margin-left: -512px;
+    margin-left: -551px;
     z-index: 9999999;
   }
 
