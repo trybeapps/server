@@ -18,7 +18,7 @@ a {
 }
 
 .page-container {
-  width: 1024px;
+  width: 1102px;
   background: #fafafb;
   border: 1px solid #e6eaef;
   border-top: none;
@@ -85,12 +85,12 @@ input[type="text"],input[type="password"] {
 
 header {
   position: relative;
-  width: 1024px;
+  width: 1102px;
   height: 44px;
   background: #558cc1;
   color: white;
   margin: 0 auto;
-  padding: 0 15px;
+  padding: 0 20px;
   z-index: 999;
 }
 
@@ -112,7 +112,7 @@ header {
   width: 420px;
   background: white;
   border: 1px solid #fff!important;
-  margin: 7px 0 0 20px;
+  margin: 7px 0 0 25px;
   padding: 0 10px;
   outline: none;
 
@@ -128,7 +128,7 @@ header {
     float: left;
     color: white;
     margin-top: 11px;
-    margin-right: 20px;
+    margin-right: 25px;
     cursor: pointer;
 
     &:hover {
@@ -264,21 +264,19 @@ header {
 }
 
 .book-list {
-  display: block;
+  display: -webkit-flex;
+  display: flex;
   list-style: none;
-  padding: 15px;
+  padding: 15px 20px;
   overflow: hidden;
+  flex-wrap: wrap;
 
   a {
     display: block;
-    height: 132px;
-    background: #cfd3d6;
   }
 
   li {
-    float: left;
-    margin: 0 17.6px 20px 0;
-    border: 1px solid #cfd3d6;
+    margin: 0 25px 30px 0;
 
     &:nth-child(7n) {
       margin-right: 0;
@@ -287,14 +285,23 @@ header {
     img {
       position: relative;
       z-index: 1;
+      border: 1px solid #cfd3d6;
+
+      &:hover {
+        border: 1px solid #558cc1;
+      }
     }
 
     p {
-      width: 100px;
-      height: 90px;
+      display: none;
+      width: 130px;
+      min-height: 140px;
+      background: white;
       color: #555;
       word-wrap: break-word;
-      margin: -102px 0 0 5px;
+      border: 1px solid #cfd3d6;
+      margin: 0;
+      padding: 10px;
       overflow: hidden;
     }
   }

@@ -3,7 +3,7 @@ Dropzone.autoDiscover = false;
 
 function imgError (image) {
   image.onerror = ''
-  image.style = 'opacity: 0;'
+  image.style = 'display: none;'
   image.nextSibling.style = 'display: block;'
   return true
 }

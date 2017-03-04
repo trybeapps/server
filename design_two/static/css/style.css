@@ -9,7 +9,8 @@ body {
 
 input, textarea, keygen, select, button {
   font-family: 'Open Sans', sans-serif;
-  color: #444; }
+  color: #444;
+  outline: none; }
 
 .pull-left {
   float: left; }
@@ -72,9 +73,16 @@ header {
 
 .book-item {
   float: left;
-  margin-right: 30px; }
+  margin-right: 30px;
+  cursor: pointer; }
   .book-item:nth-child(6n) {
     margin-right: 0; }
   .book-item img {
     width: 160px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); }
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.28); }
+  .book-item:hover {
+    -webkit-transform: scale(1.1);
+            transform: scale(1.1);
+    margin-top: -7px;
+    -webkit-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out; }

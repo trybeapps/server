@@ -12,6 +12,7 @@ body {
 input, textarea, keygen, select, button {
   font-family: 'Open Sans', sans-serif;
   color: #444;
+  outline: none;
 }
 
 .pull-left {
@@ -92,6 +93,7 @@ header {
 .book-item {
   float: left;
   margin-right: 30px;
+  cursor: pointer;
 
   &:nth-child(6n) {
     margin-right: 0;
@@ -99,6 +101,12 @@ header {
 
   img {
     width: 160px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.28);
+  }
+
+  &:hover {
+    transform: scale(1.1);
+    margin-top: -7px;
+    transition: all 0.2s ease-in-out;
   }
 }
