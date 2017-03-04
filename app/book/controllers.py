@@ -86,7 +86,9 @@ def upload_file():
                 _gen_cover(file_path, cover_path)
 
                 url = '/b/' + filename_gen
-                cover = '/b/cover/' + '_'.join(title.split(' ')) + '-001-000.png'
+                cover = None
+                if os.path.isfile(cover_path + '-001-000.png'):
+                    cover = '/b/cover/' + '_'.join(title.split(' ')) + '-001-000.png'
                 print cover
 
                 book = Book(

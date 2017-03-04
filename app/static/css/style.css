@@ -201,7 +201,6 @@ header {
       .book-list li img:hover {
         border: 1px solid #558cc1; }
     .book-list li p {
-      display: none;
       width: 130px;
       min-height: 140px;
       background: white;
