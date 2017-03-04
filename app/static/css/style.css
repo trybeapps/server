@@ -210,6 +210,8 @@ header {
       margin: 0;
       padding: 10px;
       overflow: hidden; }
+      .book-list li p:hover {
+        border: 1px solid #558cc1; }
 
 .btn {
   background: #cfd3d6;

@@ -302,6 +302,10 @@ header {
       margin: 0;
       padding: 10px;
       overflow: hidden;
+
+      &:hover {
+        border: 1px solid #558cc1;
+      }
     }
   }
 }
