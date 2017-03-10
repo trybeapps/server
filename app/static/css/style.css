@@ -1,6 +1,7 @@
 body, input {
+  background: #fafafb;
   font-family: 'Source Sans Pro', sans-serif;
-  font-size: 15px;
+  font-size: 17px;
   color: #555; }
 
 * {
@@ -14,10 +15,7 @@ a {
     text-decoration: underline; }
 
 .page-container {
-  width: 1102px;
-  background: #fafafb;
-  border: 1px solid #e6eaef;
-  border-top: none;
+  width: 1170px;
   min-height: 640px;
   margin: 0 auto 50px;
   overflow: hidden; }
@@ -62,31 +60,36 @@ input[type="text"], input[type="password"] {
 
 header {
   position: relative;
-  width: 1102px;
-  height: 44px;
+  width: 100%;
+  height: 66px;
   background: #558cc1;
   color: white;
-  margin: 0 auto;
-  padding: 0 20px;
+  margin: 0;
   z-index: 999; }
+  header .header-container {
+    width: 1170px;
+    margin: 0 auto;
+    padding: 0 30px;
+    overflow: hidden; }
 
 .logo {
   float: left;
   font-family: 'Droid Sans', sans-serif;
-  font-size: 18px;
+  font-size: 22px;
   color: white;
   text-decoration: none;
-  padding-top: 11px; }
+  padding-top: 20px; }
   .logo:hover {
     text-decoration: none; }
 
 .search-box {
   float: left;
-  width: 420px;
+  width: 520px;
+  height: 64px;
   background: white;
   border: 1px solid #fff !important;
-  margin: 7px 0 0 25px;
-  padding: 0 10px;
+  margin: 1px 0 1px 30px;
+  padding: 0 15px !important;
   outline: none; }
   .search-box:focus {
     border: 1px solid #fff !important; }
@@ -96,8 +99,8 @@ header {
   .management a, .management div {
     float: left;
     color: white;
-    margin-top: 11px;
-    margin-right: 25px;
+    margin-top: 21px;
+    margin-right: 30px;
     cursor: pointer; }
     .management a:hover, .management div:hover {
       text-decoration: underline; }
@@ -107,23 +110,23 @@ header {
     margin-top: 0; }
     .management .user .first-name {
       float: left;
-      margin: 11px 5px 0 0; }
+      margin: 21px 5px 0 0; }
     .management .user svg {
       float: left;
-      margin-top: 16px; }
+      margin-top: 27px; }
     .management .user:hover .first-name {
       text-decoration: underline; }
 
 .search-dropdown {
   display: none;
   position: absolute;
-  width: 420px;
+  width: 520px;
   height: 400px;
   background: white;
   color: #555;
   border: 1px solid #cfd3d6;
   border-top: none;
-  margin: 37px 0 0 97px;
+  margin: 66px 0 0 129px;
   padding: 10px;
   overflow-y: auto; }
   .search-dropdown .metadata, .search-dropdown .content {
@@ -149,7 +152,7 @@ header {
     border: 1px solid #cfd3d6; }
   .search-dropdown .sd-item .sdi-info {
     float: left;
-    width: 310px;
+    width: 413px;
     color: #555;
     margin-left: 10px; }
   .search-dropdown .sd-item .sdii-title {
@@ -166,17 +169,16 @@ header {
 .user-dropdown {
   display: none;
   position: absolute;
-  width: 130px;
+  width: 170px;
   background: white;
   border: 1px solid #cfd3d6;
   border-top: none;
-  right: 0;
-  margin: 44px 15px 0 0;
-  padding: 10px; }
+  margin: 66px 0 0 940px;
+  padding: 20px; }
   .user-dropdown a {
     display: block;
     color: #555;
-    margin-top: 15px; }
+    margin-top: 20px; }
     .user-dropdown a:first-child {
       margin-top: 0; }
 
@@ -184,22 +186,20 @@ header {
   display: -ms-flexbox;
   display: flex;
   list-style: none;
-  padding: 15px 20px;
+  padding: 30px;
   overflow: hidden;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap; }
   .book-list a {
     display: block; }
   .book-list li {
-    margin: 0 25px 30px 0; }
-    .book-list li:nth-child(7n) {
+    margin: 0 30px 30px 0; }
+    .book-list li:nth-child(6n) {
       margin-right: 0; }
     .book-list li img {
       position: relative;
       z-index: 1;
-      border: 1px solid #cfd3d6; }
-      .book-list li img:hover {
-        border: 1px solid #558cc1; }
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); }
     .book-list li p {
       width: 130px;
       min-height: 140px;
