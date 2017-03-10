@@ -199,14 +199,18 @@ header {
     .book-list li img {
       position: relative;
       z-index: 1;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); }
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+      border: 1px solid #b3b3b3; }
+      .book-list li img:hover {
+        border: 1px solid #558cc1; }
     .book-list li p {
-      width: 130px;
+      width: 160px;
       min-height: 140px;
       background: white;
       color: #555;
       word-wrap: break-word;
       border: 1px solid #cfd3d6;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
       margin: 0;
       padding: 10px;
       overflow: hidden; }
@@ -223,7 +227,8 @@ header {
   cursor: pointer;
   outline: none; }
   .btn:hover {
-    text-decoration: none; }
+    text-decoration: none;
+    border: 1px solid #558cc1; }
   .btn:active {
     background: #cfd3d6; }
 
