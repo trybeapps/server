@@ -508,7 +508,7 @@ html[dir='rtl'] #sidebarContent {
   right: 0;
   bottom: 0;
   left: 0;
-  padding-top: 76px;
+  padding-top: 128px;
   outline: none;
 }
 html[dir='ltr'] #viewerContainer {
@@ -527,7 +527,8 @@ html[dir='rtl'] #viewerContainer {
 }
 
 #toolbarContainer {
-  width: 100%;
+  width: 1130px;
+  margin: 0 auto;
 }
 
 #toolbarSidebar {
@@ -665,7 +666,7 @@ html[dir='rtl'] #findInput[data-status="pending"] {
   z-index: 30000;
 }
 html[dir='ltr'] .secondaryToolbar {
-  right: 4px;
+  margin-left: 1065px;
 }
 html[dir='rtl'] .secondaryToolbar {
   left: 4px;
