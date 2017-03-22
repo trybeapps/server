@@ -56,7 +56,7 @@ def upload_file():
                 if not os.path.exists(app.config['UPLOAD_FOLDER']):
                     os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'images/'))
 
-                # save file    
+                # save file
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename_gen)
                 file.save(file_path)
                 print 'file saved successfully'
@@ -229,7 +229,7 @@ def _gen_cover(file_path, cover_path):
     subprocess.call('pdfimages -p -png -f 1 -l 2 ' + file_path + ' ' + cover_path, shell=True)
 
 def _pdf_encode(pdf_filename):
-    return base64.b64encode(open(pdf_filename,"rb").read());
+    return base64.b64encode(open(pdf_filename,'rb').read())
 
 @book.route('/uploads/<filename>')
 @login_required
