@@ -47,6 +47,33 @@ See https://github.com/adobe-type-tools/cmap-resources
 
 
     <script src="/static/js/viewer.js"></script>
+    <script>
+      $(function() {
+        document.onmouseup = getSelectedText;
+
+        function getSelectedText() {
+          var selObj = window.getSelection();
+          var selRange = selObj.getRangeAt(0);
+          $(selRange['commonAncestorContainer']).closest('.page').append('<span>Test</span>')
+          console.log($(selRange['commonAncestorContainer']).text().length)
+          console.log(selRange['startOffset'])
+          console.log(selObj.toString().length)
+          console.log(selRange['startContainer']['parentElement']['offsetWidth'])
+          console.log(selRange['startContainer']['parentElement']['offsetTop'])
+          console.log(selRange)
+
+          selRange.collapse(false);
+          //console.log(selRange)
+          var dummy = document.createElement("span");
+          selRange.insertNode(dummy);
+          var rect = dummy.getBoundingClientRect();
+          //alert(parseInt($('#viewerContainer').scrollTop()) + parseInt(rect.top))
+          var x = rect.left, y = rect.top;
+          //console.log(rect)
+          // dummy.parentNode.removeChild(dummy);
+        }
+      })
+    </script>
 
   </head>
 
