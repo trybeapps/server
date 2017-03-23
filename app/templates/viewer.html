@@ -54,7 +54,12 @@ See https://github.com/adobe-type-tools/cmap-resources
         function getSelectedText() {
           var selObj = window.getSelection();
           var selRange = selObj.getRangeAt(0);
-          $(selRange['commonAncestorContainer']).closest('.page').append('<span>Test</span>')
+          var hOneLetterWidth = parseInt(selRange['startContainer']['parentElement']['offsetWidth']) / parseInt($(selRange['commonAncestorContainer']).text().length)
+          var hWidth = hOneLetterWidth * parseInt(selObj.toString().length)
+          var hHeight = 20
+          var hLeft = 120 + (hOneLetterWidth * parseInt(selRange['startOffset']))
+          var hTop = selRange['startContainer']['parentElement']['offsetTop']
+          $(selRange['commonAncestorContainer']).closest('.page').append('<span style="width: '+ hWidth +'px; height: '+hHeight+'px; background: yellow; position: absolute; top: ' + hTop + 'px; left: ' + hLeft + 'px; opacity: 0.3"></span>')
           console.log($(selRange['commonAncestorContainer']).text().length)
           console.log(selRange['startOffset'])
           console.log(selObj.toString().length)
