@@ -123,22 +123,24 @@ header {
 .search-dropdown {
   display: none;
   position: absolute;
-  width: 520px;
+  width: 500px;
   height: 400px;
-  background: white;
-  color: #555;
-  border: 1px solid #cfd3d6;
+  background: #302929;
+  color: white;
+  border: 1px solid #504747;
   border-top: none;
-  margin: 66px 0 0 129px;
+  margin: 52px 0 0 140px;
   padding: 10px;
-  overflow-y: auto; }
+  overflow-y: auto;
+  border-radius: 4px; }
   .search-dropdown .metadata, .search-dropdown .content {
     overflow: hidden; }
     .search-dropdown .metadata .title, .search-dropdown .content .title {
-      background: #f3f3f3;
+      background: #cb4848;
       text-align: center;
       padding: 3px 0;
-      margin-bottom: 10px; }
+      margin-bottom: 10px;
+      color: white; }
   .search-dropdown .none {
     display: none; }
   .search-dropdown .content {
@@ -155,17 +157,17 @@ header {
     border: 1px solid #cfd3d6; }
   .search-dropdown .sd-item .sdi-info {
     float: left;
-    width: 413px;
-    color: #555;
+    width: 393px;
+    color: white;
     margin-left: 10px; }
   .search-dropdown .sd-item .sdii-title {
     font-weight: 600; }
   .search-dropdown .sd-item .sdii-author {
-    color: #777; }
+    color: #b1b1b1; }
   .search-dropdown .sd-item .sdii-content {
     margin-top: 4px; }
     .search-dropdown .sd-item .sdii-content em {
-      color: #5082B3;
+      color: #ff5c5c;
       font-weight: 600;
       font-style: normal; }
 
