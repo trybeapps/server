@@ -57,7 +57,7 @@ input[type="text"], input[type="password"] {
   border-radius: 20px;
   padding: 4px 8px; }
   input[type="text"]:focus, input[type="password"]:focus {
-    border: 1px solid #558cc1; }
+    border: 1px solid #ec1919; }
 
 header {
   position: relative;
