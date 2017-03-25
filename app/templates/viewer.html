@@ -51,7 +51,23 @@ See https://github.com/adobe-type-tools/cmap-resources
       $(function() {
         document.onmouseup = getSelectedText;
 
+        function getRangeText() {
+
+    var userSelection;
+    if (window.getSelection) {
+        userSelection = window.getSelection();
+    } else if (document.selection) {
+        userSelection = document.selection.createRange();
+    }
+    var selectedText = userSelection;
+    if (userSelection.text) {
+        selectedText = userSelection.text;
+    }
+    return selectedText;
+}
+
         function getSelectedText() {
+          alert(getRangeText())
           var selObj = window.getSelection();
           var selRange = selObj.getRangeAt(0);
           var hOneLetterWidth = parseInt(selRange['startContainer']['parentElement']['offsetWidth']) / parseInt($(selRange['commonAncestorContainer']).text().length)
@@ -66,16 +82,6 @@ See https://github.com/adobe-type-tools/cmap-resources
           console.log(selRange['startContainer']['parentElement']['offsetWidth'])
           console.log(selRange['startContainer']['parentElement']['offsetTop'])
           console.log(selRange)
-
-          selRange.collapse(false);
-          //console.log(selRange)
-          var dummy = document.createElement("span");
-          selRange.insertNode(dummy);
-          var rect = dummy.getBoundingClientRect();
-          //alert(parseInt($('#viewerContainer').scrollTop()) + parseInt(rect.top))
-          var x = rect.left, y = rect.top;
-          //console.log(rect)
-          // dummy.parentNode.removeChild(dummy);
         }
       })
     </script>
