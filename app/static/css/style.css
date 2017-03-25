@@ -54,6 +54,7 @@ a {
 input[type="text"], input[type="password"] {
   outline: none;
   border: 1px solid #cfd3d6;
+  border-radius: 20px;
   padding: 4px 8px; }
   input[type="text"]:focus, input[type="password"]:focus {
     border: 1px solid #558cc1; }
@@ -225,18 +226,19 @@ header {
 
 .btn {
   background: #cfd3d6;
-  background: linear-gradient(#ededed, #cfd3d6);
-  color: #444;
-  border: 1px solid #aaa;
+  background: linear-gradient(#C8E425, #90C120), linear-gradient(#F8FFC5, #D3E647);
+  color: #592F2F;
+  border: none;
+  border-radius: 4px;
   padding: 4px 8px 6px;
   text-decoration: none;
   cursor: pointer;
-  outline: none; }
+  outline: none;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5); }
   .btn:hover {
-    text-decoration: none;
-    border: 1px solid #558cc1; }
+    text-decoration: none; }
   .btn:active {
-    background: #cfd3d6; }
+    background: #90C120; }
 
 .collections-container, .invite-container {
   padding: 30px;
