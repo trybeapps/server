@@ -137,7 +137,7 @@ header {
   .search-dropdown .metadata, .search-dropdown .content {
     overflow: hidden; }
     .search-dropdown .metadata .title, .search-dropdown .content .title {
-      background: #a92424;
+      background: #c13838;
       text-align: center;
       padding: 3px 0;
       margin-bottom: 10px;
@@ -222,7 +222,7 @@ header {
       padding: 10px;
       overflow: hidden; }
       .book-list li p:hover {
-        border: 1px solid #ec1919; }
+        border: 1px solid #24a965; }
 
 .btn {
   background: #cfd3d6;
