@@ -77,10 +77,10 @@ header {
 .logo {
   float: left;
   font-family: 'Droid Sans', sans-serif;
-  font-size: 22px;
+  font-size: 20px;
   color: white;
   text-decoration: none;
-  padding-top: 17px; }
+  padding-top: 18px; }
   .logo:hover {
     text-decoration: none; }
 
