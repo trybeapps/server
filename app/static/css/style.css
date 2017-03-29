@@ -1,8 +1,8 @@
 body, input {
-  background: #302929;
+  background: #f5f5f5;
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 17px;
-  color: white; }
+  color: #555; }
 
 * {
   margin: 0;
@@ -28,7 +28,7 @@ a {
 
 .sign-link {
   float: right;
-  color: white;
+  color: #555;
   margin-top: 19px; }
 
 .sign-form {
@@ -54,20 +54,19 @@ a {
 input[type="text"], input[type="password"] {
   outline: none;
   border: 1px solid #cfd3d6;
-  border-radius: 20px;
+  border-radius: 4px;
   padding: 4px 8px; }
   input[type="text"]:focus, input[type="password"]:focus {
-    border: 1px solid #ec1919; }
+    border: 1px solid #3681de; }
 
 header {
   position: relative;
   width: 100%;
   height: 60px;
-  background: #c13838;
-  color: white;
+  background: white;
+  color: #555;
   margin: 0;
-  z-index: 999;
-  border-bottom: 1px solid #ec1919; }
+  z-index: 999; }
   header .header-container {
     width: 1170px;
     margin: 0 auto;
@@ -78,7 +77,7 @@ header {
   float: left;
   font-family: 'Droid Sans', sans-serif;
   font-size: 20px;
-  color: white;
+  color: #555;
   text-decoration: none;
   padding-top: 18px; }
   .logo:hover {
@@ -88,21 +87,21 @@ header {
   float: left;
   width: 520px;
   height: 44px;
-  color: white;
+  color: #555;
   background: #302929;
-  border: 1px solid #E45D5D !important;
+  border: 1px solid #d5d5d5 !important;
   border-radius: 44px;
   margin: 8px 0 1px 30px;
   padding: 0 15px !important;
   outline: none; }
   .search-box:focus {
-    border: 1px solid #E45D5D !important; }
+    border: 1px solid #3681de !important; }
 
 .management {
   float: right; }
   .management a, .management div {
     float: left;
-    color: white;
+    color: #555;
     margin-top: 19px;
     margin-right: 30px;
     cursor: pointer; }
@@ -127,7 +126,7 @@ header {
   width: 500px;
   height: 400px;
   background: #302929;
-  color: white;
+  color: #555;
   border: 1px solid #504747;
   border-top: none;
   margin: 52px 0 0 129px;
@@ -141,7 +140,7 @@ header {
       text-align: center;
       padding: 3px 0;
       margin-bottom: 10px;
-      color: white; }
+      color: #555; }
   .search-dropdown .none {
     display: none; }
   .search-dropdown .content {
@@ -159,7 +158,7 @@ header {
   .search-dropdown .sd-item .sdi-info {
     float: left;
     width: 393px;
-    color: white;
+    color: #555;
     margin-left: 10px; }
   .search-dropdown .sd-item .sdii-title {
     font-weight: 600; }
@@ -215,7 +214,7 @@ header {
       width: 160px;
       min-height: 140px;
       background: #24a965;
-      color: white;
+      color: #555;
       word-wrap: break-word;
       border: 1px solid #1f1f1f;
       margin: 0;
@@ -225,9 +224,8 @@ header {
         border: 1px solid #24a965; }
 
 .btn {
-  background: #cfd3d6;
-  background: linear-gradient(#C8E425, #90C120), linear-gradient(#F8FFC5, #D3E647);
-  color: #592F2F;
+  background: #3681de;
+  color: white;
   border: none;
   border-radius: 4px;
   padding: 4px 8px 6px;
@@ -238,7 +236,7 @@ header {
   .btn:hover {
     text-decoration: none; }
   .btn:active {
-    background: #90C120; }
+    background: #3681de; }
 
 .collections-container, .invite-container {
   padding: 30px;
