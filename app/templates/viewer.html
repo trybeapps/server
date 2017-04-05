@@ -50,24 +50,23 @@ See https://github.com/adobe-type-tools/cmap-resources
     <script>
       $(function() {
         document.onmouseup = getSelectedText;
-
+        
         function getRangeText() {
-
-    var userSelection;
-    if (window.getSelection) {
-        userSelection = window.getSelection();
-    } else if (document.selection) {
-        userSelection = document.selection.createRange();
-    }
-    var selectedText = userSelection;
-    if (userSelection.text) {
-        selectedText = userSelection.text;
-    }
-    return selectedText;
-}
+          var userSelection;
+          if (window.getSelection) {
+            userSelection = window.getSelection();
+          } else if (document.selection) {
+            userSelection = document.selection.createRange();
+          }
+        
+          var selectedText = userSelection;
+          if (userSelection.text) {
+            selectedText = userSelection.text;
+          }
+          return selectedText;
+        }
 
         function getSelectedText() {
-          alert(getRangeText())
           var selObj = window.getSelection();
           var selRange = selObj.getRangeAt(0);
           var hOneLetterWidth = parseInt(selRange['startContainer']['parentElement']['offsetWidth']) / parseInt($(selRange['commonAncestorContainer']).text().length)
