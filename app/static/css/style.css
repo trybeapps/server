@@ -378,7 +378,7 @@ header {
     z-index: 9999999; }
   #pdfBody .toolbar {
     position: fixed !important;
-    top: 66px !important; }
+    top: 60px !important; }
 
 .del-book-btn {
   float: right;
