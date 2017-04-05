@@ -1,5 +1,5 @@
 body, input {
-  background: #f5f5f5;
+  background: white;
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 17px;
   color: #555;
@@ -72,8 +72,9 @@ a {
 }
 
 input[type="text"],input[type="password"] {
+  background: white;
   outline: none;
-  border: 1px solid #cfd3d6;
+  border: 1px solid #d7dadc;
   border-radius: 4px;
   padding: 4px 8px;
 
@@ -87,6 +88,7 @@ header {
   width: 100%;
   height: 60px;
   background: white;
+  border-bottom: 1px solid #d7dadc;
   color: #555;
   margin: 0;
   z-index: 999;
@@ -102,6 +104,7 @@ header {
 .logo {
   float: left;
   font-family: 'Droid Sans', sans-serif;
+  font-weight: bold;
   font-size: 20px;
   color: #555;
   text-decoration: none;
@@ -118,10 +121,8 @@ header {
   height: 44px;
   color: #555;
   background: #302929;
-  border: 1px solid #d5d5d5!important;
   border-radius: 44px;
   margin: 8px 0 1px 30px;
-  padding: 0 15px!important;
   outline: none;
 
   &:focus {
@@ -172,13 +173,13 @@ header {
 .search-dropdown {
   display: none;
   position: absolute;
-  width: 500px;
+  width: 520px;
   height: 400px;
-  background: #302929;
+  background: white;
   color: #555;
-  border: 1px solid #504747;
+  border: 1px solid #d7dadc;
   border-top: none;
-  margin: 52px 0 0 129px;
+  margin: 52px 0 0 120px;
   padding: 10px;
   overflow-y: auto;
   border-radius: 4px;
@@ -186,7 +187,7 @@ header {
   .metadata,.content {
     overflow: hidden;
     .title {
-      background: #c13838;
+      background: #f0f2f5;
       text-align: center;
       padding: 3px 0;
       margin-bottom: 10px;
@@ -218,7 +219,7 @@ header {
   .sd-item {
       img {
         float: left;
-        border: 1px solid #cfd3d6;
+        border: 1px solid #d7dadc;
       }
 
       .sdi-info {
@@ -254,9 +255,9 @@ header {
   width: 170px;
   background: white;
   border-radius: 4px;
-  margin: 59px 0 0 940px;
+  margin: 52px 0 0 940px;
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 
   a {
     &:first-child {
@@ -294,12 +295,7 @@ header {
     img {
       position: relative;
       z-index: 1;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
-      border: 1px solid #1f1f1f;
-
-      &:hover {
-        border: 1px solid #ec1919;
-      }
+      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
     }
 
     p {
@@ -322,9 +318,9 @@ header {
 
 .btn {
   background: #3681de;
-  // background: linear-gradient(#C8E425, #90C120), linear-gradient(#F8FFC5, #D3E647);
+  background: linear-gradient(#3681de, #2f72c5);
   color: white;
-  border: none;
+  border: 1px solid #1f6ed0;
   border-radius: 4px;
   padding: 4px 8px 6px;
   text-decoration: none;
@@ -337,7 +333,7 @@ header {
   }
 
   &:active {
-    background: #3681de;
+    background: #2f72c5;
   }
 
 
@@ -389,7 +385,7 @@ header {
     .collection-cover {
       width: 130px;
       height: 156px;
-      background: #cfd3d6;
+      background: #d7dadc;
 
       img {
         float: left;
@@ -436,7 +432,7 @@ header {
     width: 478px;
     height: 306px;
     background: white;
-    border: 1px solid #cfd3d6;
+    border: 1px solid #d7dadc;
     margin: 20px 0 20px;
     padding: 10px;
     overflow-y: auto;
@@ -460,7 +456,7 @@ header {
 
   .nc-img {
     float: left;
-    border: 1px solid #cfd3d6;
+    border: 1px solid #d7dadc;
   }
 }
 
@@ -534,7 +530,7 @@ header {
     margin-bottom: 30px;
 
     .canvasWrapper {
-      border: 1px solid #cfd3d6;
+      border: 1px solid #d7dadc;
     }
   }
 }

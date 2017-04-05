@@ -1,5 +1,5 @@
 body, input {
-  background: #f5f5f5;
+  background: white;
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 17px;
   color: #555; }
@@ -52,8 +52,9 @@ a {
   font-weight: 600; }
 
 input[type="text"], input[type="password"] {
+  background: white;
   outline: none;
-  border: 1px solid #cfd3d6;
+  border: 1px solid #d7dadc;
   border-radius: 4px;
   padding: 4px 8px; }
   input[type="text"]:focus, input[type="password"]:focus {
@@ -64,6 +65,7 @@ header {
   width: 100%;
   height: 60px;
   background: white;
+  border-bottom: 1px solid #d7dadc;
   color: #555;
   margin: 0;
   z-index: 999; }
@@ -76,6 +78,7 @@ header {
 .logo {
   float: left;
   font-family: 'Droid Sans', sans-serif;
+  font-weight: bold;
   font-size: 20px;
   color: #555;
   text-decoration: none;
@@ -89,10 +92,8 @@ header {
   height: 44px;
   color: #555;
   background: #302929;
-  border: 1px solid #d5d5d5 !important;
   border-radius: 44px;
   margin: 8px 0 1px 30px;
-  padding: 0 15px !important;
   outline: none; }
   .search-box:focus {
     border: 1px solid #3681de !important; }
@@ -123,20 +124,20 @@ header {
 .search-dropdown {
   display: none;
   position: absolute;
-  width: 500px;
+  width: 520px;
   height: 400px;
-  background: #302929;
+  background: white;
   color: #555;
-  border: 1px solid #504747;
+  border: 1px solid #d7dadc;
   border-top: none;
-  margin: 52px 0 0 129px;
+  margin: 52px 0 0 120px;
   padding: 10px;
   overflow-y: auto;
   border-radius: 4px; }
   .search-dropdown .metadata, .search-dropdown .content {
     overflow: hidden; }
     .search-dropdown .metadata .title, .search-dropdown .content .title {
-      background: #c13838;
+      background: #f0f2f5;
       text-align: center;
       padding: 3px 0;
       margin-bottom: 10px;
@@ -154,7 +155,7 @@ header {
         margin-bottom: 0; }
   .search-dropdown .sd-item img {
     float: left;
-    border: 1px solid #cfd3d6; }
+    border: 1px solid #d7dadc; }
   .search-dropdown .sd-item .sdi-info {
     float: left;
     width: 393px;
@@ -177,9 +178,9 @@ header {
   width: 170px;
   background: white;
   border-radius: 4px;
-  margin: 59px 0 0 940px;
+  margin: 52px 0 0 940px;
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); }
   .user-dropdown a {
     display: block;
     color: #555;
@@ -206,10 +207,7 @@ header {
     .book-list li img {
       position: relative;
       z-index: 1;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
-      border: 1px solid #1f1f1f; }
-      .book-list li img:hover {
-        border: 1px solid #ec1919; }
+      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.4); }
     .book-list li p {
       width: 160px;
       min-height: 140px;
@@ -225,8 +223,9 @@ header {
 
 .btn {
   background: #3681de;
+  background: linear-gradient(#3681de, #2f72c5);
   color: white;
-  border: none;
+  border: 1px solid #1f6ed0;
   border-radius: 4px;
   padding: 4px 8px 6px;
   text-decoration: none;
@@ -236,7 +235,7 @@ header {
   .btn:hover {
     text-decoration: none; }
   .btn:active {
-    background: #3681de; }
+    background: #2f72c5; }
 
 .collections-container, .invite-container {
   padding: 30px;
@@ -271,7 +270,7 @@ header {
   .collections-container .collection-item .collection-cover {
     width: 130px;
     height: 156px;
-    background: #cfd3d6; }
+    background: #d7dadc; }
     .collections-container .collection-item .collection-cover img {
       float: left;
       width: 65px;
@@ -301,7 +300,7 @@ header {
   width: 478px;
   height: 306px;
   background: white;
-  border: 1px solid #cfd3d6;
+  border: 1px solid #d7dadc;
   margin: 20px 0 20px;
   padding: 10px;
   overflow-y: auto; }
@@ -320,7 +319,7 @@ header {
 
 .nc-form .nc-img {
   float: left;
-  border: 1px solid #cfd3d6; }
+  border: 1px solid #d7dadc; }
 
 #dropzone_container {
   display: block;
@@ -369,7 +368,7 @@ header {
     border: none;
     margin-bottom: 30px; }
     #mainContainer .page .canvasWrapper {
-      border: 1px solid #cfd3d6; }
+      border: 1px solid #d7dadc; }
 
 #pdfBody {
   overflow: hidden; }
