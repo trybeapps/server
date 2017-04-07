@@ -211,15 +211,12 @@ header {
     .book-list li p {
       width: 160px;
       min-height: 140px;
-      background: #24a965;
+      background: #edf0f5;
       color: #555;
       word-wrap: break-word;
-      border: 1px solid #1f1f1f;
       margin: 0;
       padding: 10px;
       overflow: hidden; }
-      .book-list li p:hover {
-        border: 1px solid #24a965; }
 
 .btn {
   background: #3681de;
