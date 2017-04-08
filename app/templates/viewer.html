@@ -49,66 +49,140 @@ See https://github.com/adobe-type-tools/cmap-resources
     <script src="/static/js/viewer.js"></script>
     <script>
       $(function() {
-        document.onmouseup = getSelectedText;
-        
-        function getRangeText() {
-          var userSelection;
-          if (window.getSelection) {
-            userSelection = window.getSelection();
-          } else if (document.selection) {
-            userSelection = document.selection.createRange();
-          }
-        
-          var selectedText = userSelection;
-          if (userSelection.text) {
-            selectedText = userSelection.text;
-          }
-          return selectedText;
-        }
+        document.onmouseup = highlightSelection
 
-        function getSelectionDimensions() {
-    var sel = document.selection, range;
-    var width = 0, height = 0, left = 0, top = 0;
-    if (sel) {
-        if (sel.type != "Control") {
-            console.log(sel.createRange())
-            range = sel.createRange();
-            width = range.boundingWidth;
-            height = range.boundingHeight;
-        }
-    } else if (window.getSelection) {
-        sel = window.getSelection();
-        if (sel.rangeCount) {
-            range = sel.getRangeAt(0).cloneRange();
-            if (range.getBoundingClientRect) {
-                var rect = range.getBoundingClientRect();
-                console.log(rect)
-                width = rect.right - rect.left;
-                height = rect.bottom - rect.top;
-                left = rect.left;
-                alert(left);
-                top = rect.top;
-            }
-        }
+
+
+
+
+function highlight() {
+    console.clear();
+    var range = window.getSelection().getRangeAt(0),
+        parent = range.commonAncestorContainer,
+        start = range.startContainer,
+        end = range.endContainer;
+    var startDOM = (start.parentElement == parent) ? start.nextSibling : start.parentElement;
+    var currentDOM = startDOM.nextElementSibling;
+    var endDOM = (end.parentElement == parent) ? end : end.parentElement;
+    //Process Start Element
+    highlightText(startDOM, 'START', range.startOffset);
+    while (currentDOM != endDOM && currentDOM != null) {
+        highlightText(currentDOM);
+        currentDOM = currentDOM.nextElementSibling;
     }
-    return { width: width , height: height, left: left, top: top };
+    //Process End Element
+    highlightText(endDOM, 'END', range.endOffset);
+}
+
+function highlightText(elem, offsetType, idx) {
+    if (elem.nodeType == 3) {
+        var span = document.createElement('span');
+        span.setAttribute('class', 'highlight');
+        var origText = elem.textContent, text, prevText, nextText;
+        if (offsetType == 'START') {
+            text = origText.substring(idx);
+            prevText = origText.substring(0, idx);
+        } else if (offsetType == 'END') {
+            text = origText.substring(0, idx);
+            nextText = origText.substring(idx);
+        } else {
+            text = origText;
+        }
+        span.textContent = text;
+        
+        var parent = elem.parentElement;
+        parent.replaceChild(span, elem);
+        if (prevText) { 
+            var prevDOM = document.createTextNode(prevText);
+            parent.insertBefore(prevDOM, span);
+        }
+        if (nextText) {
+            var nextDOM = document.createTextNode(nextText);
+            //parent.appendChild(nextDOM);
+                parent.insertBefore(nextDOM, span.nextSibling);
+            //parent.insertBefore(span, nextDOM);
+        }
+        return;
+    }
+    var childCount = elem.childNodes.length;
+    for (var i = 0; i < childCount; i++) {
+        if (offsetType == 'START' && i == 0) 
+            highlightText(elem.childNodes[i], 'START', idx);
+        else if (offsetType == 'END' && i == childCount - 1)
+            highlightText(elem.childNodes[i], 'END', idx);
+        else
+            highlightText(elem.childNodes[i]);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        function highlightSelection() {
+    var userSelection = window.getSelection();
+    for(var i = 0; i < userSelection.rangeCount; i++) {
+        highlightRange(userSelection.getRangeAt(i));
+    }
+
+}
+
+function highlightRange(range) {
+
+        /* Insert your new span element in the same position from where the selected text was extracted */
+    var span = document.createElement("span");
+    span.setAttribute('class', 'highlight');
+    try {
+      range.surroundContents(span);
+    }
+    catch(err) {
+      highlight()
+    }
 }
 
         function getSelectedText() {
+          var width = 0, height = 0, left = 0, top = 0;
+          if (window.getSelection) {
+            sel = window.getSelection();
+            if (sel.rangeCount) {
+              range = sel.getRangeAt(0).cloneRange();
+              if (range.getBoundingClientRect) {
+                var rect = range.getBoundingClientRect();
+                console.log(rect);
+                width = rect.right - rect.left;
+                height = rect.bottom - rect.top;
+                left = rect.left;
+                top = rect.top;
+              }
+            }
+          }
+
           var selObj = window.getSelection();
           var selRange = selObj.getRangeAt(0);
-          var hOneLetterWidth = parseInt(selRange['startContainer']['parentElement']['offsetWidth']) / parseInt($(selRange['commonAncestorContainer']).text().length)
-          var hWidth = hOneLetterWidth * parseInt(selObj.toString().length)
-          var hHeight = 20
-          var hLeft = 105.6 + (hOneLetterWidth * parseInt(selRange['startOffset']))
+          console.log(selRange)
+          alert(selRange.startContainer);
+          alert(selRange.startOffset);
+          // var hLeft = 105.6 + (hOneLetterWidth * parseInt(selRange['startOffset']))
           var hTop = selRange['startContainer']['parentElement']['offsetTop'] - 3
 
-          var selDimensions = getSelectionDimensions();
-          hWidth = selDimensions.width;
-          hHeight = selDimensions.height;
-          hLeft = selDimensions.left - 276.49375;
-          // hTop = selDimensions.top;
-          console.log(selRange)
+          hWidth = width;
+          hHeight = height;
+          hLeft = left - 383.5062502422;
+          // hTop = top;
+          // hLeft = left - (left - parseFloat($(selRange['commonAncestorContainer']).closest('.textLayer').children('div:first-child').css('left').split('px')[0]))
+
+          // hLeft = parseFloat($(selRange['commonAncestorContainer']['parentElement']).css('left').split('px')[0])
 
           $(selRange['commonAncestorContainer']).closest('.page').append('<span style="width: '+ hWidth +'px; height: '+hHeight+'px; background: yellow; position: absolute; top: ' + hTop + 'px; left: ' + hLeft + 'px; opacity: 0.3"></span>')
         }
