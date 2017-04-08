@@ -66,21 +66,51 @@ See https://github.com/adobe-type-tools/cmap-resources
           return selectedText;
         }
 
+        function getSelectionDimensions() {
+    var sel = document.selection, range;
+    var width = 0, height = 0, left = 0, top = 0;
+    if (sel) {
+        if (sel.type != "Control") {
+            console.log(sel.createRange())
+            range = sel.createRange();
+            width = range.boundingWidth;
+            height = range.boundingHeight;
+        }
+    } else if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.rangeCount) {
+            range = sel.getRangeAt(0).cloneRange();
+            if (range.getBoundingClientRect) {
+                var rect = range.getBoundingClientRect();
+                console.log(rect)
+                width = rect.right - rect.left;
+                height = rect.bottom - rect.top;
+                left = rect.left;
+                alert(left);
+                top = rect.top;
+            }
+        }
+    }
+    return { width: width , height: height, left: left, top: top };
+}
+
         function getSelectedText() {
           var selObj = window.getSelection();
           var selRange = selObj.getRangeAt(0);
           var hOneLetterWidth = parseInt(selRange['startContainer']['parentElement']['offsetWidth']) / parseInt($(selRange['commonAncestorContainer']).text().length)
           var hWidth = hOneLetterWidth * parseInt(selObj.toString().length)
           var hHeight = 20
-          var hLeft = 120 + (hOneLetterWidth * parseInt(selRange['startOffset']))
-          var hTop = selRange['startContainer']['parentElement']['offsetTop']
-          $(selRange['commonAncestorContainer']).closest('.page').append('<span style="width: '+ hWidth +'px; height: '+hHeight+'px; background: yellow; position: absolute; top: ' + hTop + 'px; left: ' + hLeft + 'px; opacity: 0.3"></span>')
-          console.log($(selRange['commonAncestorContainer']).text().length)
-          console.log(selRange['startOffset'])
-          console.log(selObj.toString().length)
-          console.log(selRange['startContainer']['parentElement']['offsetWidth'])
-          console.log(selRange['startContainer']['parentElement']['offsetTop'])
+          var hLeft = 105.6 + (hOneLetterWidth * parseInt(selRange['startOffset']))
+          var hTop = selRange['startContainer']['parentElement']['offsetTop'] - 3
+
+          var selDimensions = getSelectionDimensions();
+          hWidth = selDimensions.width;
+          hHeight = selDimensions.height;
+          hLeft = selDimensions.left - 276.49375;
+          // hTop = selDimensions.top;
           console.log(selRange)
+
+          $(selRange['commonAncestorContainer']).closest('.page').append('<span style="width: '+ hWidth +'px; height: '+hHeight+'px; background: yellow; position: absolute; top: ' + hTop + 'px; left: ' + hLeft + 'px; opacity: 0.3"></span>')
         }
       })
     </script>
