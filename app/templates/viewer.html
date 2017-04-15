@@ -116,20 +116,6 @@ function highlightText(elem, offsetType, idx) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         function highlightSelection() {
     var userSelection = window.getSelection();
     for(var i = 0; i < userSelection.rangeCount; i++) {
@@ -151,41 +137,6 @@ function highlightRange(range) {
     }
 }
 
-        function getSelectedText() {
-          var width = 0, height = 0, left = 0, top = 0;
-          if (window.getSelection) {
-            sel = window.getSelection();
-            if (sel.rangeCount) {
-              range = sel.getRangeAt(0).cloneRange();
-              if (range.getBoundingClientRect) {
-                var rect = range.getBoundingClientRect();
-                console.log(rect);
-                width = rect.right - rect.left;
-                height = rect.bottom - rect.top;
-                left = rect.left;
-                top = rect.top;
-              }
-            }
-          }
-
-          var selObj = window.getSelection();
-          var selRange = selObj.getRangeAt(0);
-          console.log(selRange)
-          alert(selRange.startContainer);
-          alert(selRange.startOffset);
-          // var hLeft = 105.6 + (hOneLetterWidth * parseInt(selRange['startOffset']))
-          var hTop = selRange['startContainer']['parentElement']['offsetTop'] - 3
-
-          hWidth = width;
-          hHeight = height;
-          hLeft = left - 383.5062502422;
-          // hTop = top;
-          // hLeft = left - (left - parseFloat($(selRange['commonAncestorContainer']).closest('.textLayer').children('div:first-child').css('left').split('px')[0]))
-
-          // hLeft = parseFloat($(selRange['commonAncestorContainer']['parentElement']).css('left').split('px')[0])
-
-          $(selRange['commonAncestorContainer']).closest('.page').append('<span style="width: '+ hWidth +'px; height: '+hHeight+'px; background: yellow; position: absolute; top: ' + hTop + 'px; left: ' + hLeft + 'px; opacity: 0.3"></span>')
-        }
       })
     </script>
 
