@@ -311,23 +311,20 @@ header {
 }
 
 .btn {
-  background: #3681de;
-  background: linear-gradient(#3681de, #2f72c5);
-  color: white;
-  border: 1px solid #1f6ed0;
-  border-radius: 4px;
-  padding: 4px 8px 6px;
-  text-decoration: none;
-  cursor: pointer;
-  outline: none;
-  box-shadow: 0 2px 3px rgba(0,0,0,0.5);
+    background: #566688;
+    color: white;
+    padding: 4px 8px 6px;
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+    border: none;
 
   &:hover {
     text-decoration: none;
   }
 
   &:active {
-    background: #2f72c5;
+    background: #394561;
   }
 
 
