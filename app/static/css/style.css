@@ -16,7 +16,7 @@ a {
 
 .page-container {
   width: 1170px;
-  background: #f5f6f9;
+  background: #edf0f5;
   min-height: 640px;
   margin: 0 auto 50px;
   overflow: hidden; }
@@ -64,7 +64,7 @@ header {
   position: relative;
   width: 1170px;
   height: 52px;
-  background: #6287bd;
+  background: #566688;
   color: white;
   margin: 0 auto;
   z-index: 999; }
@@ -175,7 +175,7 @@ header {
   background: white;
   margin: 52px 0 0 940px;
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); }
+  border: 1px solid #ccc; }
   .user-dropdown a {
     display: block;
     color: #555;
@@ -202,7 +202,9 @@ header {
     .book-list li img {
       position: relative;
       z-index: 1;
-      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.4); }
+      border: 5px solid #ccc; }
+      .book-list li img:hover {
+        border: 5px solid #566688; }
     .book-list li p {
       width: 160px;
       min-height: 140px;
