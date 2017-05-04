@@ -32,110 +32,38 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     <link rel="stylesheet" href="/static/css/viewer.css">
     <link rel="stylesheet" href="/static/css/style.css">
-    <script
-      src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="/static/js/compatibility.js"></script>
 
-
-
-<!-- This snippet is used in production (included from viewer.html) -->
-<link rel="resource" type="application/l10n" href="/static/js/locale/locale.properties">
-<script src="/static/js/l10n.js"></script>
-<script src="/static/js/pdf.js"></script>
-
-
+    <!-- This snippet is used in production (included from viewer.html) -->
+    <link rel="resource" type="application/l10n" href="/static/js/locale/locale.properties">
+    <script src="/static/js/l10n.js"></script>
+    <script src="/static/js/pdf.js"></script>
 
     <script src="/static/js/viewer.js"></script>
     <script>
       $(function() {
         document.onmouseup = highlightSelection
 
-
-
-
-
-function highlight() {
-    console.clear();
-    var range = window.getSelection().getRangeAt(0),
-        parent = range.commonAncestorContainer,
-        start = range.startContainer,
-        end = range.endContainer;
-    var startDOM = (start.parentElement == parent) ? start.nextSibling : start.parentElement;
-    var currentDOM = startDOM.nextElementSibling;
-    var endDOM = (end.parentElement == parent) ? end : end.parentElement;
-    //Process Start Element
-    highlightText(startDOM, 'START', range.startOffset);
-    while (currentDOM != endDOM && currentDOM != null) {
-        highlightText(currentDOM);
-        currentDOM = currentDOM.nextElementSibling;
-    }
-    //Process End Element
-    highlightText(endDOM, 'END', range.endOffset);
-}
-
-function highlightText(elem, offsetType, idx) {
-    if (elem.nodeType == 3) {
-        var span = document.createElement('span');
-        span.setAttribute('class', 'highlight');
-        var origText = elem.textContent, text, prevText, nextText;
-        if (offsetType == 'START') {
-            text = origText.substring(idx);
-            prevText = origText.substring(0, idx);
-        } else if (offsetType == 'END') {
-            text = origText.substring(0, idx);
-            nextText = origText.substring(idx);
-        } else {
-            text = origText;
-        }
-        span.textContent = text;
-        
-        var parent = elem.parentElement;
-        parent.replaceChild(span, elem);
-        if (prevText) { 
-            var prevDOM = document.createTextNode(prevText);
-            parent.insertBefore(prevDOM, span);
-        }
-        if (nextText) {
-            var nextDOM = document.createTextNode(nextText);
-            //parent.appendChild(nextDOM);
-                parent.insertBefore(nextDOM, span.nextSibling);
-            //parent.insertBefore(span, nextDOM);
-        }
-        return;
-    }
-    var childCount = elem.childNodes.length;
-    for (var i = 0; i < childCount; i++) {
-        if (offsetType == 'START' && i == 0) 
-            highlightText(elem.childNodes[i], 'START', idx);
-        else if (offsetType == 'END' && i == childCount - 1)
-            highlightText(elem.childNodes[i], 'END', idx);
-        else
-            highlightText(elem.childNodes[i]);
-    }
-}
-
-
         function highlightSelection() {
-    var userSelection = window.getSelection();
-    for(var i = 0; i < userSelection.rangeCount; i++) {
-        highlightRange(userSelection.getRangeAt(i));
-    }
+          var userSelection = window.getSelection()
+          for(var i = 0; i < userSelection.rangeCount; i++) {
+            highlightRange(userSelection.getRangeAt(i));
+          }
+        }
 
-}
-
-function highlightRange(range) {
-
-        /* Insert your new span element in the same position from where the selected text was extracted */
-    var span = document.createElement("span");
-    span.setAttribute('class', 'highlight');
-    try {
-      range.surroundContents(span);
-    }
-    catch(err) {
-      highlight()
-    }
-}
+        function highlightRange(range) {
+          /* Insert your new span element in the same position from where the selected text was extracted */
+          var span = document.createElement("span")
+          span.setAttribute('class', 'highlight')
+          try {
+            range.surroundContents(span);
+            alert($('.highlight').closest('div').html())
+          }
+          catch(err) {
+            highlight()
+          }
+        }
 
       })
     </script>
