@@ -48,6 +48,14 @@
   border-radius: 4px;
 }
 
+.textLayer [class*="highlight-"] {
+  margin: -1px;
+  padding: 1px;
+
+  background-color: rgb(180, 0, 170);
+  border-radius: 4px;
+}
+
 .textLayer .highlight.begin {
   border-radius: 4px 0px 0px 4px;
 }

@@ -32,21 +32,107 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     <link rel="stylesheet" href="/static/css/viewer.css">
     <link rel="stylesheet" href="/static/css/style.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
     <script src="/static/js/compatibility.js"></script>
 
-    <!-- This snippet is used in production (included from viewer.html) -->
-    <link rel="resource" type="application/l10n" href="/static/js/locale/locale.properties">
-    <script src="/static/js/l10n.js"></script>
-    <script src="/static/js/pdf.js"></script>
+
+
+<!-- This snippet is used in production (included from viewer.html) -->
+<link rel="resource" type="application/l10n" href="/static/js/locale/locale.properties">
+<script src="/static/js/l10n.js"></script>
+<script src="/static/js/pdf.js"></script>
+
+
 
     <script src="/static/js/viewer.js"></script>
     <script>
+      var prE = 0;
       $(function() {
         document.onmouseup = highlightSelection
 
+        function highlight() {
+          var range = window.getSelection().getRangeAt(0),
+          parent = range.commonAncestorContainer,
+          start = range.startContainer,
+          end = range.endContainer;
+          var startDOM = (start.parentElement == parent) ? start.nextSibling : start.parentElement;
+          var currentDOM = startDOM.nextElementSibling;
+          var endDOM = (end.parentElement == parent) ? end : end.parentElement;
+          //Process Start Element
+          highlightText(startDOM, 'START', range.startOffset);
+          while (currentDOM != endDOM && currentDOM != null) {
+            highlightText(currentDOM);
+            currentDOM = currentDOM.nextElementSibling;
+          }
+          //Process End Element
+          highlightText(endDOM, 'END', range.endOffset);
+        }
+
+        function highlightText(elem, offsetType, idx) {
+          if (elem.nodeType == 3) {
+            var span = document.createElement('span');
+            var highlightCount = Math.floor((Math.random() * 1000000) + 1);
+            span.setAttribute('class', 'highlight-' + highlightCount);
+            var origText = elem.textContent, text, prevText, nextText;
+            if (offsetType == 'START') {
+              text = origText.substring(idx);
+              prevText = origText.substring(0, idx);
+            } else if (offsetType == 'END') {
+              text = origText.substring(0, idx);
+              nextText = origText.substring(idx);
+            } else {
+              text = origText;
+            }
+            span.textContent = text;
+        
+            var parent = elem.parentElement;
+            parent.replaceChild(span, elem);
+            if (prevText) { 
+              var prevDOM = document.createTextNode(prevText);
+              parent.insertBefore(prevDOM, span);
+            }
+            if (nextText) {
+              var nextDOM = document.createTextNode(nextText);
+              //parent.appendChild(nextDOM);
+              parent.insertBefore(nextDOM, span.nextSibling);
+              //parent.insertBefore(span, nextDOM);
+            }
+            var $highlightContainer = $('.highlight-' + highlightCount).closest('div')
+            var highlightPageContainer = $highlightContainer.closest('.page').attr('id')
+            var highlightContent = $highlightContainer.html()
+            $highlightContainer.html(highlightContent)
+            $.ajax({
+              url: '/highlight',
+              dataType: 'json',
+              data: {
+                filename: window.location.pathname.split('/b/').pop(),
+                page_container: highlightPageContainer,
+                nth_child: $highlightContainer.index() + 1,
+                html: highlightContent
+              },
+              success: function (data) {
+                console.log('successfully highlighted')
+              },
+              async:true
+            })
+            return;
+          }
+          var childCount = elem.childNodes.length;
+          for (var i = 0; i < childCount; i++) {
+            if (offsetType == 'START' && i == 0) 
+              highlightText(elem.childNodes[i], 'START', idx);
+            else if (offsetType == 'END' && i == childCount - 1)
+              highlightText(elem.childNodes[i], 'END', idx);
+            else
+              highlightText(elem.childNodes[i]);
+          }
+        }
+
+
         function highlightSelection() {
-          var userSelection = window.getSelection()
+          var userSelection = window.getSelection();
           for(var i = 0; i < userSelection.rangeCount; i++) {
             highlightRange(userSelection.getRangeAt(i));
           }
@@ -54,23 +140,56 @@ See https://github.com/adobe-type-tools/cmap-resources
 
         function highlightRange(range) {
           /* Insert your new span element in the same position from where the selected text was extracted */
-          var span = document.createElement("span")
-          span.setAttribute('class', 'highlight')
+          var span = document.createElement("span");
+          var highlightCount = Math.floor((Math.random() * 1000000) + 1);
+          span.setAttribute('class', 'highlight-' + highlightCount);
           try {
             range.surroundContents(span);
-            alert($('.highlight').closest('div').html())
+            var $highlightContainer = $('.highlight-' + highlightCount).closest('div')
+            var highlightPageContainer = $highlightContainer.closest('.page').attr('id')
+            var highlightContent = $highlightContainer.html()
+            $highlightContainer.html(highlightContent)
+            $.ajax({
+              url: '/highlight',
+              dataType: 'json',
+              data: {
+                filename: window.location.pathname.split('/b/').pop(),
+                page_container: highlightPageContainer,
+                nth_child: $highlightContainer.index() + 1,
+                html: highlightContent
+              },
+              success: function (data) {
+                console.log('successfully highlighted')
+              },
+              async:true
+            })
+
           }
           catch(err) {
             highlight()
           }
         }
-
       })
+
+      $(document).bind('pagerendered', function (e) {
+          {% for highlight in highlights %}    
+          
+          var html = decodeHTML('{{highlight.html}}')
+          $('#{{highlight.page_container}} .textLayer div:nth-child({{highlight.nth_child}})').html(html)
+
+          function decodeHTML(html) {
+            return $('<div>').html(html).text();
+          }
+          {% endfor %}
+     });
+
+
     </script>
 
   </head>
 
   <body tabindex="1" id="pdfBody" class="loadingInProgress">
+
     <div id="outerContainer">
       <header>
         <div class="header-container">
@@ -381,6 +500,5 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     </div> <!-- outerContainer -->
     <div id="printContainer"></div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   </body>
 </html>

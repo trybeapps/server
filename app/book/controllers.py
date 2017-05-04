@@ -1,7 +1,7 @@
 from flask import Blueprint, g, session, abort, redirect, url_for, render_template, request, escape, send_from_directory, jsonify
 from app.auth.controllers import login_required
 from app.auth.models import User
-from app.book.models import Book
+from app.book.models import Book, Highlight
 from app import app, celery, db
 from werkzeug.utils import secure_filename
 import requests
@@ -21,9 +21,8 @@ def _allowed_file(filename):
 def _file_extension(filename):
     return filename.rsplit('.', 1)[1] if '.' in filename else ''
 
-def _if_book_exists(filename):
+def _if_book_exists(filename, user):
     # Check if the file already exists then return
-    user = User.query.filter_by(email=session['email']).first()
     book = Book.query.filter_by(user_id=user.id, filename=filename).first()
     print book
     return True if book else False
@@ -45,7 +44,7 @@ def upload_file():
                 return redirect(request.url)
             if file and _allowed_file(file.filename):
 
-                if _if_book_exists(file.filename):
+                if _if_book_exists(file.filename, User.query.filter_by(email=session['email']).first()):
                     print 'book already exists'
                     return 'book already exists'
 
@@ -106,7 +105,6 @@ def upload_file():
                 db.session.add(user)
                 db.session.add(book)
                 db.session.commit()
-
                 print book.id
 
                 # Set the payload in json
@@ -250,7 +248,8 @@ def send_book(filename):
                 print book.url
                 print file_path
                 if book.url == file_path:
-                    return render_template('viewer.html', book_id=book.id)
+                    highlights = book.highlights.all()
+                    return render_template('viewer.html', book_id=book.id, highlights=highlights)
     return redirect(url_for('auth.index'))
 
 @book.route('/b/cover/<filename>')
@@ -366,3 +365,40 @@ def search_books():
     print suggestions
 
     return jsonify(suggestions)
+
+@book.route('/highlight')
+@login_required
+def highlight():
+    filename = request.args.get('filename')
+    page_container = request.args.get('page_container')
+    nth_child = request.args.get('nth_child')
+    html = request.args.get('html')
+    print filename
+    print page_container
+    print nth_child
+    print html
+
+    file_path = '/b/' + filename
+
+    if 'email' in session:
+        user = User.query.filter_by(email=session['email']).first()
+        if user:
+            books = user.books.all()
+            for book in books:
+                print book.url
+                print file_path
+                if book.url == file_path:
+                    highlight = Highlight(
+                        page_container=page_container,
+                        nth_child=nth_child,
+                        html=html
+                    )
+
+                    book.highlights.append(highlight)
+                    db.session.add(book)
+                    db.session.add(highlight)
+                    db.session.commit()
+
+                    print highlight.id
+
+    return ''

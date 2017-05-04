@@ -12,6 +12,7 @@ class Book(db.Model):
     created_on = db.Column(db.DateTime, server_default=db.func.now())
     public = db.Column(db.Boolean, default=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    highlights = db.relationship('Highlight', backref='book', lazy='dynamic')
 
     def __init__(self, title, filename, author, url, cover, pages, current_page):
         self.title = title
@@ -24,3 +25,18 @@ class Book(db.Model):
 
     def __repr__(self):
         return '<Book %r>' % (self.title)
+
+class Highlight(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    page_container = db.Column(db.String(200))
+    nth_child = db.Column(db.Integer)
+    html = db.Column(db.String(1200))
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'))
+
+    def __init__(self, page_container, nth_child, html):
+        self.page_container = page_container
+        self.nth_child = nth_child
+        self.html = html
+
+    def __repr__(self):
+        return '<Highlight %r>' % (self.html)
