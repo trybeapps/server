@@ -141,8 +141,10 @@ See https://github.com/adobe-type-tools/cmap-resources
 
         function highlightSelection() {
           var userSelection = window.getSelection();
-          for(var i = 0; i < userSelection.rangeCount; i++) {
-            highlightRange(userSelection.getRangeAt(i));
+          if (window.getSelection().toString().length) {
+            for(var i = 0; i < userSelection.rangeCount; i++) {
+              highlightRange(userSelection.getRangeAt(i));
+            }
           }
         }
 
