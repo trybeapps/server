@@ -50,7 +50,14 @@ See https://github.com/adobe-type-tools/cmap-resources
     <script>
       var prE = 0;
       $(function() {
-        document.onmouseup = highlightSelection
+        // document.onmouseup = highlightSelection
+        $(document).on('mouseup', '.textLayer div', function() {
+          highlightSelection()
+        })
+
+        $(document).on('mouseenter', '.textLayer div.h-container [class*="highlight"]', function(e) {
+          alert('yes')
+        })
 
         function highlight() {
           var range = window.getSelection().getRangeAt(0),
@@ -100,6 +107,7 @@ See https://github.com/adobe-type-tools/cmap-resources
               //parent.insertBefore(span, nextDOM);
             }
             var $highlightContainer = $('.highlight-' + highlightCount).closest('div')
+            $highlightContainer.addClass('h-container')
             var highlightPageContainer = $highlightContainer.closest('.page').attr('id')
             var highlightContent = $highlightContainer.html()
             $highlightContainer.html(highlightContent)
@@ -146,6 +154,7 @@ See https://github.com/adobe-type-tools/cmap-resources
           try {
             range.surroundContents(span);
             var $highlightContainer = $('.highlight-' + highlightCount).closest('div')
+            $highlightContainer.addClass('h-container')
             var highlightPageContainer = $highlightContainer.closest('.page').attr('id')
             var highlightContent = $highlightContainer.html()
             $highlightContainer.html(highlightContent)
@@ -169,19 +178,21 @@ See https://github.com/adobe-type-tools/cmap-resources
             highlight()
           }
         }
+
       })
 
       $(document).bind('pagerendered', function (e) {
           {% for highlight in highlights %}    
           
           var html = decodeHTML('{{highlight.html}}')
-          $('#{{highlight.page_container}} .textLayer div:nth-child({{highlight.nth_child}})').html(html)
+          $('#{{highlight.page_container}} .textLayer div:nth-child({{highlight.nth_child}})').html(html).addClass('h-container')
 
           function decodeHTML(html) {
             return $('<div>').html(html).text();
           }
           {% endfor %}
-     });
+
+     })
 
 
     </script>
