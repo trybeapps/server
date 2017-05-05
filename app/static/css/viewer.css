@@ -46,6 +46,7 @@
 
   background-color: rgb(180, 0, 170);
   border-radius: 4px;
+  cursor: default;
 }
 
 .textLayer [class*="highlight-"] {
@@ -54,6 +55,7 @@
 
   background-color: rgb(180, 0, 170);
   border-radius: 4px;
+  cursor: default;
 }
 
 .textLayer .highlight.begin {
