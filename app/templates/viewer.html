@@ -56,7 +56,17 @@ See https://github.com/adobe-type-tools/cmap-resources
         })
 
         $(document).on('mouseenter', '.textLayer div.h-container [class*="highlight"]', function(e) {
-          alert('yes')
+          var hTop = $(this).closest('div').css('top')
+          var nthChild = $(this).closest('div').index() + 1
+          var hLeft = ($(this).position().left + 96) + 'px'
+          if ($(this).closest('.page').children('.h-hover-menu').length == 0) {
+            $(this).closest('.page').append('<div style="top: ' + hTop + '; left: ' + hLeft + ';" class="h-hover-menu h-n-child-' + nthChild + '"></div>')
+          } else {
+            $(this).closest('.page').children('.h-hover-menu').attr({
+              'style': 'top: ' + hTop + '; left: ' + hLeft + ';',
+              'class': 'h-hover-menu h-n-child-' + nthChild
+            })
+          }
         })
 
         function highlight() {
