@@ -58,11 +58,45 @@
   cursor: default;
 }
 
-.h-hover-menu .h-color-list {
+.h-hover-menu .h-color-current {
   width: 20px;
   height: 20px;
   background: white;
   border-radius: 20px;
+}
+
+.h-hover-menu .h-color-list {
+  display: none;
+  list-style: none;
+  margin-top: -60px;
+  width: 80px;
+  height: 40px;
+  background: black;
+}
+
+.h-hover-menu .h-color-list .h-color {
+  float: left;
+  width: 20px;
+  height: 20px;
+  background: white;
+  margin-right: 10px;
+  border-radius: 20px;
+}
+
+.h-hover-menu .h-color-list .h-color:nth-child(3n) {
+  margin-right: 0;
+}
+
+.h-hover-menu .h-color-list .h-color.h-yellow {
+  background: yellow;
+}
+
+.h-hover-menu .h-color-list .h-color.h-blue {
+  background: blue;
+}
+
+.h-hover-menu .h-color-list .h-color.h-orange {
+  background: orange;
 }
 
 .page .h-hover-menu {

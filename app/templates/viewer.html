@@ -60,7 +60,7 @@ See https://github.com/adobe-type-tools/cmap-resources
           var nthChild = $(this).closest('div').index() + 1
           var hLeft = (e.pageX - $(this).closest('div').offset().left) + 'px'
           if ($(this).closest('.page').children('.h-hover-menu').length == 0) {
-            $(this).closest('.page').append('<div style="top: ' + hTop + '; left: ' + hLeft + ';" class="h-hover-menu h-n-child-' + nthChild + '"><div class="h-color-list"></div></div>')
+            $(this).closest('.page').append('<div style="top: ' + hTop + '; left: ' + hLeft + ';" class="h-hover-menu h-n-child-' + nthChild + '"><div class="h-color-current"></div><ul class="h-color-list"><li class="h-color h-yellow"></li><li class="h-color h-blue"></li><li class="h-color h-orange"></li></ul></div>')
           } else {
             $(this).closest('.page').children('.h-hover-menu').attr({
               'style': 'top: ' + hTop + '; left: ' + hLeft + ';',
@@ -69,9 +69,14 @@ See https://github.com/adobe-type-tools/cmap-resources
           }
         })
 
-        $(document).on('click', '.h-color-list', function() {
+        $(document).on('mouseover', '.h-color-current', function() {
+          $(this).siblings('.h-color-list').show()
+        })
+
+        $(document).on('click', '.h-color', function() {
           var nthChild = $(this).closest('.h-hover-menu').attr('class').split(' ').pop().split('-').pop()
-          
+          var color = $(this).css('background-color')
+          $(this).closest('.h-hover-menu').siblings('.textLayer').children('div:nth-child(' + nthChild + ')').children('[class*="highlight"]').css('background-color', color)
         })
 
         function highlight() {
