@@ -58,6 +58,13 @@
   cursor: default;
 }
 
+.h-hover-menu .h-color-list {
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 20px;
+}
+
 .page .h-hover-menu {
   width: 100px;
   height: 30px;
