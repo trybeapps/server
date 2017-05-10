@@ -1,0 +1,54 @@
+body {
+  background: white; }
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; }
+
+body {
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  color: #555;
+  line-height: 24px; }
+
+.logo {
+  font-family: "Rancho", cursive;
+  font-size: 38px;
+  font-weight: 400;
+  color: #DA6767;
+  line-height: 60px; }
+
+header {
+  width: 1170px;
+  height: 80px;
+  background: white;
+  color: #BFBFBF;
+  margin: 0 auto;
+  padding: 0 30px; }
+  header .logo {
+    position: absolute;
+    left: 50%;
+    margin: 10px 0 0 -59px; }
+  header .search-label {
+    float: left;
+    margin-top: 28px; }
+    header .search-label svg, header .search-label label {
+      float: left; }
+    header .search-label svg {
+      margin: 2px 15px 0 0; }
+  header .user-label {
+    float: right;
+    margin-top: 24px;
+    overflow: hidden; }
+    header .user-label img {
+      float: left;
+      width: 32px;
+      height: 32px;
+      border-radius: 100%;
+      opacity: 0.55;
+      margin-right: 10px; }
+    header .user-label svg {
+      float: left;
+      margin-top: 12px; }

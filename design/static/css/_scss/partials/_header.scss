@@ -1,0 +1,47 @@
+header {
+	width: 1170px;
+	height: 80px;
+	background: white;
+	color: $menu-font-color;
+	margin: 0 auto;
+	padding: 0 30px;
+
+	.logo {
+		position: absolute;
+    	left: 50%;
+    	margin: 10px 0 0 -59px;
+	}
+
+	.search-label {
+		float: left;
+		margin-top: 28px;
+
+		svg,label {
+			float: left;
+		}
+
+		svg {
+			margin: 2px 15px 0 0;
+		}
+	}
+
+	.user-label {
+		float: right;
+		margin-top: 24px;
+		overflow: hidden;
+
+		img {
+			float: left;
+			width: 32px;
+    		height: 32px;
+    		border-radius: 100%;
+    		opacity: 0.55;
+    		margin-right: 10px;
+		}
+
+		svg {
+			float: left;
+			margin-top: 12px;
+		}
+	}
+}
