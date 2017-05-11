@@ -144,6 +144,9 @@ header {
     width: 122px;
     height: 32px;
     cursor: pointer; }
+  header .header-link {
+    float: right;
+    margin: 28px 50px 0 0; }
   header .search-label {
     float: left;
     margin-top: 28px;
@@ -199,13 +202,13 @@ header {
   header .user-dropdown {
     display: none;
     position: absolute;
-    width: 210px;
+    width: 190px;
     height: auto;
     background: white;
     border: 1px solid #DBDBDB;
     border-radius: 2px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    margin-left: 900px;
+    margin-left: 920px;
     top: 66px;
     padding: 15px;
     z-index: 999; }
@@ -214,11 +217,6 @@ header {
       margin-bottom: 15px; }
       header .user-dropdown a:last-child {
         margin-bottom: 0; }
-    header .user-dropdown .separator {
-      width: 100%;
-      height: 1px;
-      background: #EEE;
-      margin-bottom: 15px; }
     header .user-dropdown.anim-drop-down {
       animation: drop-down .5s ease-in-out both; }
 
