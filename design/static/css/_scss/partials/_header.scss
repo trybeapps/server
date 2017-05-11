@@ -48,15 +48,16 @@ header {
 		svg {
 			float: left;
 			margin-top: 12px;
+			transition: transform 0.2s linear;
 
 			&.rotate {
-				transition: transform 0.2s linear;
 				transform: rotate(-180deg);
 			}
 		}
 	}
 
 	.user-dropdown {
+		display: none;
 		position: absolute;
 		width: 210px;
 		height: auto;
@@ -82,6 +83,10 @@ header {
     		height: 1px;
     		background: #EEE;
     		margin-bottom: 15px;
+    	}
+
+    	&.anim-drop-down {
+    		animation: drop-down .5s ease-in-out both;
     	}
 	}
 }
