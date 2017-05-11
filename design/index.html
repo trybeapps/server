@@ -50,24 +50,40 @@
 				}
 			
 			}).on('click', function() {
-			
+				
 				var $userDropdown = $('.user-dropdown')
-
-				if ( $userDropdown.is(':visible') ) {
-
-					userDropdownExists = false
-					$('.user-label svg').removeClass('rotate')
-					$userDropdown.hide()
 				
-				} else {
-				
-					userDropdownExists = true
-					$('.user-label svg').addClass('rotate')
-					$userDropdown.addClass('anim-drop-down').show()
-				
-				}
+				if ( $userDropdown.is(':visible') ) { hideUserDropDown() } else { showUserDropDown() }
 			
 			})
+
+			function showUserDropDown() {
+
+				var $userDropdown = $('.user-dropdown')
+				var $userLabel = $('.user-label')
+				
+				userDropdownExists = true
+				$userLabel.children('svg').addClass('rotate')
+				$userDropdown.addClass('anim-drop-down').show()
+
+			}
+
+			function hideUserDropDown() {
+
+				var $userDropdown = $('.user-dropdown')
+				var $userLabel = $('.user-label')
+				
+				userDropdownExists = false
+				$userLabel.children('svg').removeClass('rotate')
+				$userDropdown.hide()
+				$userLabel.trigger('mouseleave')
+			
+			}
+
+			$(document).on('click', function(e) {
+				if ($(e.target).closest('header .content').length === 0) hideUserDropDown()
+			})
+
 		})
 	</script>
 </body>
