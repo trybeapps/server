@@ -15,18 +15,59 @@ header {
     	background-repeat: no-repeat;
     	width: 122px;
     	height: 32px;
+    	cursor: pointer;
 	}
 
 	.search-label {
 		float: left;
 		margin-top: 28px;
-
-		svg,label {
-			float: left;
-		}
+		cursor: text;
 
 		svg {
+			float: left;
 			margin: 2px 15px 0 0;
+
+			g {
+				transition: stroke 0.1s linear;
+			}
+		}
+
+		label {
+			float: left;
+			transition: color 0.1s linear;
+			cursor: text;
+		}
+
+		&:hover {
+			svg {
+				g {
+					stroke: $brand-primary; 
+				}
+			}
+
+			label {
+				color: $brand-primary;
+			}
+		}
+	}
+
+	.o-search-label {
+		display: none;
+		float: left;
+		margin-top: 25px;
+
+		svg {
+			float: left;
+			cursor: pointer;
+		}
+
+		input[type="text"] {
+			outline: none;
+			float: left;
+    		font-size: 23px;
+    		color: #555;
+    		margin-left: 20px;
+    		border: none;
 		}
 	}
 
@@ -43,12 +84,17 @@ header {
     		border-radius: 100%;
     		opacity: 0.55;
     		margin-right: 10px;
+    		transition: opacity 0.1s linear;
 		}
 
 		svg {
 			float: left;
 			margin-top: 12px;
 			transition: transform 0.2s linear;
+
+			path {
+				transition: stroke 0.1s linear;
+			}
 
 			&.rotate {
 				transform: rotate(-180deg);
@@ -68,6 +114,7 @@ header {
 		margin-left: 900px;
     	top: 66px;
     	padding: 15px;
+    	z-index: 999;
 
     	a {
     		display: block;

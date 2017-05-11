@@ -12,6 +12,10 @@
 				<svg width="20" height="20" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg"><title>ui-48px-outline-1_zoom</title><g transform="translate(1 1)" stroke-width="2" stroke="#BFBFBF" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20l-5.381-5.381"/><circle cx="8.571" cy="8.571" r="8.571"/></g></svg>
 				<label>Search</label>
 			</div>
+			<div class="o-search-label">
+				<svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg"><title>ui-48px-outline-1_simple-remove</title><path d="M29 1L1 29m28 0L1 1" stroke-width="2" stroke="#555" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+				<input type="text" placeholder="Search">
+			</div>
 			<div class="logo"></div>
 			<div class="user-label">
 				<img src="static/images/richard_bw.jpeg">
@@ -29,62 +33,41 @@
 			</div>
 		</div>
 	</header>
+	<div class="page-container">
+		<ul class="book-list">
+      		<li>
+        		<a href="">
+            		<img src="static/images/Thinking_Functionally_with_Haskell-001-000.png" width="182px">
+        		</a>
+      		</li>
+      		<li>
+        		<a href="">
+            		<img src="static/images/true-001-000.png" width="182px">
+        		</a>
+      		</li>
+      		<li>
+        		<a href="">
+            		<img src="static/images/A_Great_Emergency_and_Other_Tales-001-000.png" width="182px">
+        		</a>
+      		</li>
+      		<li>
+        		<a href="">
+            		<img src="static/images/Thinking_Functionally_with_Haskell-001-000.png" width="182px">
+        		</a>
+      		</li>
+      		<li>
+        		<a href="">
+            		<img src="static/images/A_Great_Emergency_and_Other_Tales-001-000.png" width="182px">
+        		</a>
+      		</li>
+      		<li>
+        		<a href="">
+            		<img src="static/images/A_Great_Emergency_and_Other_Tales-001-000.png" width="182px">
+        		</a>
+      		</li>
+  		</ul>
+	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-	<script>
-		$(function() {
-
-			var userDropdownExists = false
-			
-			$('.user-label').on('mouseover', function() {
-			
-				$(this).children('img').attr('src', 'static/images/richard.jpeg').css('opacity', 1)
-				$(this).children('svg').children('path').attr('stroke', '#DD4E4E')
-			
-			}).on('mouseleave', function() {
-			
-				if ( !userDropdownExists ) {
-					
-					$(this).children('img').attr('src', 'static/images/richard_bw.jpeg').css('opacity', 0.55)
-					$(this).children('svg').children('path').attr('stroke', '#BFBFBF')
-
-				}
-			
-			}).on('click', function() {
-				
-				var $userDropdown = $('.user-dropdown')
-				
-				if ( $userDropdown.is(':visible') ) { hideUserDropDown() } else { showUserDropDown() }
-			
-			})
-
-			function showUserDropDown() {
-
-				var $userDropdown = $('.user-dropdown')
-				var $userLabel = $('.user-label')
-				
-				userDropdownExists = true
-				$userLabel.children('svg').addClass('rotate')
-				$userDropdown.addClass('anim-drop-down').show()
-
-			}
-
-			function hideUserDropDown() {
-
-				var $userDropdown = $('.user-dropdown')
-				var $userLabel = $('.user-label')
-				
-				userDropdownExists = false
-				$userLabel.children('svg').removeClass('rotate')
-				$userDropdown.hide()
-				$userLabel.trigger('mouseleave')
-			
-			}
-
-			$(document).on('click', function(e) {
-				if ($(e.target).closest('header .content').length === 0) hideUserDropDown()
-			})
-
-		})
-	</script>
+	<script type="text/javascript" src="static/js/main.js"></script>
 </body>
 </html>
