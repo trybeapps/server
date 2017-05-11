@@ -250,3 +250,22 @@ a {
         animation: book-jelly 1.3s linear both; }
         .page-container .book-list li.book-jelly img {
           box-shadow: 0 12px 60px rgba(0, 0, 0, 0.4); }
+      .page-container .book-list li:first-child {
+        width: 182px;
+        height: 260px;
+        border: 3px dashed #BFBFBF;
+        cursor: pointer; }
+        .page-container .book-list li:first-child a {
+          display: block;
+          text-align: center;
+          color: #BFBFBF;
+          font-size: 22px;
+          margin-top: 70px; }
+          .page-container .book-list li:first-child a svg {
+            display: block;
+            margin: 0 auto 20px;
+            cursor: pointer; }
+            .page-container .book-list li:first-child a svg g {
+              stroke: #BFBFBF; }
+          .page-container .book-list li:first-child a label {
+            cursor: pointer; }
