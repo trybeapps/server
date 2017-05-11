@@ -171,6 +171,10 @@ header {
     header .o-search-label svg {
       float: left;
       cursor: pointer; }
+      header .o-search-label svg path {
+        transition: stroke 0.1s linear; }
+      header .o-search-label svg:hover path {
+        stroke: #DD4E4E; }
     header .o-search-label input[type="text"] {
       outline: none;
       float: left;
@@ -226,44 +230,85 @@ a {
   a:hover {
     color: #DD4E4E; }
 
-.page-container {
+.book-container {
   width: 1170px;
   min-height: 400px;
   background: white;
   color: #555;
   margin: 0 auto;
   padding: 50px 30px; }
-  .page-container .book-list {
+  .book-container .book-list {
     width: 100%; }
-    .page-container .book-list li {
+    .book-container .book-list li {
       float: left;
       margin-right: 50px;
       margin-bottom: 50px;
       transition: box-shadow 0.8s linear; }
-      .page-container .book-list li:nth-child(5n) {
+      .book-container .book-list li:nth-child(5n) {
         margin-right: 0; }
-      .page-container .book-list li img {
+      .book-container .book-list li img {
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); }
-      .page-container .book-list li.book-jelly {
+      .book-container .book-list li.book-jelly {
         animation: book-jelly 1.3s linear both; }
-        .page-container .book-list li.book-jelly img {
+        .book-container .book-list li.book-jelly img {
           box-shadow: 0 12px 60px rgba(0, 0, 0, 0.4); }
-      .page-container .book-list li:first-child {
+      .book-container .book-list li:first-child {
         width: 182px;
         height: 260px;
         border: 3px dashed #BFBFBF;
         cursor: pointer; }
-        .page-container .book-list li:first-child a {
+        .book-container .book-list li:first-child a {
           display: block;
           text-align: center;
           color: #BFBFBF;
-          font-size: 22px;
+          font-size: 20px;
           margin-top: 70px; }
-          .page-container .book-list li:first-child a svg {
+          .book-container .book-list li:first-child a svg {
             display: block;
             margin: 0 auto 20px;
             cursor: pointer; }
-            .page-container .book-list li:first-child a svg g {
+            .book-container .book-list li:first-child a svg g {
               stroke: #BFBFBF; }
-          .page-container .book-list li:first-child a label {
+          .book-container .book-list li:first-child a label {
             cursor: pointer; }
+
+.search-container {
+  display: none;
+  width: 1170px;
+  min-height: 400px;
+  background: white;
+  color: #555;
+  margin: 0 auto;
+  padding: 50px 30px; }
+  .search-container .title-list, .search-container .content-list {
+    float: left;
+    width: 50%; }
+    .search-container .title-list label, .search-container .content-list label {
+      font-size: 20px; }
+    .search-container .title-list ul, .search-container .content-list ul {
+      margin-top: 30px; }
+      .search-container .title-list ul li, .search-container .content-list ul li {
+        margin-bottom: 50px;
+        overflow: hidden; }
+        .search-container .title-list ul li:last-child, .search-container .content-list ul li:last-child {
+          margin-bottom: 0; }
+      .search-container .title-list ul img, .search-container .content-list ul img {
+        float: left; }
+      .search-container .title-list ul .s-t-content, .search-container .content-list ul .s-t-content {
+        float: left;
+        width: 435px;
+        margin-left: 20px; }
+        .search-container .title-list ul .s-t-content .s-title, .search-container .content-list ul .s-t-content .s-title {
+          font-size: 20px;
+          font-weight: 600;
+          margin-bottom: 7px; }
+        .search-container .title-list ul .s-t-content .s-author, .search-container .content-list ul .s-t-content .s-author {
+          color: #898989; }
+        .search-container .title-list ul .s-t-content .s-content, .search-container .content-list ul .s-t-content .s-content {
+          margin-top: 12px; }
+          .search-container .title-list ul .s-t-content .s-content em, .search-container .content-list ul .s-t-content .s-content em {
+            font-weight: 600;
+            font-style: normal;
+            color: #DD4E4E; }
+      .search-container .title-list ul a:hover .s-t-content .s-content, .search-container .content-list ul a:hover .s-t-content .s-content {
+        color: #555; }

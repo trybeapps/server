@@ -54,14 +54,15 @@ $(function() {
   })
 
   $('.search-label').click(function() {
-    $('.book-list,.logo,.user-label,.user-dropdown').fadeOut(40)
+    $('.book-container,.logo,.header-link,.user-label,.user-dropdown').fadeOut(40)
     $('.search-label').fadeOut(40)
+    $('.search-container').show()
     $('.o-search-label').fadeIn(300).children('input[type="text"]').focus()
   })
 
   $('.o-search-label').on('click', 'svg', function() {
-    $('.o-search-label').hide()
-    $('.book-list,.logo,.user-label').show()
+    $('.o-search-label,.search-container').hide()
+    $('.book-container,.logo,.header-link,.user-label').show()
     $('.search-label').show()
   })
 

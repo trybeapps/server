@@ -64,6 +64,16 @@ header {
 		svg {
 			float: left;
 			cursor: pointer;
+
+			path {
+				transition: stroke 0.1s linear;
+			}
+
+			&:hover {
+				path {
+					stroke: $brand-primary;
+				}
+			}
 		}
 
 		input[type="text"] {
