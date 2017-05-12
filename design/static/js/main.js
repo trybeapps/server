@@ -54,23 +54,54 @@ $(function() {
   })
 
   $('.search-label').click(function() {
-    $('.book-container,.logo,.header-link,.user-label,.user-dropdown,.collection-container').fadeOut(40)
-    $('.search-label').fadeOut(40)
-    $('.search-container').show()
-    $('.o-search-label').fadeIn(300).children('input[type="text"]').focus()
+    showSearch()
   })
 
-  $('.o-search-label').on('click', 'svg', function() {
-    $('.o-search-label,.search-container').hide()
-    $('.book-container,.logo,.header-link,.user-label').show()
-    $('.search-label').show()
+  $('.o-search-label').on('click', 'svg', function(e) {
+    showHome()
   })
 
   $('.collection-label').on('click', function(e) {
     e.preventDefault()
-    $('.book-container').fadeOut(40)
-    $('.collection-container').show()
+    if (window.location.href.split('/').pop() != 'collections') showCollection()
   })
+
+  function showSearch() {
+    setHistory('search', '/search')
+    $('.book-container,.logo,.header-link,.user-label,.user-dropdown,.collection-container').fadeOut(40)
+    $('.search-label').fadeOut(40)
+    $('.search-container').show()
+    $('.o-search-label').fadeIn(300).children('input[type="text"]').focus()
+  }
+
+  function showHome() {
+    setHistory('home', '/')
+    $('.o-search-label,.search-container,.collection-container,.collection-detail-container').hide()
+    $('.book-container,.logo,.header-link,.user-label').show()
+    $('.collection-label').css('border-bottom', 'none')
+    $('.search-label').show()
+  }
+
+  function showCollection(e) {
+    setHistory('collections', '/collections')
+    $('.book-container').fadeOut(40)
+    $('.collection-label').css('border-bottom', '3px solid #DD4E4E')
+    $('.collection-container').show()
+  }
+
+  function setHistory(page, url) {
+    history.pushState({
+      page: page
+    },null,url)
+  }
+
+  setHistory('home', '/')
+
+  window.onpopstate = function (e) {
+    if (e.state.page == 'home') {
+      showHome()
+    }
+  }
 
 	$(document).on('click', function(e) {
 	  if ($(e.target).closest('header .content').length === 0) hideUserDropDown()

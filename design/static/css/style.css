@@ -179,12 +179,13 @@ header {
       header .o-search-label svg:hover path {
         stroke: #DD4E4E; }
     header .o-search-label input[type="text"] {
-      outline: none;
       float: left;
+      width: 1060px;
       font-size: 23px;
       color: #555;
       margin-left: 20px;
-      border: none; }
+      border: none;
+      outline: none; }
   header .user-label {
     float: right;
     margin-top: 24px;
@@ -389,3 +390,6 @@ a {
     width: 240px;
     padding: 20px;
     z-index: 1; }
+
+.collection-detail-container {
+  display: none; }
