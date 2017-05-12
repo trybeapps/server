@@ -47,7 +47,7 @@ $(function() {
 			
 	}
 
-  $('.book-list li').on('mouseover', function() {
+  $('.book-list li,.collection-list li').on('mouseover', function() {
     if ( !$(this).is(':first-child') ) $(this).addClass('book-jelly')
   }).on('mouseleave', function() {
     $(this).removeClass('book-jelly')
@@ -64,6 +64,12 @@ $(function() {
     $('.o-search-label,.search-container').hide()
     $('.book-container,.logo,.header-link,.user-label').show()
     $('.search-label').show()
+  })
+
+  $('.collection-label').on('click', function(e) {
+    e.preventDefault()
+    $('.book-container').fadeOut(40)
+    $('.collection-container').show()
   })
 
 	$(document).on('click', function(e) {
