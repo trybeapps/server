@@ -1,0 +1,153 @@
+header {
+	width: 1170px;
+	height: 80px;
+	background: $bg-color;
+	color: $menu-font-color;
+	margin: 0 auto;
+	padding: 0 30px;
+
+	.logo {
+		position: absolute;
+    	left: 50%;
+    	margin: 24px 0 0 -61px;
+    	background-image: url(../images/logo.png);
+    	background-size: 122px auto;
+    	background-repeat: no-repeat;
+    	width: 122px;
+    	height: 32px;
+    	cursor: pointer;
+	}
+
+	.header-link {
+		float: right;
+    	margin: 28px 50px 0 0;
+
+    	&:hover {
+    		color: #555;
+    		border-bottom: 3px solid $brand-primary!important;
+    	}
+	}
+
+	.search-label {
+		float: left;
+		margin-top: 28px;
+		cursor: text;
+
+		svg {
+			float: left;
+			margin: 2px 15px 0 0;
+
+			g {
+				transition: stroke 0.1s linear;
+			}
+		}
+
+		label {
+			float: left;
+			transition: color 0.1s linear;
+			cursor: text;
+		}
+
+		&:hover {
+			svg {
+				g {
+					stroke: $brand-primary; 
+				}
+			}
+
+			label {
+				color: $brand-primary;
+			}
+		}
+	}
+
+	.o-search-label {
+		display: none;
+		float: left;
+		margin-top: 25px;
+
+		svg {
+			float: left;
+			cursor: pointer;
+
+			path {
+				transition: stroke 0.1s linear;
+			}
+
+			&:hover {
+				path {
+					stroke: $brand-primary;
+				}
+			}
+		}
+
+		input[type="text"] {
+			float: left;
+			width: 1060px;
+    		font-size: 23px;
+    		color: #555;
+    		margin-left: 20px;
+    		border: none;
+    		outline: none;
+		}
+	}
+
+	.user-label {
+		float: right;
+		margin-top: 24px;
+		overflow: hidden;
+		cursor: pointer;
+
+		img {
+			float: left;
+			width: 32px;
+    		height: 32px;
+    		border-radius: 100%;
+    		opacity: 0.55;
+    		margin-right: 10px;
+    		transition: opacity 0.1s linear;
+		}
+
+		svg {
+			float: left;
+			margin-top: 12px;
+			transition: transform 0.2s linear;
+
+			path {
+				transition: stroke 0.1s linear;
+			}
+
+			&.rotate {
+				transform: rotate(-180deg);
+			}
+		}
+	}
+
+	.user-dropdown {
+		display: none;
+		position: absolute;
+		width: 190px;
+		height: auto;
+		background: $bg-color;
+		border: $border;
+		border-radius: $border-radius;
+		box-shadow: $border-shadow;
+		margin-left: 920px;
+    	top: 66px;
+    	padding: 15px;
+    	z-index: 999;
+
+    	a {
+    		display: block;
+    		margin-bottom: 15px;
+
+    		&:last-child {
+    			margin-bottom: 0;
+    		}
+    	}
+
+    	&.anim-drop-down {
+    		animation: drop-down .5s ease-in-out both;
+    	}
+	}
+}
