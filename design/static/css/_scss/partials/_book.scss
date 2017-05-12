@@ -1,0 +1,65 @@
+.book-container {
+	width: 1170px;
+	min-height: 400px;
+	background: $bg-color;
+	color: $base-font-color;
+	margin: 0 auto;
+	padding: 50px 30px;
+
+	.book-list {
+		width: 100%;
+
+		li {
+			float: left;
+			margin-right: 50px;
+			margin-bottom: 50px;
+			transition: box-shadow 0.8s linear;
+
+			&:nth-child(5n) {
+				margin-right: 0;
+			}
+
+			img {
+				box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+			}
+
+			&.book-jelly {
+				-webkit-animation: book-jelly 1.3s linear both;
+  				animation: book-jelly 1.3s linear both;
+
+  				img {
+  					box-shadow: 0 12px 60px rgba(0,0,0,0.4);
+  				}
+			}
+
+			&:first-child {
+				width: 182px;
+    			height: 260px;
+    			border: 3px dashed #BFBFBF;
+    			cursor: pointer;
+
+				a {
+					display: block;
+    				text-align: center;
+    				color: #BFBFBF;
+    				font-size: 20px;
+    				margin-top: 70px;
+
+    				svg {
+    					display: block;
+    					margin: 0 auto 20px;
+    					cursor: pointer;
+
+    					g {
+    						stroke: #BFBFBF;
+    					}
+    				}
+
+    				label {
+    					cursor: pointer;
+    				}
+				}
+			}
+		}
+	}
+}

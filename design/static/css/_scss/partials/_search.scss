@@ -1,0 +1,69 @@
+.search-container {
+	display: none;
+	width: 1170px;
+	min-height: 400px;
+	background: $bg-color;
+	color: $base-font-color;
+	margin: 0 auto;
+	padding: 50px 30px;
+
+	.title-list,.content-list {
+		float: left;
+		width: 50%;
+
+		label {
+			font-size: 20px;
+		}
+
+		ul {
+			margin-top: 30px;
+
+			li {
+				margin-bottom: 50px;
+				overflow: hidden;
+
+				&:last-child {
+					margin-bottom: 0;
+				}
+			}
+
+			img {
+				float: left;
+			}
+
+			.s-t-content {
+				float: left;
+				width: 435px;
+				margin-left: 20px;
+
+				.s-title {
+					font-size: 20px;
+					font-weight: 600;
+					margin-bottom: 7px;
+				}
+
+				.s-author {
+					color: #898989;
+				}
+
+				.s-content {
+					margin-top: 12px;
+
+					em {
+						font-weight: 600;
+    					font-style: normal;
+    					color: $brand-primary;
+					}
+				}
+			}
+
+			a:hover {
+				.s-t-content {
+					.s-content {
+						color: #555;
+					}
+				}
+			}
+		}
+	}
+}
