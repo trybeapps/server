@@ -58,7 +58,7 @@ $(function() {
   })
 
   $('.o-search-label').on('click', 'svg', function(e) {
-    showHome()
+    history.back()
   })
 
   $('.collection-label').on('click', function(e) {
@@ -84,9 +84,9 @@ $(function() {
 
   function showCollection(e) {
     setHistory('collections', '/collections')
-    $('.book-container').fadeOut(40)
+    $('.o-search-label,.search-container,.book-container').fadeOut(40)
     $('.collection-label').css('border-bottom', '3px solid #DD4E4E')
-    $('.collection-container').show()
+    $('.collection-container,.search-label,.logo,.header-link,.user-label').show()
   }
 
   function setHistory(page, url) {
@@ -100,6 +100,8 @@ $(function() {
   window.onpopstate = function (e) {
     if (e.state.page == 'home') {
       showHome()
+    } else if (e.state.page == 'collections') {
+      showCollection()
     }
   }
 

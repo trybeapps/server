@@ -149,7 +149,7 @@ header {
     margin: 28px 50px 0 0; }
     header .header-link:hover {
       color: #555;
-      border-bottom: 3px solid #DD4E4E; }
+      border-bottom: 3px solid #DD4E4E !important; }
   header .search-label {
     float: left;
     margin-top: 28px;
