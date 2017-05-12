@@ -147,6 +147,9 @@ header {
   header .header-link {
     float: right;
     margin: 28px 50px 0 0; }
+    header .header-link:hover {
+      color: #555;
+      border-bottom: 3px solid #DD4E4E; }
   header .search-label {
     float: left;
     margin-top: 28px;
@@ -312,3 +315,15 @@ a {
             color: #DD4E4E; }
       .search-container .title-list ul a:hover .s-t-content .s-content, .search-container .content-list ul a:hover .s-t-content .s-content {
         color: #555; }
+
+.collection-container {
+  display: none;
+  width: 1170px;
+  min-height: 400px;
+  background: white;
+  color: #555;
+  margin: 0 auto;
+  padding: 50px 30px; }
+  .collection-container label {
+    font-size: 25px;
+    font-weight: 600; }

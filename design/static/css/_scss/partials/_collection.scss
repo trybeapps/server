@@ -1,0 +1,14 @@
+.collection-container {
+	display: none;
+	width: 1170px;
+	min-height: 400px;
+	background: $bg-color;
+	color: $base-font-color;
+	margin: 0 auto;
+	padding: 50px 30px;
+
+	label {
+		font-size: 25px;
+		font-weight: 600;
+	}
+}

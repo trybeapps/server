@@ -66,6 +66,12 @@ $(function() {
     $('.search-label').show()
   })
 
+  $('.collection-label').on('click', function(e) {
+    e.preventDefault()
+    $('.book-container').fadeOut(40)
+    $('.collection-container').show()
+  })
+
 	$(document).on('click', function(e) {
 	  if ($(e.target).closest('header .content').length === 0) hideUserDropDown()
 	})
