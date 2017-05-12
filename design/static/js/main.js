@@ -47,7 +47,7 @@ $(function() {
 			
 	}
 
-  $('.book-list li').on('mouseover', function() {
+  $('.book-list li,.collection-list li').on('mouseover', function() {
     if ( !$(this).is(':first-child') ) $(this).addClass('book-jelly')
   }).on('mouseleave', function() {
     $(this).removeClass('book-jelly')

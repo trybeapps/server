@@ -327,3 +327,65 @@ a {
   .collection-container label {
     font-size: 25px;
     font-weight: 600; }
+  .collection-container ul {
+    margin-top: 30px; }
+  .collection-container li {
+    float: left;
+    width: 240px;
+    height: 280px;
+    margin: 0 50px 50px 0;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); }
+    .collection-container li:nth-child(4n) {
+      margin-right: 0; }
+    .collection-container li:first-child {
+      box-shadow: none;
+      border: 3px dashed #BFBFBF;
+      cursor: pointer; }
+      .collection-container li:first-child a {
+        display: block;
+        margin-top: 78px;
+        overflow: hidden; }
+        .collection-container li:first-child a::after {
+          display: none; }
+        .collection-container li:first-child a svg {
+          display: block;
+          margin: 0 auto 20px;
+          cursor: pointer; }
+        .collection-container li:first-child a label {
+          display: block;
+          font-size: 20px;
+          font-weight: normal;
+          color: #BFBFBF;
+          text-align: center;
+          cursor: pointer; }
+    .collection-container li.book-jelly {
+      animation: book-jelly 1.3s linear both; }
+      .collection-container li.book-jelly img {
+        box-shadow: 0 12px 60px rgba(0, 0, 0, 0.4); }
+  .collection-container a {
+    position: relative; }
+    .collection-container a::after {
+      position: absolute;
+      top: -280px;
+      left: 0;
+      content: "";
+      width: 240px;
+      height: 280px;
+      background: rgba(0, 0, 0, 0.68); }
+  .collection-container .collection-image {
+    width: 240px;
+    height: 280px;
+    background-image: url(../images/Thinking_Functionally_with_Haskell-001-000.png);
+    background-size: 100%;
+    background-position: 0 50%;
+    background-repeat: no-repeat; }
+  .collection-container .collection-title {
+    position: absolute;
+    top: -260px;
+    font-size: 37px;
+    font-weight: 700;
+    color: white;
+    line-height: 46px;
+    width: 240px;
+    padding: 20px;
+    z-index: 1; }
