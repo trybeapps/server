@@ -4,14 +4,14 @@ $(function() {
 			
 	$('.user-label').on('mouseover', function() {
 			
-		$(this).children('img').attr('src', 'static/images/richard.jpeg').css('opacity', 1)
+		$(this).children('img').attr('src', '/static/images/richard.jpeg').css('opacity', 1)
 		$(this).children('svg').children('path').attr('stroke', '#DD4E4E')
 			
 	}).on('mouseleave', function() {
 			
 		if ( !userDropdownExists ) {
 					
-		  $(this).children('img').attr('src', 'static/images/richard_bw.jpeg').css('opacity', 0.55)
+		  $(this).children('img').attr('src', '/static/images/richard_bw.jpeg').css('opacity', 0.55)
 			$(this).children('svg').children('path').attr('stroke', '#BFBFBF')
 
 		}
@@ -48,7 +48,7 @@ $(function() {
 	}
 
   $('.book-list li,.collection-list li').on('mouseover', function() {
-    if ( !$(this).is(':first-child') ) $(this).addClass('book-jelly')
+    if ( !$(this).hasClass('anb-item') && !$(this).hasClass('cd-item') && !$(this).hasClass('anc-item') ) $(this).addClass('book-jelly')
   }).on('mouseleave', function() {
     $(this).removeClass('book-jelly')
   })
@@ -64,6 +64,17 @@ $(function() {
   $('.collection-label').on('click', function(e) {
     e.preventDefault()
     if (window.location.href.split('/').pop() != 'collections') showCollection()
+  })
+
+  $('.collection-container a').on('click', function(e) {
+    e.preventDefault()
+    if ( !$(this).closest('li').hasClass('anc-item') ) {
+      var collectionTitle = $(this).attr('href').split('/').pop()
+      setHistory('collection-detail', '/collections/' + collectionTitle)
+      $('.book-container').addClass('collection-detail')
+      $('.collection-container,.anb-item').hide()
+      $('.book-container,.cd-item').show()
+    }
   })
 
   function showSearch() {
