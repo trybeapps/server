@@ -71,9 +71,7 @@ $(function() {
     if ( !$(this).closest('li').hasClass('anc-item') ) {
       var collectionTitle = $(this).attr('href').split('/').pop()
       setHistory('collection-detail', '/collections/' + collectionTitle)
-      $('.book-container').addClass('collection-detail')
-      $('.collection-container,.anb-item').hide()
-      $('.book-container,.cd-item').show()
+      showCollectionDetail()
     }
   })
 
@@ -100,6 +98,12 @@ $(function() {
     $('.collection-container,.search-label,.logo,.header-link,.user-label').show()
   }
 
+  function showCollectionDetail() {
+    $('.book-container').addClass('collection-detail')
+    $('.o-search-label,.search-container,.collection-container,.anb-item').hide()
+    $('.book-container,.cd-item,.search-label,.header-link,.logo,.user-label').show()
+  }
+
   function setHistory(page, url) {
     history.pushState({
       page: page
@@ -113,6 +117,8 @@ $(function() {
       showHome()
     } else if (e.state.page == 'collections') {
       showCollection()
+    } else if (e.state.page == 'collection-detail') {
+      showCollectionDetail()
     }
   }
 
