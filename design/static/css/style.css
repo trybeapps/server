@@ -149,7 +149,7 @@ header {
     margin: 28px 50px 0 0; }
     header .header-link:hover {
       color: #555;
-      border-bottom: 3px solid #DD4E4E; }
+      border-bottom: 3px solid #DD4E4E !important; }
   header .search-label {
     float: left;
     margin-top: 28px;
@@ -179,12 +179,13 @@ header {
       header .o-search-label svg:hover path {
         stroke: #DD4E4E; }
     header .o-search-label input[type="text"] {
-      outline: none;
       float: left;
+      width: 1060px;
       font-size: 23px;
       color: #555;
       margin-left: 20px;
-      border: none; }
+      border: none;
+      outline: none; }
   header .user-label {
     float: right;
     margin-top: 24px;
@@ -240,14 +241,19 @@ a {
   color: #555;
   margin: 0 auto;
   padding: 50px 30px; }
+  .book-container.collection-detail .book-list li:nth-child(5n) {
+    margin-right: 0 !important; }
+  .book-container.collection-detail .book-list li:nth-child(5n + 1) {
+    margin-right: 50px !important; }
   .book-container .book-list {
     width: 100%; }
     .book-container .book-list li {
       float: left;
-      margin-right: 50px;
-      margin-bottom: 50px;
+      margin: 0 50px 50px 0;
       transition: box-shadow 0.8s linear; }
-      .book-container .book-list li:nth-child(5n) {
+      .book-container .book-list li:first-child, .book-container .book-list li:nth-child(5) {
+        margin-right: 50px !important; }
+      .book-container .book-list li:nth-child(5n + 1) {
         margin-right: 0; }
       .book-container .book-list li img {
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); }
@@ -255,25 +261,39 @@ a {
         animation: book-jelly 1.3s linear both; }
         .book-container .book-list li.book-jelly img {
           box-shadow: 0 12px 60px rgba(0, 0, 0, 0.4); }
-      .book-container .book-list li:first-child {
+      .book-container .book-list li.anb-item {
         width: 182px;
         height: 260px;
         border: 3px dashed #BFBFBF;
         cursor: pointer; }
-        .book-container .book-list li:first-child a {
+        .book-container .book-list li.anb-item a {
           display: block;
           text-align: center;
           color: #BFBFBF;
           font-size: 20px;
           margin-top: 70px; }
-          .book-container .book-list li:first-child a svg {
+          .book-container .book-list li.anb-item a svg {
             display: block;
             margin: 0 auto 20px;
             cursor: pointer; }
-            .book-container .book-list li:first-child a svg g {
+            .book-container .book-list li.anb-item a svg g {
               stroke: #BFBFBF; }
-          .book-container .book-list li:first-child a label {
+          .book-container .book-list li.anb-item a label {
             cursor: pointer; }
+      .book-container .book-list li.cd-item {
+        display: none;
+        width: 414px;
+        min-height: 260px;
+        border: 5px solid #777;
+        padding: 15px; }
+        .book-container .book-list li.cd-item a {
+          display: block;
+          color: #DD4E4E;
+          margin-bottom: 15px; }
+        .book-container .book-list li.cd-item .cdi-title {
+          font-size: 25px;
+          font-weight: 600;
+          margin-bottom: 10px; }
 
 .search-container {
   display: none;

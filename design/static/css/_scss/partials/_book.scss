@@ -6,16 +6,33 @@
 	margin: 0 auto;
 	padding: 50px 30px;
 
+	&.collection-detail {
+		.book-list {
+			li {
+				&:nth-child(5n) {
+					margin-right: 0!important;
+				}
+
+				&:nth-child(5n + 1) {
+					margin-right: 50px!important;
+				}
+			}
+		}
+	}
+
 	.book-list {
 		width: 100%;
 
 		li {
 			float: left;
-			margin-right: 50px;
-			margin-bottom: 50px;
+			margin: 0 50px 50px 0;
 			transition: box-shadow 0.8s linear;
 
-			&:nth-child(5n) {
+			&:first-child,&:nth-child(5) {
+				margin-right: 50px!important;
+			}
+
+			&:nth-child(5n + 1) {
 				margin-right: 0;
 			}
 
@@ -32,7 +49,7 @@
   				}
 			}
 
-			&:first-child {
+			&.anb-item {
 				width: 182px;
     			height: 260px;
     			border: 3px dashed #BFBFBF;
@@ -59,6 +76,26 @@
     					cursor: pointer;
     				}
 				}
+			}
+
+			&.cd-item {
+				display: none;
+				width: 414px;
+				min-height: 260px;
+    			border: 5px solid #777;
+    			padding: 15px;
+
+    			a {
+    				display: block;
+    				color: $brand-primary;
+    				margin-bottom: 15px;
+    			}
+
+    			.cdi-title {
+    				font-size: 25px;
+    				font-weight: 600;
+    				margin-bottom: 10px;
+    			}
 			}
 		}
 	}

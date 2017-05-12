@@ -24,7 +24,7 @@ header {
 
     	&:hover {
     		color: #555;
-    		border-bottom: 3px solid $brand-primary;
+    		border-bottom: 3px solid $brand-primary!important;
     	}
 	}
 
@@ -82,12 +82,13 @@ header {
 		}
 
 		input[type="text"] {
-			outline: none;
 			float: left;
+			width: 1060px;
     		font-size: 23px;
     		color: #555;
     		margin-left: 20px;
     		border: none;
+    		outline: none;
 		}
 	}
 
