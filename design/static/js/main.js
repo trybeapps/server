@@ -54,7 +54,7 @@ $(function() {
   })
 
   $('.search-label').click(function() {
-    $('.book-container,.logo,.header-link,.user-label,.user-dropdown').fadeOut(40)
+    $('.book-container,.logo,.header-link,.user-label,.user-dropdown,.collection-container').fadeOut(40)
     $('.search-label').fadeOut(40)
     $('.search-container').show()
     $('.o-search-label').fadeIn(300).children('input[type="text"]').focus()
