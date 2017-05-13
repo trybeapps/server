@@ -2,6 +2,12 @@ $(function() {
 
 	var userDropdownExists = false
 
+  $(document).ajaxStart(function() {
+    NProgress.start()
+  }).ajaxStop(function() {
+    NProgress.done()
+  })
+
   $('.signin-form').submit(function(e) {
     e.preventDefault()
     var email = $(this).children('.email-field').val()
@@ -12,6 +18,27 @@ $(function() {
     }
     $.ajax({
       url: '/signin',
+      type: 'post',
+      dataType: 'json',
+      data: jsonData,
+      success: function (res) {
+        console.log(res)
+      }
+    });
+  })
+
+  $('.signup-form').submit(function(e) {
+    e.preventDefault()
+    var name = $(this).children('.name-field').val()
+    var email = $(this).children('.email-field').val()
+    var password = $(this).children('.password-field').val()
+    var jsonData = {
+      name: name,
+      email: email,
+      password: password
+    }
+    $.ajax({
+      url: '/signup',
       type: 'post',
       dataType: 'json',
       data: jsonData,
@@ -32,7 +59,7 @@ $(function() {
   })
 
   function showSignIn() {
-    NProgress.start();
+    NProgress.start()
     setHistory('signin', '/signin')
     $('.signup-form,.signin-label').removeClass('show')
     $('.signin-form,.signup-label').addClass('show')
