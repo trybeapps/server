@@ -1,0 +1,64 @@
+.auth-container {
+	width: 1170px;
+	min-height: 400px;
+	background: $bg-color;
+	color: $base-font-color;
+	margin: 0 auto;
+	padding: 50px 30px;
+
+	form {
+		width: 240px;
+		height: auto;
+		margin: 100px auto;
+
+		label {
+			display: block;
+			width: 100%;
+			text-align: center;
+			margin-bottom: 20px;
+		}
+	}
+}
+
+.auth-container {
+	form {
+		display: none;
+
+		&.hide {
+			display: none;
+		}
+
+		&.show {
+			display: block;
+		}
+	}
+}
+
+input[type="text"], input[type="password"] {
+	display: block;
+	width: 240px;
+	height: 36px;
+	font-size: 15px;
+	border: 1px solid #A9A9A9;
+	border-radius: 2px;
+	margin-bottom: 20px;
+	padding: 10px;
+	outline: none;
+	transition: border 0.1s linear;
+
+	&:focus {
+		border: 1px solid $brand-primary;
+	}
+}
+
+input[type="submit"] {
+	display: block;
+    color: white;
+    background: #DA6767;
+    border: none;
+    border-radius: 2px;
+    font-size: 15px;
+    margin: 0 auto;
+    padding: 8px 20px 10px;
+    cursor: pointer;
+}

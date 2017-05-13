@@ -1,6 +1,78 @@
 $(function() {
 
 	var userDropdownExists = false
+
+  $(document).ajaxStart(function() {
+    NProgress.start()
+  }).ajaxStop(function() {
+    NProgress.done()
+  })
+
+  $('.signin-form').submit(function(e) {
+    e.preventDefault()
+    var email = $(this).children('.email-field').val()
+    var password = $(this).children('.password-field').val()
+    var jsonData = {
+      email: email,
+      password: password
+    }
+    $.ajax({
+      url: '/signin',
+      type: 'post',
+      dataType: 'json',
+      data: jsonData,
+      success: function (res) {
+        console.log(res)
+      }
+    });
+  })
+
+  $('.signup-form').submit(function(e) {
+    e.preventDefault()
+    var name = $(this).children('.name-field').val()
+    var email = $(this).children('.email-field').val()
+    var password = $(this).children('.password-field').val()
+    var jsonData = {
+      name: name,
+      email: email,
+      password: password
+    }
+    $.ajax({
+      url: '/signup',
+      type: 'post',
+      dataType: 'json',
+      data: jsonData,
+      success: function (res) {
+        console.log(res)
+      }
+    });
+  })
+
+  $('.signin-label').on('click', function(e) {
+    e.preventDefault()
+    showSignIn()
+  })
+
+  $('.signup-label').on('click', function(e) {
+    e.preventDefault()
+    showSignUp()
+  })
+
+  function showSignIn() {
+    NProgress.start()
+    setHistory('signin', '/signin')
+    $('.signup-form,.signin-label').removeClass('show')
+    $('.signin-form,.signup-label').addClass('show')
+    NProgress.done()
+  }
+
+  function showSignUp() {
+    NProgress.start();
+    setHistory('signup', '/signup')
+    $('.signin-form,.signup-label').removeClass('show')
+    $('.signup-form,.signin-label').addClass('show')
+    NProgress.done()
+  }
 			
 	$('.user-label').on('mouseover', function() {
 			
@@ -110,7 +182,7 @@ $(function() {
     },null,url)
   }
 
-  setHistory('home', '/')
+  // setHistory('home', '/')
 
   window.onpopstate = function (e) {
     if (e.state.page == 'home') {
@@ -119,6 +191,10 @@ $(function() {
       showCollection()
     } else if (e.state.page == 'collection-detail') {
       showCollectionDetail()
+    } else if (e.state.page == 'signin') {
+      showSignIn()
+    } else if (e.state.page == 'signup') {
+      showSignUp()
     }
   }
 

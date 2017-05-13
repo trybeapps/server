@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block content %}
+	<header>
+		<div class="content">
+			<a href="/" class="logo"></a>
+			{% if signup %}
+				<a class="header-link signin-label show" href="/signin">Sign in</a>
+				<a class="header-link signup-label" href="/signup">Sign up</a>
+			{% else %}
+				<a class="header-link signin-label" href="/signin">Sign in</a>
+				<a class="header-link signup-label show" href="/signup">Sign up</a>
+			{% endif %}
+		</div>
+	</header>
+	<div class="auth-container">
+	{% if signup %}
+		<form class="signin-form">
+	{% else %}
+		<form class="signin-form show">
+	{% endif %}
+			<label>Sign in</label>
+			<input class="email-field" type="text" placeholder="Email">
+			<input class="password-field" type="password" placeholder="Password">
+			<input type="submit" value="Submit">
+		</form>
+	{% if signup %}
+		<form class="signup-form show">
+	{% else %}
+		<form class="signup-form">
+	{% endif %}
+			<label>Sign up</label>
+			<input class="name-field" type="text" placeholder="Full name">
+			<input class="email-field" type="text" placeholder="Email">
+			<input class="password-field" type="password" placeholder="Password">
+			<input type="submit" value="Submit">
+		</form>		
+	</div>
+{% endblock %}

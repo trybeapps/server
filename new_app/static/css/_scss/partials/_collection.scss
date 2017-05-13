@@ -1,0 +1,105 @@
+.collection-container {
+	display: none;
+	width: 1170px;
+	min-height: 400px;
+	background: $bg-color;
+	color: $base-font-color;
+	margin: 0 auto;
+	padding: 50px 30px;
+
+	label {
+		font-size: 25px;
+		font-weight: 600;
+	}
+
+	ul {
+		margin-top: 30px;
+	}
+
+	li {
+		float: left;
+		width: 240px;
+		height: 280px;
+		margin: 0 50px 50px 0;
+		box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+
+		&:nth-child(4n) {
+			margin-right: 0;
+		}
+
+		&:first-child {
+			box-shadow: none;
+    		border: 3px dashed #BFBFBF;
+    		cursor: pointer;
+			
+			a {
+				display: block;
+				margin-top: 78px;
+    			overflow: hidden;
+				
+				&::after {
+					display: none;
+				}
+
+				svg {
+					display: block;
+    				margin: 0 auto 20px;
+    				cursor: pointer;
+				}
+
+				label {
+					display: block;
+					font-size: 20px;
+    				font-weight: normal;
+    				color: #BFBFBF;
+    				text-align: center;
+    				cursor: pointer;
+				}
+			}
+		}
+
+		&.book-jelly {
+			-webkit-animation: book-jelly 1.3s linear both;
+  			animation: book-jelly 1.3s linear both;
+
+  			img {
+  				box-shadow: 0 12px 60px rgba(0,0,0,0.4);
+  			}
+		}
+	}
+
+	a {
+		position: relative;
+
+		&::after {
+			position: absolute;
+			top: -280px;
+			left: 0;
+			content: "";
+			width: 240px;
+			height: 280px;
+			background: rgba(0,0,0,0.68);
+		}
+	}
+
+	.collection-image {
+		width: 240px;
+		height: 280px;
+		background-image: url(../images/Thinking_Functionally_with_Haskell-001-000.png);
+    	background-size: 100%;
+    	background-position: 0 50%;
+    	background-repeat: no-repeat;
+	}
+
+	.collection-title {
+		position: absolute;
+    	top: -260px;
+    	font-size: 37px;
+    	font-weight: 700;
+    	color: white;
+    	line-height: 46px;
+    	width: 240px;
+    	padding: 20px;
+    	z-index: 1;
+	}
+}
