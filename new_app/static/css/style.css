@@ -150,6 +150,8 @@ header {
     header .header-link:hover {
       color: #555;
       border-bottom: 3px solid #DD4E4E !important; }
+    header .header-link.signin-label, header .header-link.signup-label {
+      display: none; }
   header .search-label {
     float: left;
     margin-top: 28px;
@@ -228,6 +230,12 @@ header {
     header .user-dropdown.anim-drop-down {
       animation: drop-down .5s ease-in-out both; }
 
+.show {
+  display: block !important; }
+
+.hide {
+  display: none !important; }
+
 a {
   color: #555;
   text-decoration: none; }
@@ -241,15 +249,22 @@ a {
   color: #555;
   margin: 0 auto;
   padding: 50px 30px; }
-  .auth-container .auth-form {
+  .auth-container form {
     width: 240px;
     height: auto;
     margin: 100px auto; }
-    .auth-container .auth-form label {
+    .auth-container form label {
       display: block;
       width: 100%;
       text-align: center;
       margin-bottom: 20px; }
+
+.auth-container form {
+  display: none; }
+  .auth-container form.hide {
+    display: none; }
+  .auth-container form.show {
+    display: block; }
 
 input[type="text"], input[type="password"] {
   display: block;

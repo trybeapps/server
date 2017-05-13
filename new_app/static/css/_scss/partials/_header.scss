@@ -26,6 +26,10 @@ header {
     		color: #555;
     		border-bottom: 3px solid $brand-primary!important;
     	}
+
+    	&.signin-label,&.signup-label {
+    		display: none;
+    	}
 	}
 
 	.search-label {
@@ -150,4 +154,12 @@ header {
     		animation: drop-down .5s ease-in-out both;
     	}
 	}
+}
+
+.show {
+	display: block!important;
+}
+
+.hide {
+	display: none!important;
 }
