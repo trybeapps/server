@@ -81,6 +81,7 @@ header .header-container {
 .header-nav label {
 	float: left;
 	color: #676767;
+	font-weight: 600;
 	margin-top: 2px;
 	cursor: pointer;
 }
@@ -103,17 +104,17 @@ header .header-container {
 	display: none;
 	position: absolute;
 	width: 190px;
-	background: #292929;
+	background: #222222;
 	padding: 20px;
 	margin-top: 50px;
-	margin-left: 363px;
+	margin-left: 369px;
 }
 
 .user-dropdown div {
 	position: absolute;
-    width: 30px;
+    width: 25px;
     height: 32px;
-    background: #292929;
+    background: #222222;
     margin-top: -52px;
     right: 0;
 }
@@ -121,12 +122,13 @@ header .header-container {
 .user-dropdown div svg {
 	float: left;
     margin-top: 10px;
-    margin-left: 9px;
+    margin-left: 7px;
 }
 
 .user-dropdown a {
 	display: block;
 	color: white;
+	font-weight: 600;
 	text-decoration: none;
 	margin-bottom: 20px;
 	cursor: pointer;
@@ -141,7 +143,67 @@ header .header-container {
 }
 
 .page-container {
+	width: 100%;
+}
+
+.quote-of-the-day {
+	width: 600px;
+	border: 5px solid rgba(96, 96, 96, 0.13);
+	margin: 60px auto;
+	padding: 20px;
+	overflow: hidden;
+}
+
+.quote-of-the-day label {
+	position: absolute;
+    background: #222222;
+    color: white;
+    margin-top: -47px;
+    margin-left: -35px;
+    padding: 6px 8px;
+}
+
+.quote-of-the-day img {
+	float: left;
+	margin-right: 20px;
+}
+
+.quote-of-the-day .quote, .quote-of-the-day .author {
+	float: left;
+	color: #161616;
+	width: 480px;
+	line-height: 24px;
+}
+
+.quote-of-the-day .quote {
+	font-size: 19px;
+	line-height: 27px;
+}
+
+.quote-of-the-day .author {
+	margin-top: 5px;
+	font-weight: 700;
+}
+
+.currently-reading-container {
+	width: 100%;
+	min-height: 480px;
+	background: rgba(34, 34, 34, 0.8);
+}
+
+.currently-reading-container .crc-bg {
 	width: 1440px;
-	min-height: 700px;
+	min-height: 480px;
+	background: #222222;
 	margin: 0 auto;
+	padding: 30px;
+}
+
+.crc-bg label {
+	float: left;
+	font-size: 24px;
+	font-weight: bold;
+	color: #333333;
+	background: white;
+	padding: 8px 12px;
 }
