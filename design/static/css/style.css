@@ -1,0 +1,106 @@
+body {
+	font-family: 'Source Sans Pro', sans-serif;
+	font-size: 16px;
+	background: #FFFFF8;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+header {
+	width: 100%;
+	height: 60px;
+	background: white;
+	margin: 0 auto;
+	border-bottom: 1px solid #DFDFDF;
+}
+
+header .header-container {
+	width: 1440px;
+	margin: 0 auto;
+	padding: 0 30px;
+	overflow: hidden;
+}
+
+.logo {
+	float: left;
+	font-family: 'Droid Sans', sans-serif;
+	font-size: 20px;
+	color: #676767;
+	margin-top: 18px;
+}
+
+.search-box {
+	float: left;
+	width: 480px;
+	height: 36px;
+	font-size: 14px;
+	border: 1px solid #B1B1B1;
+	margin-top: 12px;
+	margin-left: 30px;
+	padding: 0 10px;
+	outline: none;
+}
+
+.header-nav {
+	float: right;
+}
+
+.header-nav .hn-book-nav, .header-nav .hn-collection-nav, .header-nav .hn-notification-nav, .header-nav .hn-user-nav {
+	float: left;
+	margin-top: 17.5px;
+	margin-right: 30px;
+	overflow: hidden;
+	cursor: pointer;
+}
+
+.header-nav div:last-child {
+	margin-right: 0;
+}
+
+.header-nav svg {
+	float: left;
+	margin-right: 5px;
+}
+
+.header-nav .hn-book-nav:hover svg g, .header-nav .hn-collection-nav:hover svg path, .header-nav .hn-notification-nav:hover svg g {
+	stroke: #FF4848;
+}
+
+.header-nav .hn-user-nav img {
+	float: left;
+	width: 25px;
+	height: 25px;
+	border-radius: 25px;
+	margin-right: 5px;
+}
+
+.header-nav label {
+	float: left;
+	color: #676767;
+	margin-top: 2px;
+	cursor: pointer;
+}
+
+.header-nav .hn-book-nav:hover label, .header-nav .hn-collection-nav:hover label, .header-nav .hn-notification-nav:hover label, .header-nav .hn-user-nav:hover label {
+	color: #FF4848;
+}
+
+.header-nav .hn-user-nav svg {
+	margin-top: 10px;
+	margin-left: 10px;
+	margin-right: 0;
+}
+
+.header-nav .hn-user-nav:hover svg path {
+	fill: #FF4848;
+}
+
+.page-container {
+	width: 1440px;
+	min-height: 700px;
+	margin: 0 auto;
+}
