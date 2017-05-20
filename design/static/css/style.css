@@ -187,15 +187,14 @@ header .header-container {
 
 .currently-reading-container {
 	width: 100%;
-	min-height: 480px;
 	background: #222222;
 }
 
 .currently-reading-container .crc-bg {
 	width: 1440px;
-	min-height: 480px;
-	margin: 0 auto;
+	margin: 0 auto 80px;
 	padding: 30px;
+	overflow: hidden;
 }
 
 .crc-bg label {
@@ -226,3 +225,19 @@ header .header-container {
 	display: block;
 	margin: 14px auto;
 }
+
+.crcb-book-list {
+	float: left;
+	margin: 50px 0 30px;
+    clear: both;
+}
+
+.crcb-book-list a {
+	float: left;
+	margin-right: 30px;
+}
+
+.crcb-book-list a:last-child {
+	margin-right: 0;
+}
+
