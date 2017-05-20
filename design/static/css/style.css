@@ -57,7 +57,7 @@ header .header-container {
 	cursor: pointer;
 }
 
-.header-nav div:last-child {
+.header-nav a:last-child {
 	margin-right: 0;
 }
 
@@ -97,6 +97,47 @@ header .header-container {
 
 .header-nav .hn-user-nav:hover svg path {
 	fill: #FF4848;
+}
+
+.user-dropdown {
+	display: none;
+	position: absolute;
+	width: 190px;
+	background: #292929;
+	padding: 20px;
+	margin-top: 50px;
+	margin-left: 363px;
+}
+
+.user-dropdown div {
+	position: absolute;
+    width: 30px;
+    height: 32px;
+    background: #292929;
+    margin-top: -52px;
+    right: 0;
+}
+
+.user-dropdown div svg {
+	float: left;
+    margin-top: 10px;
+    margin-left: 9px;
+}
+
+.user-dropdown a {
+	display: block;
+	color: white;
+	text-decoration: none;
+	margin-bottom: 20px;
+	cursor: pointer;
+}
+
+.user-dropdown a:last-child {
+	margin-bottom: 0;
+}
+
+.user-dropdown a:hover {
+	color: #FF4848;
 }
 
 .page-container {
