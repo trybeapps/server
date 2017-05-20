@@ -188,13 +188,12 @@ header .header-container {
 .currently-reading-container {
 	width: 100%;
 	min-height: 480px;
-	background: rgba(34, 34, 34, 0.8);
+	background: #222222;
 }
 
 .currently-reading-container .crc-bg {
 	width: 1440px;
 	min-height: 480px;
-	background: #222222;
 	margin: 0 auto;
 	padding: 30px;
 }
@@ -206,4 +205,24 @@ header .header-container {
 	color: #333333;
 	background: white;
 	padding: 8px 12px;
+}
+
+.crcb-arrow {
+	float: right;
+}
+
+.crcb-arrow .left, .crcb-arrow .right {
+	float: left;
+	background: white;
+	width: 60px;
+	height: 47px;
+}
+
+.crcb-arrow .left {
+	margin-right: 30px;
+}
+
+.crcb-arrow .left svg, .crcb-arrow .right svg {
+	display: block;
+	margin: 14px auto;
 }
