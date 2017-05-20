@@ -158,6 +158,7 @@ header .header-container {
 	position: absolute;
     background: #222222;
     color: white;
+    font-weight: 600;
     margin-top: -47px;
     margin-left: -35px;
     padding: 6px 8px;
@@ -190,7 +191,7 @@ header .header-container {
 	background: #222222;
 }
 
-.currently-reading-container .crc-bg {
+.currently-reading-container .crc-bg, .books-container {
 	width: 1440px;
 	margin: 0 auto 80px;
 	padding: 30px;
@@ -200,7 +201,7 @@ header .header-container {
 .crc-bg label {
 	float: left;
 	font-size: 24px;
-	font-weight: bold;
+	font-weight: 600;
 	color: #333333;
 	background: white;
 	padding: 8px 12px;
@@ -212,18 +213,42 @@ header .header-container {
 
 .crcb-arrow .left, .crcb-arrow .right {
 	float: left;
-	background: white;
 	width: 60px;
 	height: 47px;
+	border: 4px solid white;
+	cursor: pointer;
 }
 
 .crcb-arrow .left {
 	margin-right: 30px;
 }
 
+.crcb-arrow .left:hover, .crcb-arrow .right:hover {
+	background: white;
+}
+
+.crcb-arrow .left.none, .crcb-arrow .right.none {
+	background: none;
+	border: none;
+	padding-top: 4px;
+	cursor: auto;
+}
+
 .crcb-arrow .left svg, .crcb-arrow .right svg {
 	display: block;
-	margin: 14px auto;
+	margin: 10px auto;
+}
+
+.crcb-arrow .left.none svg g, .crcb-arrow .right.none svg g {
+	stroke: #BEBEBE;
+}
+
+.crcb-arrow .left:hover svg g, .crcb-arrow .right:hover svg g {
+	stroke: #333;
+}
+
+.crcb-arrow .left.none:hover svg g, .crcb-arrow .right.none:hover svg g {
+	stroke: #BEBEBE;
 }
 
 .crcb-book-list {
@@ -238,6 +263,52 @@ header .header-container {
 }
 
 .crcb-book-list a:last-child {
+	margin-right: 0;
+}
+
+.bc-nav-list {
+	width: 684px;
+	margin: 0 auto;
+	overflow: hidden;
+}
+
+.bc-nav-list .bcnl-item {
+	float: left;
+	background: #222222;
+	width: 208px;
+    height: 47px;
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+	color: white;
+	margin-right: 30px;
+    padding-top: 7px;
+    cursor: pointer;
+}
+
+.bc-nav-list .bcnl-item:last-child {
+	margin-right: 0;
+}
+
+.bc-nav-list .bcnl-item:hover {
+	background: #FF4848;
+}
+
+.bc-nav-list .bcnl-item.active {
+	background: #FF4848;
+}
+
+.bc-books-list {
+	overflow: hidden;
+}
+
+.bc-books-list a {
+	float: left;
+	margin-right: 30px;
+	margin-top: 50px;
+}
+
+.bc-books-list a:nth-child(6n) {
 	margin-right: 0;
 }
 
