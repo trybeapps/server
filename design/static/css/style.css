@@ -376,6 +376,11 @@ header .header-container {
 	cursor: default;
 }
 
+.bc-pagination .num.none {
+	font-size: 20px;
+    margin-top: 10px;
+}
+
 .bc-pagination .left, .bc-pagination .right {
 	width: 60px;
     height: 47px;
