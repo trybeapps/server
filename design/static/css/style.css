@@ -27,6 +27,7 @@ header {
 	background: white;
 	margin: 0 auto;
 	border-bottom: 1px solid #DFDFDF;
+	z-index: 999999;
 }
 
 header .header-container {
@@ -66,6 +67,14 @@ header .header-container {
 	margin-right: 30px;
 	overflow: hidden;
 	cursor: pointer;
+}
+
+.header-nav a.active svg g, .header-nav a.active svg path {
+	stroke: #FF4848;
+}
+
+.header-nav a.active label {
+	color: #FF4848;
 }
 
 .header-nav a:last-child {
@@ -155,12 +164,14 @@ header .header-container {
 
 .page-container {
 	width: 100%;
+	margin-top: 60px;
+	overflow: hidden;
 }
 
 .quote-of-the-day {
 	width: 600px;
 	border: 5px solid rgba(96, 96, 96, 0.13);
-	margin: 120px auto 60px;
+	margin: 60px auto;
 	padding: 20px;
 	overflow: hidden;
 }
@@ -403,4 +414,50 @@ footer {
 	width: 100%;
 	height: 80px;
 	background: #222222;
+}
+
+.collections-banner {
+	position: relative;
+	width: 100%;
+	height: 260px;
+	background-image: url('../img/collections_banner.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.collections-banner::after {
+	position: absolute;
+	top: 0;
+	left: 0;
+	content: " ";
+	width: 100%;
+	height: 260px;
+	background-color: rgba(0, 0, 0, 0.7);
+}
+
+.collections-banner label {
+	position: absolute;
+	width: 100%;
+	font-size: 34px;
+	font-weight: 700;
+	text-align: center;
+	color: white;
+	text-align: center;
+	z-index: 1;
+	margin-top: 70px;
+}
+
+.collections-banner .add-collection-button {
+	position: absolute;
+    background: #FF4848;
+    text-decoration: none;
+    color: white;
+    left: 50%;
+    margin-left: -87.49px;
+    margin-top: 140px;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    padding-bottom: .4em;
+    padding-top: .4em;
+    z-index: 1;
 }
