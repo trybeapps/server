@@ -42,7 +42,13 @@ header .header-container {
 	font-family: 'Droid Sans', sans-serif;
 	font-size: 20px;
 	color: #676767;
+	text-decoration: none;
 	margin-top: 18px;
+	cursor: pointer;
+}
+
+.logo:hover {
+	color: #FF4848;
 }
 
 .search-box {
