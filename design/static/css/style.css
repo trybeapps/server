@@ -326,7 +326,7 @@ header .header-container {
 }
 
 .bc-pagination {
-	width: 378px;
+	width: 382px;
 	margin: 80px auto 0;
 	overflow: hidden;
 }
@@ -344,10 +344,12 @@ header .header-container {
 
 .bc-pagination .num {
 	margin-top: 8px;
+	font-weight: 600;
 }
 
 .bc-pagination .dots {
 	margin-top: 8px;
+	font-weight: 600;
 	cursor: default;
 	color: #BEBEBE;
 }
