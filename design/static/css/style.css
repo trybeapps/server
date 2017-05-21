@@ -10,6 +10,15 @@ body {
 	box-sizing: border-box;
 }
 
+::selection {
+  background: #FF4848;
+  color: white;
+}
+::-moz-selection {
+  background: #FF4848;
+  color: white;
+}
+
 header {
 	width: 100%;
 	height: 60px;
