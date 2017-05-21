@@ -20,6 +20,8 @@ body {
 }
 
 header {
+	position: fixed;
+	top: 0;
 	width: 100%;
 	height: 60px;
 	background: white;
@@ -158,7 +160,7 @@ header .header-container {
 .quote-of-the-day {
 	width: 600px;
 	border: 5px solid rgba(96, 96, 96, 0.13);
-	margin: 60px auto;
+	margin: 120px auto 60px;
 	padding: 20px;
 	overflow: hidden;
 }
