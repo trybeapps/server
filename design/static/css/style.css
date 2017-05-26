@@ -478,7 +478,7 @@ footer {
   and (max-width: 1440px) { 
   	
   	header .header-container {
-  		width: 100%;
+  		width: 1290px;
   	}
 
   	.quote-of-the-day .quote {
