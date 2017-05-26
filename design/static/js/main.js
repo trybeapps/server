@@ -13,4 +13,49 @@ $(function() {
 			$('.user-dropdown').hide()
 		}
 	})
+
+	var crcbCounter = 0
+	$('.crcb-book-list a').each(function() {
+		$(this).css('left', crcbCounter + 'px')
+		crcbCounter = crcbCounter + 235
+	})
+
+	$('.crcb-arrow .right').click(function() {
+		$('.crcb-arrow .left').removeClass('none')
+
+		if ( parseInt($('.crcb-book-list a:last-child').css('left').split('px')[0]) != 1175 ) {
+
+			$('.crcb-book-list a').each(function() {
+				var left = parseInt($(this).css('left').split('px')[0]) - 235
+				$(this).css('left', left + 'px')
+			})
+
+			if ( parseInt($('.crcb-book-list a:last-child').css('left').split('px')[0]) == 1410 ) {
+				$('.crcb-arrow .right').addClass('none')
+			} else {
+				$('.crcb-arrow .right').removeClass('none')
+			}
+
+		}
+
+	})
+
+	$('.crcb-arrow .left').click(function() {
+		$('.crcb-arrow .right').removeClass('none')
+
+		if ( parseInt($('.crcb-book-list a:first-child').css('left').split('px')[0]) != 0 ) {
+
+			$('.crcb-book-list a').each(function() {
+				var left = parseInt($(this).css('left').split('px')[0]) + 235
+				$(this).css('left', left + 'px')
+			})
+			
+			if ( parseInt($('.crcb-book-list a:first-child').css('left').split('px')[0]) == -235 ) {
+				$('.crcb-arrow .left').addClass('none')
+			} else {
+				$('.crcb-arrow .left').removeClass('none')
+			}
+			
+		}
+	})
 })

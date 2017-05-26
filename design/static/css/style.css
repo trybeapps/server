@@ -284,18 +284,19 @@ header .header-container {
 }
 
 .crcb-book-list {
+	position: relative;
 	float: left;
+	width: 1380px;
+	min-height: 300px;
 	margin: 50px 0 30px;
     clear: both;
+    overflow: hidden;
 }
 
 .crcb-book-list a {
-	float: left;
-	margin-right: 30px;
-}
-
-.crcb-book-list a:last-child {
-	margin-right: 0;
+	position: absolute;
+	top: 0;
+	transition: left 0.2s ease-in-out;
 }
 
 .bc-nav-list {
@@ -468,7 +469,7 @@ footer {
     margin-top: 140px;
     padding-left: 1.5em;
     padding-right: 1.5em;
-    padding-bottom: .4em;
+    padding-bottom: .6em;
     padding-top: .4em;
     z-index: 1;
 }
