@@ -475,7 +475,6 @@ footer {
 }
 
 @media screen 
-  and (min-width: 1300px)
   and (max-width: 1440px) { 
   	
   	header .header-container {
@@ -514,6 +513,7 @@ footer {
 
   	.crcb-book-list {
   		width: 1230px;
+  		min-height: 270px;
   	}
 
   	.crcb-book-list a img, .bc-books-list a img {

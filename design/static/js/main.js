@@ -19,7 +19,11 @@ $(function() {
 	}
 
 	var crcbCounter = 0
+	var crcbHeight = parseInt($('.crcb-book-list a:first-child img')[0].getBoundingClientRect().height)
+	$('.crcb-book-list').css('height', crcbHeight + 'px')
 	$('.crcb-book-list a').each(function() {
+		var thisHeight = parseInt($(this).children('img')[0].getBoundingClientRect().height)
+		if ( thisHeight > crcbHeight ) $('.crcb-book-list').css('height', thisHeight + 'px')
 		$(this).css('left', crcbCounter + 'px')
 		crcbCounter = crcbCounter + parseInt($(this).children('img').width()) + 30
 	})
@@ -49,7 +53,7 @@ $(function() {
 	})
 
 	$('.crcb-arrow .left').click(function() {
-		
+
 		if ($('.crcb-book-list a').length > 6) {
 			
 			$('.crcb-arrow .right').removeClass('none')
