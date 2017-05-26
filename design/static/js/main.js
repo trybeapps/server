@@ -14,6 +14,10 @@ $(function() {
 		}
 	})
 
+	if ($('.crcb-book-list a').length <= 6) {
+		$('.crcb-arrow div').addClass('none')
+	}
+
 	var crcbCounter = 0
 	$('.crcb-book-list a').each(function() {
 		$(this).css('left', crcbCounter + 'px')
@@ -21,19 +25,22 @@ $(function() {
 	})
 
 	$('.crcb-arrow .right').click(function() {
-		$('.crcb-arrow .left').removeClass('none')
+		if ($('.crcb-book-list a').length > 6) {
+			
+			$('.crcb-arrow .left').removeClass('none')
 
-		if ( parseInt($('.crcb-book-list a:last-child').css('left').split('px')[0]) != 1175 ) {
+			if ( parseInt($('.crcb-book-list a:last-child').css('left').split('px')[0]) != 1175 ) {
+				$('.crcb-book-list a').each(function() {
+					var left = parseInt($(this).css('left').split('px')[0]) - 235
+					$(this).css('left', left + 'px')
+				})
 
-			$('.crcb-book-list a').each(function() {
-				var left = parseInt($(this).css('left').split('px')[0]) - 235
-				$(this).css('left', left + 'px')
-			})
+				if ( parseInt($('.crcb-book-list a:last-child').css('left').split('px')[0]) == 1410 ) {
+					$('.crcb-arrow .right').addClass('none')
+				} else {
+					$('.crcb-arrow .right').removeClass('none')
+				}
 
-			if ( parseInt($('.crcb-book-list a:last-child').css('left').split('px')[0]) == 1410 ) {
-				$('.crcb-arrow .right').addClass('none')
-			} else {
-				$('.crcb-arrow .right').removeClass('none')
 			}
 
 		}
@@ -41,21 +48,25 @@ $(function() {
 	})
 
 	$('.crcb-arrow .left').click(function() {
-		$('.crcb-arrow .right').removeClass('none')
-
-		if ( parseInt($('.crcb-book-list a:first-child').css('left').split('px')[0]) != 0 ) {
-
-			$('.crcb-book-list a').each(function() {
-				var left = parseInt($(this).css('left').split('px')[0]) + 235
-				$(this).css('left', left + 'px')
-			})
+		if ($('.crcb-book-list a').length > 6) {
 			
-			if ( parseInt($('.crcb-book-list a:first-child').css('left').split('px')[0]) == -235 ) {
-				$('.crcb-arrow .left').addClass('none')
-			} else {
-				$('.crcb-arrow .left').removeClass('none')
+			$('.crcb-arrow .right').removeClass('none')
+
+			if ( parseInt($('.crcb-book-list a:first-child').css('left').split('px')[0]) != 0 ) {
+
+				$('.crcb-book-list a').each(function() {
+					var left = parseInt($(this).css('left').split('px')[0]) + 235
+					$(this).css('left', left + 'px')
+				})
+			
+				if ( parseInt($('.crcb-book-list a:first-child').css('left').split('px')[0]) == -235 ) {
+					$('.crcb-arrow .left').addClass('none')
+				} else {
+					$('.crcb-arrow .left').removeClass('none')
+				}
+			
 			}
-			
+
 		}
 	})
 })
