@@ -486,6 +486,18 @@ footer {
   		font-size: 17px;
   	}
 
+  	.crc-bg label {
+  		font-size: 21px;
+  	}
+
+  	.crcb-arrow .left, .crcb-arrow .right {
+  		width: 56px;
+  	}
+
+  	.crcb-arrow .left svg, .crcb-arrow .right svg {
+  		width: 29px;
+  	}
+
   	.bc-nav-list {
   		width: 618px;
   	}
