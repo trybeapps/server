@@ -1,143 +1,120 @@
-// Disable auto discover for all elements:
-Dropzone.autoDiscover = false;
+$(function() {
+	$('.hn-user-nav').click(function(e) {
+		e.preventDefault()
+		if ( !$('.user-dropdown').is(':visible') ) {
+			$('.user-dropdown').show()
+		} else {
+			$('.user-dropdown').hide()
+		}
+	})
 
-$(function () {
-  var myDropzone = new Dropzone('body', {
-    url: '/book-upload',
-    paramName: 'file',
-    acceptedFiles: 'application/pdf,.epub',
-    uploadMultiple: true,
-    previewsContainer: '#dropzone_container',
-    clickable: false
-  })
+	$(document).click(function(e) {
+		if ( $(e.target).closest('.user-dropdown').length === 0 && $(e.target).closest('.hn-user-nav').length === 0 ) {
+			$('.user-dropdown').hide()
+		}
+	})
 
-  myDropzone.on('dragover', function () {
-    $('.page-container').addClass('drag-over')
-  })
+	if ($('.crcb-book-list a').length <= 6) {
+		$('.crcb-arrow div').addClass('none')
+	}
 
-  myDropzone.on('dragleave', function () {
-    $('.page-container').removeClass('drag-over')
-  })
+	var crcbCounter = 0
+	var crcbHeight = parseInt($('.crcb-book-list a:first-child img')[0].getBoundingClientRect().height)
+	$('.crcb-book-list').css('height', crcbHeight + 'px')
+	$('.crcb-book-list a').each(function() {
+		var thisHeight = parseInt($(this).children('img')[0].getBoundingClientRect().height)
+		if ( thisHeight > crcbHeight ) $('.crcb-book-list').css('height', thisHeight + 'px')
+		$(this).css('left', crcbCounter + 'px')
+		crcbCounter = crcbCounter + parseInt($(this).children('img').width()) + 30
+	})
 
-  myDropzone.on('drop', function () {
-    $('.page-container').removeClass('drag-over')
-  })
+	function getScrollBarWidth () {
+  		var inner = document.createElement('p');
+  		inner.style.width = "100%";
+  		inner.style.height = "200px";
 
-  myDropzone.on('error', function(file, err) {
-    console.log(file)
-    console.log(err)
-    if (!file.accepted) alert('wrong file format')
-    window.location.reload(false);
-  })
+  		var outer = document.createElement('div');
+  		outer.style.position = "absolute";
+  		outer.style.top = "0px";
+  		outer.style.left = "0px";
+  		outer.style.visibility = "hidden";
+  		outer.style.width = "200px";
+  		outer.style.height = "150px";
+  		outer.style.overflow = "hidden";
+  		outer.appendChild (inner);
 
-  myDropzone.on('success', function (file, res) {
-    console.log(file)
-    if (res == 'book already exists') alert(res)
-    window.location.reload(false);
-  })
+  		document.body.appendChild (outer);
+  		var w1 = inner.offsetWidth;
+  		outer.style.overflow = 'scroll';
+  		var w2 = inner.offsetWidth;
+  		if (w1 == w2) w2 = outer.clientWidth;
 
-  var uploadBtn = new Dropzone('.upload-books', {
-    url: '/book-upload',
-    paramName: 'file',
-    acceptedFiles: 'application/pdf,.epub',
-    uploadMultiple: true,
-    previewsContainer: '#dropzone_container'
-  })
+  		document.body.removeChild (outer);
 
-  uploadBtn.on('error', function(file, err) {
-    console.log(file)
-    console.log(err)
-    if (!file.accepted) alert('wrong file format')
-    window.location.reload(false)
-  })
+  		return (w1 - w2);
+	};
 
-  uploadBtn.on('success', function (file, res) {
-    console.log(file)
-    if (res == 'book already exists') alert(res)
-    window.location.reload(false);
-  })
+	var windowWidth = $(window).width() + parseInt(getScrollBarWidth())
 
-  $('.user').click(function (e) {
-    e.preventDefault()
-    e.stopPropagation()
-    $('.user-dropdown').toggle()
-  })
+	var booksLength = 6
+	var crcbImgWidthFULL = 0
+	var crcbImgWidthPartial = 0
+	if ( windowWidth > 1300 ) {
+		booksLength = 6
+		crcbImgWidthFULL = ( parseInt( $('.crcb-book-list a img').width() ) * 6 ) + 180
+		crcbImgWidthPartial = ( parseInt($('.crcb-book-list a img').width()) * 5 ) + 150 
+	} else if ( windowWidth <= 1300 && windowWidth >= 900 ) {
+		booksLength = 4
+		crcbImgWidthFULL = ( parseInt( $('.crcb-book-list a img').width() ) * 4 ) + 120
+		crcbImgWidthPartial = ( parseInt($('.crcb-book-list a img').width()) * 3 ) + 90 
+	}
 
-  $('.nc-img').click(function() {
-    $(this).siblings('.nc-checkbox').click()
-  })
+	$('.crcb-arrow .right').click(function() {
 
-  $(document).on('click', function () {
-    $('.user-dropdown,.search-dropdown').hide()
-  })
+		if ($('.crcb-book-list a').length > booksLength) {
 
-  $('#search').on('keyup', function () {
-    if ($(this).val().length >= 3) {
-      $('.search-dropdown').show()
-      $.ajax({
-        url: '/autocomplete',
-        dataType: 'json',
-        data: {
-          term: $(this).val()
-        },
-        success: function (data) {
-          console.log(data)
-          $('.metadata ul').html('')
-          if (!data[0].length) {
-            $('.metadata-none').show()
-          }
-          else {
-            $('.metadata-none').hide()
-          }
-          for (i in data[0]) {
-            var title = data[0][i].title
-            var author = data[0][i].author
-            var url = data[0][i].url
-            var cover = data[0][i].cover
+			$('.crcb-arrow .left').removeClass('none')
 
-            var html = '<li>'
-                        + '<a href="' + url + '" class="sd-item">'
-                          + '<img src="' + cover + '" width="60px" height="72px">'
-                          + '<div class="sdi-info">'
-                            + '<div class="sdii-title">' + title + '</div>'
-                            + '<div class="sdii-author">' + author + '</div>'
-                          + '</div>'
-                        + '</a>'
-                        + '</li>'
+			if ( parseInt($('.crcb-book-list a:last-child').css('left').split('px')[0]) != crcbImgWidthPartial ) {
+				$('.crcb-book-list a').each(function() {
+					var left = parseInt($(this).css('left').split('px')[0]) - ( parseInt($(this).children('img').width()) + 30 )
+					$(this).css('left', left + 'px')
+				})
 
-            $('.metadata ul').append(html)
-          }
+				if ( parseInt($('.crcb-book-list a:last-child').css('left').split('px')[0]) ==  crcbImgWidthFULL ) {
+					$('.crcb-arrow .right').addClass('none')
+				} else {
+					$('.crcb-arrow .right').removeClass('none')
+				}
 
-          $('.content ul').html('')
-          if (!data[1].length) {
-            $('.content-none').show()
-          }
-          else {
-            $('.content-none').hide()
-          }
-          for (i in data[1]) {
-            var title = data[1][i].title
-            var author = data[1][i].author
-            var url = data[1][i].url
-            var cover = data[1][i].cover
-            var page = data[1][i].page
-            var content = data[1][i].data
+			}
 
-            var html = '<li>'
-                        + '<a href="' + url + '#page=' + page + '" class="sd-item">'
-                          + '<img src="' + cover + '" width="60px" height="72px">'
-                          + '<div class="sdi-info">'
-                            + '<div class="sdii-title">' + title + '</div>'
-                            + '<div class="sdii-author">' + author + '</div>'
-                            + '<div class="sdii-content">' + content + '</div>'
-                          + '</div>'
-                        + '</a>'
-                        + '</li>'
+		}
 
-            $('.content ul').append(html)
-          }
-        }
-      })
-    }
-  })
+	})
+
+	$('.crcb-arrow .left').click(function() {
+
+		if ($('.crcb-book-list a').length > booksLength) {
+			
+			$('.crcb-arrow .right').removeClass('none')
+
+			if ( parseInt($('.crcb-book-list a:first-child').css('left').split('px')[0]) != 0 ) {
+
+				$('.crcb-book-list a').each(function() {
+					var left = parseInt($(this).css('left').split('px')[0]) + ( parseInt($(this).children('img').width()) + 30 )
+					$(this).css('left', left + 'px')
+				})
+			
+				if ( parseInt($('.crcb-book-list a:first-child').css('left').split('px')[0]) == -Math.abs(parseInt($('.crcb-book-list a img').width())) - 30 ) {
+					$('.crcb-arrow .left').addClass('none')
+				} else {
+					$('.crcb-arrow .left').removeClass('none')
+				}
+			
+			}
+
+		}
+
+	})
 })
