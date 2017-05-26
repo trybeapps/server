@@ -473,3 +473,61 @@ footer {
     padding-top: .4em;
     z-index: 1;
 }
+
+@media screen 
+  and (min-width: 1300px)
+  and (max-width: 1440px) { 
+  	
+  	header .header-container {
+  		width: 100%;
+  	}
+
+  	.quote-of-the-day .quote {
+  		font-size: 17px;
+  	}
+
+  	.bc-nav-list {
+  		width: 618px;
+  	}
+
+  	.bc-nav-list .bcnl-item {
+  		width: 186px;
+    	height: 43px;
+    	font-size: 21px;
+  	}
+
+  	.currently-reading-container .crc-bg, .books-container {
+  		width: 1290px;
+  	}
+
+  	.crcb-book-list {
+  		width: 1230px;
+  	}
+
+  	.crcb-book-list a img, .bc-books-list a img {
+  		width: 180px;
+  	}
+
+  	.bc-pagination a, .bc-pagination .dots {
+  		font-size: 21px;
+  	}
+
+  	.bc-pagination .dots, .bc-pagination .num {
+  		margin-top: 9px;
+  	}
+
+  	.bc-pagination .num.none {
+  		font-size: 18px;
+  		margin-top: 11px;
+  	}
+
+  	.bc-pagination .left, .bc-pagination .right {
+  		width: 56px;
+  		padding-top: 8px;
+  	}
+
+  	.bc-pagination .left svg, .bc-pagination .right svg {
+  		width: 29px;
+  	}
+
+}
