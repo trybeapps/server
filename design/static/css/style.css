@@ -337,15 +337,15 @@ header .header-container {
 	background: #FF4848;
 }
 
-.bc-books-list, .bc-books-list div, .bc-books-list-medium, .bc-books-list-medium div, .bc-books-list-small, .bc-books-list-small div {
+.bc-books-list, .bc-books-list div, .bc-books-list-medium, .bc-books-list-medium div, .bc-books-list-small, .bc-books-list-small div, .bc-books-list-xtra-small {
 	overflow: hidden;
 }
 
-.bc-books-list-medium, .bc-books-list-small {
+.bc-books-list-medium, .bc-books-list-small, .bc-books-list-xtra-small {
 	display: none;
 }
 
-.bc-books-list-medium a img, .bc-books-list-small a img {
+.bc-books-list-medium a img, .bc-books-list-small a img, .bc-books-list-xtra-small a img {
 	width: 180px;
 }
 
@@ -357,6 +357,18 @@ header .header-container {
 
 .bc-books-list a:nth-child(6n), .bc-books-list-medium a:nth-child(4n), .bc-books-list-small a:nth-child(2n) {
 	margin-right: 0;
+}
+
+.bc-books-list-xtra-small a {
+	display: block;
+	width: 100%;
+    margin-top: 50px;
+    overflow: hidden;
+}
+
+.bc-books-list-xtra-small a img {
+	display: block;
+    margin: 0 auto;
 }
 
 .bc-pagination {
@@ -559,7 +571,6 @@ footer {
 }
 
 @media screen 
-  and (min-width: 900px)
   and (max-width: 1300px) {
 
   	.currently-reading-container .crc-bg, .books-container {
@@ -576,8 +587,7 @@ footer {
 }
 
 @media screen
-  and (min-width: 470px)
-  and (max-width: 899px) {
+  and (max-width: 900px) {
 
   	.quote-of-the-day {
   		width: 390px;
@@ -635,4 +645,59 @@ footer {
   		display: block;
   	}
 
-  }
+ }
+
+@media screen
+  and (max-width: 470px) {
+
+  	.quote-of-the-day {
+  		width: 325px;
+  	}
+
+  	.currently-reading-container .crc-bg, .books-container {
+  		width: 100%;
+  	}
+
+  	.crc-bg label {
+  		float: none;
+	    display: block;
+    	text-align: center;
+    	margin-bottom: 30px;
+  	}
+
+  	.crcb-arrow {
+  		width: 100%;
+    	float: none;
+    	margin: 0 auto;
+    	overflow: hidden;
+  	}
+
+	.crcb-arrow .right {
+  		float: right;
+  	}
+
+  	.bc-nav-list, .bc-nav-list .bcnl-item {
+  		width: 100%;
+  	}
+
+  	.bc-books-list,.bc-books-list-medium,.bc-books-list-small {
+  		display: none;
+  	}
+
+  	.bc-books-list-xtra-small {
+  		display: block;
+  	}
+
+  	.bc-pagination {
+  		width: 190px;
+  	}
+
+  	.bc-pagination a:nth-child(6) {
+  		margin-right: 0;
+  	}
+
+  	.bc-pagination .left, .bc-pagination .right {
+  		display: none;
+  	}
+
+}
