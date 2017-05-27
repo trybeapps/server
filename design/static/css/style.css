@@ -656,7 +656,7 @@ footer {
 }
 
 @media screen
-  and (max-width: 900px) {
+  and (max-device-width: 900px) {
 
   	.quote-of-the-day {
   		width: 390px;
@@ -717,7 +717,7 @@ footer {
  }
 
 @media screen
-  and (max-width: 470px) {
+  and (max-device-width: 470px) {
 
   	.quote-of-the-day {
   		width: 325px;
