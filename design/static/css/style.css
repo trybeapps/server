@@ -67,6 +67,75 @@ header .header-container {
 	border: 1px solid #FF4848;
 }
 
+.search-dropdown {
+	display: none;
+	position: absolute;
+    top: 50px;
+    margin-left: 127px;
+	width: 480px;
+    max-height: 480px;
+    background: white;
+    border: 1px solid #CCCCCC;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.search-dropdown label {
+	display: block;
+    width: 100%;
+    font-weight: 700;
+    color: #676767;
+    text-align: center;
+    background: rgba(96, 96, 96, 0.13);
+    margin-bottom: 20px;
+    padding: 3px;
+    clear: both;
+}
+
+.search-dropdown a {
+	display: block;
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.search-dropdown a img {
+	float: left;
+	width: 70px;
+    margin-right: 10px;
+}
+
+.search-dropdown a .sdtl-title {
+	float: left;
+    width: 363px;
+    color: #161616;
+    font-weight: 700;
+}
+
+.search-dropdown a .sdtl-author {
+	float: left;
+    width: 363px;
+    font-size: 14px;
+    color: #676767;
+    margin-top: 5px;
+}
+
+.search-dropdown a .sdtl-description {
+	float: left;
+    width: 363px;
+    margin-top: 10px;
+    color: #161616;
+}
+
+.search-dropdown a .sdtl-description em {
+	color: #FF4848;
+	font-weight: 700;
+	font-style: normal;
+}
+
+.search-dropdown a:hover .sdtl-title {
+	color: #FF4848;
+}
+
 .header-nav {
 	float: right;
 }
