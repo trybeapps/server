@@ -340,7 +340,7 @@ header .header-container {
 	overflow: hidden;
 }
 
-.bc-books-list-medium {
+.bc-books-list-medium, .bc-books-list-small {
 	display: none;
 }
 
@@ -565,7 +565,7 @@ footer {
   		width: 870px;
   	}
 
-  	.bc-books-list {
+  	.bc-books-list, .bc-books-list-small {
   		display: none;
   	}
 
