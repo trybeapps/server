@@ -134,7 +134,8 @@ header .header-container {
 	display: none;
 	position: absolute;
 	width: 190px;
-	background: #222222;
+	background: white;
+	border: 1px solid #CCCCCC;
 	padding: 20px;
 	margin-top: 50px;
 	margin-left: 369px;
@@ -157,7 +158,7 @@ header .header-container {
 
 .user-dropdown a {
 	display: block;
-	color: white;
+	color: #676767;
 	font-weight: 600;
 	text-decoration: none;
 	margin-bottom: 20px;
