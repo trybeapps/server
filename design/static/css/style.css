@@ -63,6 +63,10 @@ header .header-container {
 	outline: none;
 }
 
+.search-box:focus {
+	border: 1px solid #FF4848;
+}
+
 .header-nav {
 	float: right;
 }
@@ -210,6 +214,7 @@ header .header-container {
 }
 
 .quote-of-the-day .author {
+	float: right;
 	margin-top: 5px;
 	font-weight: 700;
 }
@@ -331,7 +336,7 @@ header .header-container {
 	background: #FF4848;
 }
 
-.bc-books-list, .bc-books-list div, .bc-books-list-medium, .bc-books-list-medium div {
+.bc-books-list, .bc-books-list div, .bc-books-list-medium, .bc-books-list-medium div, .bc-books-list-small, .bc-books-list-small div {
 	overflow: hidden;
 }
 
@@ -339,17 +344,17 @@ header .header-container {
 	display: none;
 }
 
-.bc-books-list-medium a img {
+.bc-books-list-medium a img, .bc-books-list-small a img {
 	width: 180px;
 }
 
-.bc-books-list a, .bc-books-list-medium a {
+.bc-books-list a, .bc-books-list-medium a, .bc-books-list-small a {
 	float: left;
 	margin-right: 30px;
 	margin-top: 50px;
 }
 
-.bc-books-list a:nth-child(6n), .bc-books-list-medium a:nth-child(4n) {
+.bc-books-list a:nth-child(6n), .bc-books-list-medium a:nth-child(4n), .bc-books-list-small a:nth-child(2n) {
 	margin-right: 0;
 }
 
@@ -568,3 +573,65 @@ footer {
   		display: block;
   	}
 }
+
+@media screen
+  and (min-width: 470px)
+  and (max-width: 899px) {
+
+  	.quote-of-the-day {
+  		width: 390px;
+  	}
+
+  	.quote-of-the-day label {
+  		left: 50%;
+    	margin-left: -74px;
+  	}
+
+  	.quote-of-the-day img {
+  		float: none;
+    	display: block;
+    	margin: 0 auto 20px;
+  	}
+
+  	.quote-of-the-day .quote, .quote-of-the-day .author {
+  		width: 100%;
+    	text-align: center;
+    	margin-bottom: 10px;
+    	float: none;
+  	}
+
+  	.quote-of-the-day .author {
+  		margin-bottom: 0;
+  	}
+  	
+  	.currently-reading-container .crc-bg, .books-container {
+  		width: 450px;
+  	}
+
+  	.crcb-book-list {
+  		width: 390px;
+  	}
+
+  	.bc-nav-list {
+  		width: 186px;
+  	}
+
+  	.bc-nav-list .bcnl-item {
+  		float: none;
+  		display: block;
+  		margin-bottom: 30px;
+  	}
+
+  	.bc-nav-list .bcnl-item:last-child {
+  		margin-bottom: 0;
+  	}
+
+  	.bc-books-list,.bc-books-list-medium {
+  		display: none;
+  	}
+
+  	.bc-books-list-small {
+  		display: block;
+  	}
+
+  }
