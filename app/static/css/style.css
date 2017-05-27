@@ -19,6 +19,15 @@ body {
   color: white;
 }
 
+input[type="text"], .sign-form input[type="password"] {
+	display: block;
+	width: 240px;
+	height: 36px;
+	font-size: 14px;
+	border: 1px solid #B1B1B1;
+	outline: none;
+}
+
 header {
 	position: fixed;
 	top: 0;
@@ -51,16 +60,16 @@ header .header-container {
 	color: #FF4848;
 }
 
-.search-box {
+input[type="text"].search-box {
 	float: left;
 	width: 480px;
-	height: 36px;
-	font-size: 14px;
-	border: 1px solid #B1B1B1;
 	margin-top: 12px;
 	margin-left: 30px;
 	padding: 0 10px;
-	outline: none;
+}
+
+.search-box:focus {
+	border: 1px solid #FF4848;
 }
 
 .header-nav {
@@ -172,6 +181,42 @@ header .header-container {
 	width: 100%;
 	margin-top: 60px;
 	overflow: hidden;
+}
+
+.sign-form {
+	width: 240px;
+	margin: 160px auto;
+}
+
+.sign-form label {
+	display: block;
+	text-align: center;
+	font-weight: 700;
+	margin-bottom: 20px;
+}
+
+.sign-form input[type="text"], .sign-form input[type="password"] {
+	margin-bottom: 20px;
+	padding: 0 10px;
+}
+
+.sign-form input[type="text"]:focus, .sign-form input[type="password"]:focus {
+	border: 1px solid #FF4848;
+}
+
+.sign-form input[type="submit"] {
+	display: block;
+	color: white;
+	border: none;
+	font-size: 16px;
+	font-weight: 600;
+	background: #FF4848;
+	padding-left: 1.5em;
+    padding-right: 1.5em;
+    padding-bottom: .6em;
+    padding-top: .4em;
+   	margin: 0 auto;
+   	cursor: pointer;
 }
 
 .quote-of-the-day {
