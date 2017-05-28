@@ -410,26 +410,31 @@ header .header-container {
 	background: #FF4848;
 }
 
-.bc-books-list, .bc-books-list div, .bc-books-list-medium, .bc-books-list-medium div, .bc-books-list-small, .bc-books-list-small div, .bc-books-list-xtra-small {
+.bc-books-list, .bc-books-list div, .bc-books-list-medium, .bc-books-list-medium div, .bc-books-list-small-ipad, .bc-books-list-small-ipad div, .bc-books-list-small, .bc-books-list-small div, .bc-books-list-xtra-small {
 	overflow: hidden;
 }
 
-.bc-books-list-medium, .bc-books-list-small, .bc-books-list-xtra-small {
+.bc-books-list-medium,.bc-books-list-small-ipad, .bc-books-list-small, .bc-books-list-xtra-small {
 	display: none;
 }
 
-.bc-books-list-medium a img, .bc-books-list-small a img, .bc-books-list-xtra-small a img {
+.bc-books-list-medium a img, .bc-books-list-small-ipad a img, .bc-books-list-small a img, .bc-books-list-xtra-small a img {
 	width: 180px;
 }
 
-.bc-books-list a, .bc-books-list-medium a, .bc-books-list-small a {
+.bc-books-list a, .bc-books-list-medium a, .bc-books-list-small-ipad a, .bc-books-list-small a {
 	float: left;
 	margin-right: 30px;
 	margin-top: 50px;
 }
 
-.bc-books-list a:nth-child(6n), .bc-books-list-medium a:nth-child(4n), .bc-books-list-small a:nth-child(2n) {
+.bc-books-list a:nth-child(6n), .bc-books-list-medium a:nth-child(4n), .bc-books-list-small-ipad a:nth-child(3n), .bc-books-list-small a:nth-child(2n) {
 	margin-right: 0;
+}
+
+.bc-books-list-small-ipad {
+	width: 600px;
+	margin: 0 auto;
 }
 
 .bc-books-list-small {
@@ -711,7 +716,7 @@ footer {
   		margin-bottom: 0;
   	}
 
-  	.bc-books-list,.bc-books-list-medium, .bc-books-list-xtra-small {
+  	.bc-books-list,.bc-books-list-medium, .bc-books-list-small-ipad, .bc-books-list-xtra-small {
   		display: none;
   	}
 
@@ -720,6 +725,31 @@ footer {
   	}
 
  }
+
+ @media screen
+  and (max-device-width: 768px) {
+
+  	.bc-nav-list {
+  		display: block;
+    	width: 618px;
+    	margin: 0 auto;
+  	}
+
+  	.bc-nav-list .bcnl-item {
+  		display: block;
+    	float: left;
+    	margin-bottom: 0;
+  	}
+  	
+  	.bc-books-list,.bc-books-list-medium, .bc-books-list-small, .bc-books-list-xtra-small {
+  		display: none;
+  	}
+
+  	.bc-books-list-small-ipad {
+  		display: block;
+  	}
+
+}
 
 @media screen
   and (max-device-width: 470px) {
