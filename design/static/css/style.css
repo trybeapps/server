@@ -685,11 +685,11 @@ footer {
   	}
   	
   	.currently-reading-container .crc-bg, .books-container {
-  		width: 450px;
+  		width: 870px;
   	}
 
   	.crcb-book-list {
-  		width: 390px;
+  		width: 100%;
   	}
 
   	.bc-nav-list {
@@ -706,11 +706,11 @@ footer {
   		margin-bottom: 0;
   	}
 
-  	.bc-books-list,.bc-books-list-medium {
+  	.bc-books-list,.bc-books-list-small {
   		display: none;
   	}
 
-  	.bc-books-list-small {
+  	.bc-books-list-medium {
   		display: block;
   	}
 
