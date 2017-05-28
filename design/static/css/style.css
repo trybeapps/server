@@ -250,10 +250,14 @@ header .header-container {
 
 .quote-of-the-day {
 	width: 600px;
-	border: 5px solid rgba(96, 96, 96, 0.13);
 	margin: 60px auto;
-	padding: 20px;
 	overflow: hidden;
+}
+
+.quote-of-the-day .qotd-border {
+	width: 100%;
+	border: 5px solid rgba(96, 96, 96, 0.13);
+	padding: 20px;
 }
 
 .quote-of-the-day label {
@@ -426,6 +430,11 @@ header .header-container {
 
 .bc-books-list a:nth-child(6n), .bc-books-list-medium a:nth-child(4n), .bc-books-list-small a:nth-child(2n) {
 	margin-right: 0;
+}
+
+.bc-books-list-small {
+	width: 390px;
+    margin: 0 auto;
 }
 
 .bc-books-list-xtra-small a {
@@ -646,7 +655,7 @@ footer {
   		width: 870px;
   	}
 
-  	.bc-books-list, .bc-books-list-small {
+  	.bc-books-list, .bc-books-list-small, .bc-books-list-xtra-small {
   		display: none;
   	}
 
@@ -684,11 +693,7 @@ footer {
   		margin-bottom: 0;
   	}
   	
-  	.currently-reading-container .crc-bg, .books-container {
-  		width: 870px;
-  	}
-
-  	.crcb-book-list {
+  	.currently-reading-container .crc-bg, .crcb-book-list, .books-container {
   		width: 100%;
   	}
 
@@ -706,11 +711,11 @@ footer {
   		margin-bottom: 0;
   	}
 
-  	.bc-books-list,.bc-books-list-small {
+  	.bc-books-list,.bc-books-list-medium, .bc-books-list-xtra-small {
   		display: none;
   	}
 
-  	.bc-books-list-medium {
+  	.bc-books-list-small {
   		display: block;
   	}
 
@@ -720,7 +725,8 @@ footer {
   and (max-device-width: 470px) {
 
   	.quote-of-the-day {
-  		width: 325px;
+  		width: 100%;
+  		padding: 0 30px;
   	}
 
   	.currently-reading-container .crc-bg, .books-container {
