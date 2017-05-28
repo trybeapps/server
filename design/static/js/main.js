@@ -76,7 +76,7 @@ $(function() {
 		crcbImgWidthFULL = ( parseInt( $('.crcb-book-list a img').width() ) * 1 ) + 30
 		crcbImgWidthPartial = 0
 	}
-
+	alert(windowWidth)
 	$('.crcb-arrow .right').click(function() {
 
 		if ($('.crcb-book-list a').length > booksLength) {
