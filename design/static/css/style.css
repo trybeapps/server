@@ -258,6 +258,7 @@ header .header-container {
 	width: 100%;
 	border: 5px solid rgba(96, 96, 96, 0.13);
 	padding: 20px;
+	overflow-y: hidden;
 }
 
 .quote-of-the-day label {
