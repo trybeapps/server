@@ -753,7 +753,7 @@ footer {
 }
 
 @media screen
-  and (max-device-width: 470px) {
+  and (max-device-width: 520px) {
 
   	.quote-of-the-day {
   		width: 100%;
@@ -786,7 +786,11 @@ footer {
   		width: 100%;
   	}
 
-  	.bc-books-list,.bc-books-list-medium,.bc-books-list-small {
+  	.bc-nav-list .bcnl-item {
+  		margin-bottom: 30px;
+  	}
+
+  	.bc-books-list,.bc-books-list-medium, .bc-books-list-small-ipad, .bc-books-list-small {
   		display: none;
   	}
 

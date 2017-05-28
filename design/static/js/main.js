@@ -67,11 +67,11 @@ $(function() {
 		booksLength = 4
 		crcbImgWidthFULL = ( parseInt( $('.crcb-book-list a img').width() ) * 4 ) + 120
 		crcbImgWidthPartial = ( parseInt($('.crcb-book-list a img').width()) * 3 ) + 90
-	} else if ( windowWidth <= 899 && windowWidth >= 470 ) {
+	} else if ( windowWidth <= 899 && windowWidth >= 520 ) {
 		booksLength = 2
 		crcbImgWidthFULL = ( parseInt( $('.crcb-book-list a img').width() ) * 2 ) + 60
 		crcbImgWidthPartial = ( parseInt($('.crcb-book-list a img').width()) * 1 ) + 30
-	} else if ( windowWidth <= 469 && windowWidth >= 300 ) {
+	} else if ( windowWidth <= 519 && windowWidth >= 300 ) {
 		booksLength = 1
 		crcbImgWidthFULL = ( parseInt( $('.crcb-book-list a img').width() ) * 1 ) + 30
 		crcbImgWidthPartial = 0
