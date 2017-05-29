@@ -153,6 +153,8 @@ header .header-container {
     top: 0;
     left: 0;
     padding: 30px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .header-nav-small .hns-close {
