@@ -28,6 +28,11 @@ header {
 	margin: 0 auto;
 	border-bottom: 1px solid #DFDFDF;
 	z-index: 999999;
+	transition: top 0.2s ease-in-out;
+}
+
+.nav-up {
+    top: -60px;
 }
 
 header .header-container {
@@ -722,6 +727,10 @@ footer {
 
   	header {
   		height: 108px;
+  	}
+
+  	.nav-up {
+  		top: -108px;
   	}
 
   	header .header-container {
