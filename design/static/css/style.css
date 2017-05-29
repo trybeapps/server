@@ -192,7 +192,6 @@ header .header-container {
 
 .header-nav a.active svg g, .header-nav a.active svg path {
 	stroke: #FF4848;
-	fill: #FF4848;
 }
 
 .header-nav a.active label {
