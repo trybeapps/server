@@ -136,6 +136,10 @@ header .header-container {
 	color: #FF4848;
 }
 
+.menu-icon {
+	display: none;
+}
+
 .header-nav {
 	float: right;
 }
@@ -148,6 +152,16 @@ header .header-container {
     height: 100%;
     top: 0;
     left: 0;
+    padding: 30px;
+}
+
+.header-nav-small .hns-close {
+    float: right;
+    font-weight: 600;
+    margin-top: -12px;
+    margin-bottom: 10px;
+    padding-bottom: 20px;
+    padding-left: 20px;
 }
 
 .header-nav .hn-book-nav, .header-nav .hn-collection-nav, .header-nav .hn-notification-nav, .header-nav .hn-user-nav,
@@ -162,6 +176,11 @@ header .header-container {
 .header-nav-small .hn-book-nav, .header-nav-small .hn-collection-nav, .header-nav-small .hn-notification-nav, .header-nav-small .hn-invite-nav, .header-nav-small .hn-settings-nav, .header-nav-small .hn-sign-out-nav {
 	float: none;
 	display: block;
+	border: 1px solid #DFDFDF;
+	margin-top: 0;
+	margin-right: 0;
+	margin-bottom: 20px;
+	padding: 20px;
 }
 
 .header-nav a.active svg g, .header-nav a.active svg path {
@@ -177,9 +196,17 @@ header .header-container {
 	margin-right: 0;
 }
 
+.header-nav-small a {
+	clear: both;
+}
+
 .header-nav svg, .header-nav-small svg {
 	float: left;
 	margin-right: 5px;
+}
+
+.header-nav-small svg {
+	margin-right: 20px;
 }
 
 .header-nav .hn-book-nav:hover svg g, .header-nav .hn-collection-nav:hover svg path, .header-nav .hn-notification-nav:hover svg g {
@@ -728,6 +755,7 @@ footer {
 
   	.menu-icon {
   		float: right;
+  		display: block;
     	margin-top: -80px;
     	cursor: pointer;
   	}

@@ -14,6 +14,14 @@ $(function() {
 		}
 	})
 
+	$('.menu-icon').click(function() {
+		$('.header-nav-small').show()
+	})
+
+	$('.hns-close').click(function() {
+		$('.header-nav-small').hide()
+	})
+
 	if ($('.crcb-book-list a').length <= 6) {
 		$('.crcb-arrow div').addClass('none')
 	}
@@ -76,7 +84,7 @@ $(function() {
 		crcbImgWidthFULL = ( parseInt( $('.crcb-book-list a img').width() ) * 1 ) + 30
 		crcbImgWidthPartial = 0
 	}
-	
+
 	$('.crcb-arrow .right').click(function() {
 
 		if ($('.crcb-book-list a').length > booksLength) {
