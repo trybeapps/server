@@ -2,48 +2,59 @@ package main
 
 import (
 	"fmt"
-    "net/http"
-    "github.com/go-martini/martini"
-    "github.com/martini-contrib/render"
-    _ "github.com/mattn/go-sqlite3"
+	"gopkg.in/gin-gonic/gin.v1"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func main() {
+	r := gin.Default()
 
-    m := martini.Classic()
-    // render html templates from templates directory
-  	m.Use(render.Renderer(render.Options{
-  		Directory: "templates", // Specify what path to load the templates from.
-  		Layout: "", // Specify a layout template. Layouts can call {{ yield }} to render the current template.
-  		Extensions: []string{".tmpl", ".html"}, // Specify extensions to load for templates.
-  		Delims: render.Delims{"{{", "}}"}, // Sets delimiters to the specified strings.
-  		Charset: "UTF-8", // Sets encoding for json and html content-types. Default is "UTF-8".
-  		IndentJSON: true, // Output human readable JSON
-	}))
+	// Serve static files
+	r.Static("/static", "./static")
 
-	staticOptions := martini.StaticOptions{Prefix: "static"}
-	m.Use(martini.Static("static", staticOptions))
+	// HTML rendering
+	r.LoadHTMLGlob("templates/*")
 
-  	m.Get("/", func(r render.Render) {
-    	r.HTML(200, "index", "")
-  	})
+	r.GET("/", GetHomePage)
+	r.GET("/signin", GetSignIn)
+	r.POST("/signin", PostSignIn)
+	r.GET("/signup", GetSignUp)
 
-  	m.Get("/signin", func(r render.Render) {
-  		r.HTML(200, "signin", "")
-  	})
 
-  	m.Get("/signup", func(r render.Render) {
-  		r.HTML(200, "signup", "")
-  	})
+	r.Run() // listen and serve on 0.0.0.0:8080
+}
 
-  	m.Get("/collections", func(r render.Render) {
-  		r.HTML(200, "collections", "")
-  	})
+func GetHomePage(c *gin.Context) {
+	c.HTML(200, "index.html", "")
+}
 
-    m.Post("/login", func(r *http.Request) string {
-        text := r.FormValue("username")
-        fmt.Println("Username: ", text)
-        return text
-    })
-    m.Run()
+func GetSignIn(c *gin.Context) {
+	c.HTML(200, "signin.html", "")
+}
+
+func PostSignIn(c *gin.Context) {
+	email := c.PostForm("email")
+	password := []byte(c.PostForm("password"))
+
+	fmt.Println(email)
+	fmt.Println(password)
+
+	// Hashing the password with the default cost of 10
+    hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+    CheckError(err)
+    fmt.Println(string(hashedPassword))
+
+    // Comparing the password with the hash
+    err = bcrypt.CompareHashAndPassword(hashedPassword, password)
+    fmt.Println(err) // nil means it is a match
+}
+
+func GetSignUp(c *gin.Context) {
+	c.HTML(200, "signup.html", "")
+}
+
+func CheckError(err error) {
+	if err != nil {
+        panic(err)
+    }
 }
