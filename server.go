@@ -24,7 +24,7 @@ func main() {
     // Create user table
     // Table: user
     // --------------------------------------------
-    // Fields: id, name, email, password, confirmed
+    // Fields: id, name, email, password_hash, confirmed
     // --------------------------------------------
     stmt, err := db.Prepare("CREATE TABLE IF NOT EXISTS `user` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` VARCHAR(255) NOT NULL, `email` VARCHAR(255) UNIQUE NOT NULL, `password_hash` VARCHAR(255) NOT NULL, `confirmed` INTEGER DEFAULT 0)")
     CheckError(err)
@@ -104,10 +104,6 @@ func PostSignUp(c *gin.Context) {
     fmt.Println(id)
 
     db.Close()
-
-    // Comparing the password with the hash
-    err = bcrypt.CompareHashAndPassword(hashedPassword, password)
-    fmt.Println(err) // nil means it is a match
 }
 
 func CheckError(err error) {
