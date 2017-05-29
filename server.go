@@ -26,7 +26,7 @@ func main() {
     // --------------------------------------------
     // Fields: id, name, email, password, confirmed
     // --------------------------------------------
-    stmt, err := db.Prepare("CREATE TABLE IF NOT EXISTS `user` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` VARCHAR(255) NOT NULL, `email` VARCHAR(255) NOT NULL, `password_hash` VARCHAR(255) NOT NULL, `confirmed` INTEGER DEFAULT 0)")
+    stmt, err := db.Prepare("CREATE TABLE IF NOT EXISTS `user` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` VARCHAR(255) NOT NULL, `email` VARCHAR(255) UNIQUE NOT NULL, `password_hash` VARCHAR(255) NOT NULL, `confirmed` INTEGER DEFAULT 0)")
     CheckError(err)
     
     _, err = stmt.Exec()
@@ -84,6 +84,11 @@ func PostSignUp(c *gin.Context) {
 	fmt.Println(email)
 	fmt.Println(password)
 
+	// Hashing the password with the default cost of 10
+    hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+    CheckError(err)
+    fmt.Println(string(hashedPassword))
+
 	db, err := sql.Open("sqlite3", "./libreread.db")
     CheckError(err)
 
@@ -99,11 +104,6 @@ func PostSignUp(c *gin.Context) {
     fmt.Println(id)
 
     db.Close()
-
-	// Hashing the password with the default cost of 10
-    hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
-    CheckError(err)
-    fmt.Println(string(hashedPassword))
 
     // Comparing the password with the hash
     err = bcrypt.CompareHashAndPassword(hashedPassword, password)
