@@ -16,10 +16,12 @@ $(function() {
 
 	$('.menu-icon').click(function() {
 		$('.header-nav-small').show()
+		$('body').css('overflow-y', 'hidden')
 	})
 
 	$('.hns-close').click(function() {
 		$('.header-nav-small').hide()
+		$('body').css('overflow-y', 'auto')
 	})
 
 	if ($('.crcb-book-list a').length <= 6) {
