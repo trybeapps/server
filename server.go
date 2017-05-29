@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"database/sql"
 	"gopkg.in/gin-gonic/gin.v1"
 	"golang.org/x/crypto/bcrypt"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
@@ -15,13 +17,33 @@ func main() {
 	// HTML rendering
 	r.LoadHTMLGlob("templates/*")
 
+	// Open sqlite3 database
+	db, err := sql.Open("sqlite3", "./libreread.db")
+    CheckError(err)
+
+    // Create user table
+    // Table: user
+    // --------------------------------------------
+    // Fields: id, name, email, password, confirmed
+    // --------------------------------------------
+    stmt, err := db.Prepare("CREATE TABLE IF NOT EXISTS `user` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` VARCHAR(255) NOT NULL, `email` VARCHAR(255) NOT NULL, `password_hash` VARCHAR(255) NOT NULL, `confirmed` INTEGER DEFAULT 0)")
+    CheckError(err)
+    
+    _, err = stmt.Exec()
+    CheckError(err)
+
+    // Close sqlite3 database
+    db.Close()
+
+    // Router
 	r.GET("/", GetHomePage)
 	r.GET("/signin", GetSignIn)
 	r.POST("/signin", PostSignIn)
 	r.GET("/signup", GetSignUp)
+	r.POST("/signup", PostSignUp)
 
-
-	r.Run() // listen and serve on 0.0.0.0:8080
+	// Listen and serve on 0.0.0.0:8080
+	r.Run()
 }
 
 func GetHomePage(c *gin.Context) {
@@ -51,6 +73,41 @@ func PostSignIn(c *gin.Context) {
 
 func GetSignUp(c *gin.Context) {
 	c.HTML(200, "signup.html", "")
+}
+
+func PostSignUp(c *gin.Context) {
+	name := c.PostForm("name")
+	email := c.PostForm("email")
+	password := []byte(c.PostForm("password"))
+
+	fmt.Println(name)
+	fmt.Println(email)
+	fmt.Println(password)
+
+	db, err := sql.Open("sqlite3", "./libreread.db")
+    CheckError(err)
+
+    stmt, err := db.Prepare("INSERT INTO user (name, email, password_hash) VALUES (?, ?, ?)")
+    CheckError(err)
+
+    res, err := stmt.Exec(name, email, password)
+    CheckError(err)
+
+    id, err := res.LastInsertId()
+    CheckError(err)
+
+    fmt.Println(id)
+
+    db.Close()
+
+	// Hashing the password with the default cost of 10
+    hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+    CheckError(err)
+    fmt.Println(string(hashedPassword))
+
+    // Comparing the password with the hash
+    err = bcrypt.CompareHashAndPassword(hashedPassword, password)
+    fmt.Println(err) // nil means it is a match
 }
 
 func CheckError(err error) {
