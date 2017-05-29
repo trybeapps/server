@@ -171,13 +171,21 @@ header .header-container {
     padding-left: 20px;
 }
 
-.header-nav .hn-book-nav, .header-nav .hn-collection-nav, .header-nav .hn-notification-nav, .header-nav .hn-user-nav,
-.header-nav-small .hn-book-nav, .header-nav-small .hn-collection-nav, .header-nav-small .hn-notification-nav, .header-nav-small .hn-invite-nav, .header-nav-small .hn-settings-nav, .header-nav-small .hn-sign-out-nav {
+.header-nav .hn-book-nav, .header-nav .hn-collection-nav,
+.header-nav .hn-notification-nav, .header-nav .hn-user-nav,
+.header-nav .hn-sign-nav, .header-nav-small .hn-book-nav, 
+.header-nav-small .hn-collection-nav, .header-nav-small .hn-notification-nav,
+.header-nav-small .hn-invite-nav, .header-nav-small .hn-settings-nav,
+.header-nav-small .hn-sign-out-nav {
 	float: left;
 	margin-top: 17.5px;
 	margin-right: 30px;
 	overflow: hidden;
 	cursor: pointer;
+}
+
+.header-nav .hn-sign-nav {
+	margin-right: 0;
 }
 
 .header-nav-small .hn-book-nav, .header-nav-small .hn-collection-nav, .header-nav-small .hn-notification-nav, .header-nav-small .hn-invite-nav, .header-nav-small .hn-settings-nav, .header-nav-small .hn-sign-out-nav {
@@ -297,6 +305,42 @@ header .header-container {
 	width: 100%;
 	margin-top: 60px;
 	overflow: hidden;
+}
+
+.sign-form {
+	display: block;
+	width: 240px;
+	margin: 120px auto;
+}
+
+.sign-form label {
+	display: block;
+    font-weight: 700;
+    text-align: center;
+}
+
+.sign-form input[type="text"], .sign-form input[type="password"] {
+	width: 100%;
+    height: 40px;
+    font-size: 16px;
+    padding: 0 10px;
+    outline: none;
+	margin-top: 20px;
+}
+
+input[type="submit"] {
+	display: block;
+	background: #FF4848;
+	font-size: 16px;
+    color: white;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    padding-bottom: .6em;
+    padding-top: .4em;
+    border: none;
+    margin: 20px auto 0;
+    outline: none;
+    cursor: pointer;
 }
 
 .quote-of-the-day {
