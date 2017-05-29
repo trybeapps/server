@@ -753,7 +753,7 @@ footer {
 }
 
 @media screen
-  and (max-device-width: 520px) {
+  and (max-device-width: 700px) {
 
   	.quote-of-the-day {
   		width: 100%;
