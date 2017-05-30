@@ -5,13 +5,18 @@ import (
 	"database/sql"
 	"net/http"
 
-	"gopkg.in/gin-gonic/gin.v1"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/sessions"
 	"golang.org/x/crypto/bcrypt"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
 	r := gin.Default()
+
+	// Initiate session management (cookie-based)
+	store := sessions.NewCookieStore([]byte("secret"))
+	r.Use(sessions.Sessions("mysession", store))
 
 	// Serve static files
 	r.Static("/static", "./static")
@@ -49,6 +54,8 @@ func main() {
 }
 
 func GetHomePage(c *gin.Context) {
+	session := sessions.Default(c)
+	fmt.Println(session.Get("email"))
 	c.HTML(200, "index.html", "")
 }
 
@@ -83,6 +90,11 @@ func PostSignIn(c *gin.Context) {
 
     if err == nil {
     	c.Redirect(http.StatusMovedPermanently, "/")
+
+    	// Set cookie based session for signin
+    	session := sessions.Default(c)
+    	session.Set("email", email)
+    	session.Save()
     } else {
     	c.HTML(200, "signin.html", "")
     }
