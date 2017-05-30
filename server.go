@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"database/sql"
+	"net/http"
+
 	"gopkg.in/gin-gonic/gin.v1"
 	"golang.org/x/crypto/bcrypt"
 	_ "github.com/mattn/go-sqlite3"
@@ -61,14 +63,27 @@ func PostSignIn(c *gin.Context) {
 	fmt.Println(email)
 	fmt.Println(password)
 
-	// Hashing the password with the default cost of 10
-    hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+	db, err := sql.Open("sqlite3", "./libreread.db")
     CheckError(err)
-    fmt.Println(string(hashedPassword))
+
+    rows, err := db.Query("select password_hash from user where email = ?", email)
+    CheckError(err)
+
+    var hashedPassword []byte
+    
+    if rows.Next() {
+		err := rows.Scan(&hashedPassword)
+		CheckError(err)
+		fmt.Println(hashedPassword)
+	}
 
     // Comparing the password with the hash
     err = bcrypt.CompareHashAndPassword(hashedPassword, password)
     fmt.Println(err) // nil means it is a match
+
+    if err == nil {
+    	c.Redirect(http.StatusMovedPermanently, "/")
+    }
 }
 
 func GetSignUp(c *gin.Context) {
@@ -95,7 +110,7 @@ func PostSignUp(c *gin.Context) {
     stmt, err := db.Prepare("INSERT INTO user (name, email, password_hash) VALUES (?, ?, ?)")
     CheckError(err)
 
-    res, err := stmt.Exec(name, email, password)
+    res, err := stmt.Exec(name, email, hashedPassword)
     CheckError(err)
 
     id, err := res.LastInsertId()
