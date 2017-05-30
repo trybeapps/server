@@ -25,9 +25,9 @@ func main() {
 
     // Create user table
     // Table: user
-    // --------------------------------------------
+    // -------------------------------------------------
     // Fields: id, name, email, password_hash, confirmed
-    // --------------------------------------------
+    // -------------------------------------------------
     stmt, err := db.Prepare("CREATE TABLE IF NOT EXISTS `user` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` VARCHAR(255) NOT NULL, `email` VARCHAR(255) UNIQUE NOT NULL, `password_hash` VARCHAR(255) NOT NULL, `confirmed` INTEGER DEFAULT 0)")
     CheckError(err)
     
@@ -83,6 +83,8 @@ func PostSignIn(c *gin.Context) {
 
     if err == nil {
     	c.Redirect(http.StatusMovedPermanently, "/")
+    } else {
+    	c.HTML(200, "signin.html", "")
     }
 }
 
