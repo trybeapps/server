@@ -54,12 +54,24 @@ func main() {
 }
 
 func GetHomePage(c *gin.Context) {
+	// Get session from cookie. Check if email exists
+	// show Home page else redirect to signin page.
 	session := sessions.Default(c)
-	fmt.Println(session.Get("email"))
-	c.HTML(200, "index.html", "")
+	if session.Get("email") != nil {
+		fmt.Println(session.Get("email"))
+		c.HTML(200, "index.html", "")
+	}
+	c.Redirect(http.StatusMovedPermanently, "/signin")
 }
 
 func GetSignIn(c *gin.Context) {
+	// Get session from cookie. Check if email exists
+	// redirect to Home page else show signin page.
+	session := sessions.Default(c)
+	if session.Get("email") != nil {
+		fmt.Println(session.Get("email"))
+		c.Redirect(http.StatusMovedPermanently, "/")
+	}
 	c.HTML(200, "signin.html", "")
 }
 
