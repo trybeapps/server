@@ -1,31 +1,31 @@
 package main
 
 import (
-	"fmt"
-	"database/sql"
-	"net/http"
+    "fmt"
+    "database/sql"
+    "net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gin-contrib/sessions"
-	"golang.org/x/crypto/bcrypt"
-	_ "github.com/mattn/go-sqlite3"
+    "github.com/gin-gonic/gin"
+    "github.com/gin-contrib/sessions"
+    "golang.org/x/crypto/bcrypt"
+    _ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	r := gin.Default()
+    r := gin.Default()
 
-	// Initiate session management (cookie-based)
-	store := sessions.NewCookieStore([]byte("secret"))
-	r.Use(sessions.Sessions("mysession", store))
+    // Initiate session management (cookie-based)
+    store := sessions.NewCookieStore([]byte("secret"))
+    r.Use(sessions.Sessions("mysession", store))
 
-	// Serve static files
-	r.Static("/static", "./static")
+    // Serve static files
+    r.Static("/static", "./static")
 
-	// HTML rendering
-	r.LoadHTMLGlob("templates/*")
+    // HTML rendering
+    r.LoadHTMLGlob("templates/*")
 
-	// Open sqlite3 database
-	db, err := sql.Open("sqlite3", "./libreread.db")
+    // Open sqlite3 database
+    db, err := sql.Open("sqlite3", "./libreread.db")
     CheckError(err)
 
     // Create user table
@@ -43,46 +43,46 @@ func main() {
     db.Close()
 
     // Router
-	r.GET("/", GetHomePage)
-	r.GET("/signin", GetSignIn)
-	r.POST("/signin", PostSignIn)
-	r.GET("/signup", GetSignUp)
-	r.POST("/signup", PostSignUp)
+    r.GET("/", GetHomePage)
+    r.GET("/signin", GetSignIn)
+    r.POST("/signin", PostSignIn)
+    r.GET("/signup", GetSignUp)
+    r.POST("/signup", PostSignUp)
 
-	// Listen and serve on 0.0.0.0:8080
-	r.Run()
+    // Listen and serve on 0.0.0.0:8080
+    r.Run()
 }
 
 func GetHomePage(c *gin.Context) {
-	// Get session from cookie. Check if email exists
-	// show Home page else redirect to signin page.
-	session := sessions.Default(c)
-	if session.Get("email") != nil {
-		fmt.Println(session.Get("email"))
-		c.HTML(200, "index.html", "")
-	}
-	c.Redirect(http.StatusMovedPermanently, "/signin")
+    // Get session from cookie. Check if email exists
+    // show Home page else redirect to signin page.
+    session := sessions.Default(c)
+    if session.Get("email") != nil {
+        fmt.Println(session.Get("email"))
+        c.HTML(200, "index.html", "")
+    }
+    c.Redirect(http.StatusMovedPermanently, "/signin")
 }
 
 func GetSignIn(c *gin.Context) {
-	// Get session from cookie. Check if email exists
-	// redirect to Home page else show signin page.
-	session := sessions.Default(c)
-	if session.Get("email") != nil {
-		fmt.Println(session.Get("email"))
-		c.Redirect(http.StatusMovedPermanently, "/")
-	}
-	c.HTML(200, "signin.html", "")
+    // Get session from cookie. Check if email exists
+    // redirect to Home page else show signin page.
+    session := sessions.Default(c)
+    if session.Get("email") != nil {
+        fmt.Println(session.Get("email"))
+        c.Redirect(http.StatusMovedPermanently, "/")
+    }
+    c.HTML(200, "signin.html", "")
 }
 
 func PostSignIn(c *gin.Context) {
-	email := c.PostForm("email")
-	password := []byte(c.PostForm("password"))
+    email := c.PostForm("email")
+    password := []byte(c.PostForm("password"))
 
-	fmt.Println(email)
-	fmt.Println(password)
+    fmt.Println(email)
+    fmt.Println(password)
 
-	db, err := sql.Open("sqlite3", "./libreread.db")
+    db, err := sql.Open("sqlite3", "./libreread.db")
     CheckError(err)
 
     rows, err := db.Query("select password_hash from user where email = ?", email)
@@ -91,46 +91,46 @@ func PostSignIn(c *gin.Context) {
     var hashedPassword []byte
     
     if rows.Next() {
-		err := rows.Scan(&hashedPassword)
-		CheckError(err)
-		fmt.Println(hashedPassword)
-	}
+        err := rows.Scan(&hashedPassword)
+        CheckError(err)
+        fmt.Println(hashedPassword)
+    }
 
     // Comparing the password with the hash
     err = bcrypt.CompareHashAndPassword(hashedPassword, password)
     fmt.Println(err) // nil means it is a match
 
     if err == nil {
-    	c.Redirect(http.StatusMovedPermanently, "/")
+        c.Redirect(http.StatusMovedPermanently, "/")
 
-    	// Set cookie based session for signin
-    	session := sessions.Default(c)
-    	session.Set("email", email)
-    	session.Save()
+        // Set cookie based session for signin
+        session := sessions.Default(c)
+        session.Set("email", email)
+        session.Save()
     } else {
-    	c.HTML(200, "signin.html", "")
+        c.HTML(200, "signin.html", "")
     }
 }
 
 func GetSignUp(c *gin.Context) {
-	c.HTML(200, "signup.html", "")
+    c.HTML(200, "signup.html", "")
 }
 
 func PostSignUp(c *gin.Context) {
-	name := c.PostForm("name")
-	email := c.PostForm("email")
-	password := []byte(c.PostForm("password"))
+    name := c.PostForm("name")
+    email := c.PostForm("email")
+    password := []byte(c.PostForm("password"))
 
-	fmt.Println(name)
-	fmt.Println(email)
-	fmt.Println(password)
+    fmt.Println(name)
+    fmt.Println(email)
+    fmt.Println(password)
 
-	// Hashing the password with the default cost of 10
+    // Hashing the password with the default cost of 10
     hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
     CheckError(err)
     fmt.Println(string(hashedPassword))
 
-	db, err := sql.Open("sqlite3", "./libreread.db")
+    db, err := sql.Open("sqlite3", "./libreread.db")
     CheckError(err)
 
     stmt, err := db.Prepare("INSERT INTO user (name, email, password_hash) VALUES (?, ?, ?)")
@@ -148,7 +148,7 @@ func PostSignUp(c *gin.Context) {
 }
 
 func CheckError(err error) {
-	if err != nil {
+    if err != nil {
         panic(err)
     }
 }
