@@ -7,6 +7,7 @@ import (
     "net/http"
     "runtime"
     "math/rand"
+    "strconv"
 
     "github.com/gin-gonic/gin"
     "github.com/gin-contrib/sessions"
@@ -172,7 +173,7 @@ func PostSignUp(c *gin.Context) {
 
     db.Close()
 
-    go SendEmail(id, name, email)
+    go SendEmail(int(id), name, email)
 
     c.String(http.StatusOK, "We have sent you a confirmation email for verification.")
 
@@ -189,7 +190,7 @@ func randSeq(n int) string {
     return string(b)
 }
 
-func SendEmail(id int64, name string, email string) {
+func SendEmail(id int, name string, email string) {
 
     // Set home many CPU cores this function wants to use.
     runtime.GOMAXPROCS(runtime.NumCPU())
@@ -263,6 +264,9 @@ func ConfirmEmail(c * gin.Context) {
 
         fmt.Println(id)
         fmt.Println(dateExpires)
+    } else {
+        c.HTML(404, "invalid_token.html", "")
+        return
     }
     rows.Close()
 
@@ -279,21 +283,45 @@ func ConfirmEmail(c * gin.Context) {
 
         _, err = stmt.Exec(1, userId)
 
-        // c.String(http.StatusOK, "Thanks! Your email is confirmed successfully. Please signin now.")
         c.HTML(http.StatusOK, "confirmed.html", gin.H{
             "id": userId,
         })
         return
+    } else {
+        c.HTML(http.StatusOK, "expired.html", gin.H{
+            "id": userId,
+        })
+        return
     }
-
-    c.HTML(http.StatusOK, "expired.html", gin.H{
-        "id": userId,
-    })
 }
 
 func SendNewToken(c * gin.Context) {
-    userId := c.Request.URL.Query()["id"][0]
+    userId, err := strconv.Atoi(c.Request.URL.Query()["id"][0])
+    CheckError(err)
     fmt.Println(userId)
+
+    db, err := sql.Open("sqlite3", "./libreread.db")
+    CheckError(err)
+
+    defer db.Close()
+
+    rows, err := db.Query("select name, email from user where id = ?", userId)
+    CheckError(err)
+
+    var (
+        name string
+        email string
+    )
+    
+    if rows.Next() {
+        err := rows.Scan(&name, &email)
+        CheckError(err)
+
+        fmt.Println(name)
+        fmt.Println(email)
+    }
+    rows.Close()
+    SendEmail(int(userId), name, email)
 }
 
 func CheckError(err error) {
