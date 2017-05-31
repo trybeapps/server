@@ -4,11 +4,13 @@ import (
     "fmt"
     "database/sql"
     "net/http"
+    "runtime"
 
     "github.com/gin-gonic/gin"
     "github.com/gin-contrib/sessions"
     "golang.org/x/crypto/bcrypt"
     _ "github.com/mattn/go-sqlite3"
+    "gopkg.in/gomail.v2"
 )
 
 func main() {
@@ -88,6 +90,8 @@ func PostSignIn(c *gin.Context) {
     rows, err := db.Query("select password_hash from user where email = ?", email)
     CheckError(err)
 
+    db.Close()
+
     var hashedPassword []byte
     
     if rows.Next() {
@@ -145,6 +149,31 @@ func PostSignUp(c *gin.Context) {
     fmt.Println(id)
 
     db.Close()
+
+    go SendEmail(email)
+
+}
+
+func SendEmail(email string) {
+
+    // Sets home many CPU cores this function want to use.
+    runtime.GOMAXPROCS(runtime.NumCPU())
+    fmt.Println(runtime.NumCPU())
+    
+    m := gomail.NewMessage()
+    m.SetHeader("From", "info@libreread.org")
+    m.SetHeader("To", email)
+    // m.SetAddressHeader("Cc", "dan@example.com", "Dan")
+    m.SetHeader("Subject", "Hello!")
+    m.SetBody("text/html", "Hello <b>Bob</b> and <i>Cora</i>!")
+    // m.Attach("/home/Alex/lolcat.jpg")
+
+    d := gomail.NewDialer("smtp.zoho.com", 587, "info@libreread.org", "magicmode")
+
+    // Send the email to Bob, Cora and Dan.
+    if err := d.DialAndSend(m); err != nil {
+        panic(err)
+    }
 }
 
 func CheckError(err error) {
