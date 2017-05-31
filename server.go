@@ -84,7 +84,7 @@ func GetHomePage(c *gin.Context) {
         fmt.Println(session.Get("email"))
         c.HTML(200, "index.html", "")
     }
-    c.Redirect(200, "/signin")
+    c.Redirect(302, "/signin")
 }
 
 func GetSignIn(c *gin.Context) {
@@ -93,7 +93,7 @@ func GetSignIn(c *gin.Context) {
     session := sessions.Default(c)
     if session.Get("email") != nil {
         fmt.Println(session.Get("email"))
-        c.Redirect(200, "/")
+        c.Redirect(302, "/")
     }
     c.HTML(200, "signin.html", "")
 }
@@ -127,7 +127,7 @@ func PostSignIn(c *gin.Context) {
     fmt.Println(err) // nil means it is a match
 
     if err == nil {
-        c.Redirect(200, "/")
+        c.Redirect(302, "/")
 
         // Set cookie based session for signin
         session := sessions.Default(c)
