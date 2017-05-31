@@ -175,4 +175,9 @@ $(function() {
 		}
 
 	})
+
+	$('.hn-book-nav').click(function(e) {
+		e.preventDefault()
+		$('#addFiles').click()
+	})
 })

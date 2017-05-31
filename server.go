@@ -4,7 +4,6 @@ import (
     "fmt"
     "time"
     "database/sql"
-    "net/http"
     "runtime"
     "math/rand"
     "strconv"
@@ -85,7 +84,7 @@ func GetHomePage(c *gin.Context) {
         fmt.Println(session.Get("email"))
         c.HTML(200, "index.html", "")
     }
-    c.Redirect(http.StatusMovedPermanently, "/signin")
+    c.Redirect(200, "/signin")
 }
 
 func GetSignIn(c *gin.Context) {
@@ -94,7 +93,7 @@ func GetSignIn(c *gin.Context) {
     session := sessions.Default(c)
     if session.Get("email") != nil {
         fmt.Println(session.Get("email"))
-        c.Redirect(http.StatusMovedPermanently, "/")
+        c.Redirect(200, "/")
     }
     c.HTML(200, "signin.html", "")
 }
@@ -128,7 +127,7 @@ func PostSignIn(c *gin.Context) {
     fmt.Println(err) // nil means it is a match
 
     if err == nil {
-        c.Redirect(http.StatusMovedPermanently, "/")
+        c.Redirect(200, "/")
 
         // Set cookie based session for signin
         session := sessions.Default(c)
@@ -175,7 +174,7 @@ func PostSignUp(c *gin.Context) {
 
     go SendEmail(int(id), name, email)
 
-    c.String(http.StatusOK, "We have sent you a confirmation email for verification.")
+    c.String(200, "We have sent you a confirmation email for verification.")
 
 }
 
@@ -283,12 +282,12 @@ func ConfirmEmail(c * gin.Context) {
 
         _, err = stmt.Exec(1, userId)
 
-        c.HTML(http.StatusOK, "confirmed.html", gin.H{
+        c.HTML(200, "confirmed.html", gin.H{
             "id": userId,
         })
         return
     } else {
-        c.HTML(http.StatusOK, "expired.html", gin.H{
+        c.HTML(200, "expired.html", gin.H{
             "id": userId,
         })
         return
@@ -321,7 +320,7 @@ func SendNewToken(c * gin.Context) {
         fmt.Println(email)
     }
     rows.Close()
-    SendEmail(int(userId), name, email)
+    go SendEmail(int(userId), name, email)
 }
 
 func CheckError(err error) {

@@ -257,6 +257,10 @@ header .header-container {
 	fill: #FF4848;
 }
 
+#addFiles {
+  display: none;
+}
+
 .user-dropdown {
 	display: none;
 	position: absolute;
