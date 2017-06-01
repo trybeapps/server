@@ -656,7 +656,8 @@ input[type="submit"] {
   top: 80px;
   left: 50%;
   width: 700px;
-  height: 500px;
+  min-height: 420px;
+  max-height: 500px;
   background: white;
   margin-left: -350px;
   border: 1px solid #DFDFDF;
