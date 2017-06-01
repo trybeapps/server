@@ -72,6 +72,7 @@ func main() {
     r.GET("/confirm-email", ConfirmEmail)
     r.GET("/new-token", SendNewToken)
     r.GET("/signout", GetSignOut)
+    r.GET("/collections", GetCollections)
 
     // Listen and serve on 0.0.0.0:8080
     r.Run(":8080")
@@ -253,7 +254,7 @@ func SendConfirmationEmail(id int, name string, email string) {
     }
 }
 
-func ConfirmEmail(c * gin.Context) {
+func ConfirmEmail(c *gin.Context) {
     token := c.Request.URL.Query()["token"][0]
     fmt.Println(token)
 
@@ -309,7 +310,7 @@ func ConfirmEmail(c * gin.Context) {
     }
 }
 
-func SendNewToken(c * gin.Context) {
+func SendNewToken(c *gin.Context) {
     userId, err := strconv.Atoi(c.Request.URL.Query()["id"][0])
     CheckError(err)
     fmt.Println(userId)
@@ -336,4 +337,8 @@ func SendNewToken(c * gin.Context) {
     }
     rows.Close()
     go SendConfirmationEmail(int(userId), name, email)
+}
+
+func GetCollections(c *gin.Context) {
+    c.HTML(302, "collections.html", "")
 }
