@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "time"
+    "net/http"
     "database/sql"
     "runtime"
     "math/rand"
@@ -71,6 +72,7 @@ func main() {
     r.POST("/signup", PostSignUp)
     r.GET("/confirm-email", ConfirmEmail)
     r.GET("/new-token", SendNewToken)
+    r.GET("/signout", GetSignOut)
 
     // Listen and serve on 0.0.0.0:8080
     r.Run(":8080")
@@ -84,7 +86,7 @@ func GetHomePage(c *gin.Context) {
         fmt.Println(session.Get("email"))
         c.HTML(302, "index.html", "")
     }
-    c.Redirect(302, "/signin")
+    c.Redirect(http.StatusSeeOther, "/signin")
 }
 
 func GetSignIn(c *gin.Context) {
@@ -93,9 +95,17 @@ func GetSignIn(c *gin.Context) {
     session := sessions.Default(c)
     if session.Get("email") != nil {
         fmt.Println(session.Get("email"))
-        c.Redirect(302, "/")
+        c.Redirect(http.StatusSeeOther, "/")
     }
     c.HTML(302, "signin.html", "")
+}
+
+func GetSignOut(c *gin.Context) {
+    session := sessions.Default(c)
+    session.Delete("email")
+    session.Save()
+
+    c.Redirect(http.StatusSeeOther, "/")
 }
 
 func PostSignIn(c *gin.Context) {
@@ -127,14 +137,14 @@ func PostSignIn(c *gin.Context) {
     fmt.Println(err) // nil means it is a match
 
     if err == nil {
-        c.Redirect(302, "/")
+        c.Redirect(http.StatusSeeOther, "/")
 
         // Set cookie based session for signin
         session := sessions.Default(c)
         session.Set("email", email)
         session.Save()
     } else {
-        c.HTML(200, "signin.html", "")
+        c.HTML(302, "signin.html", "")
     }
 }
 
