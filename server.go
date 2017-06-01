@@ -174,7 +174,7 @@ func PostSignUp(c *gin.Context) {
 
     go SendEmail(int(id), name, email)
 
-    c.String(200, "We have sent you a confirmation email for verification.")
+    c.HTML(302, "confirm_email.html", "")
 
 }
 
