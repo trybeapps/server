@@ -27,7 +27,7 @@ header {
 	background: white;
 	margin: 0 auto;
 	border-bottom: 1px solid #DFDFDF;
-	z-index: 999999;
+	z-index: 999;
 	transition: top 0.2s ease-in-out;
 }
 
@@ -80,60 +80,60 @@ header .header-container {
 .search-dropdown {
 	display: none;
 	position: absolute;
-    top: 50px;
-    margin-left: 127px;
+  top: 50px;
+  margin-left: 127px;
 	width: 480px;
-    max-height: 480px;
-    background: white;
-    border: 1px solid #CCCCCC;
-    padding: 10px;
-    overflow-y: auto;
+  max-height: 480px;
+  background: white;
+  border: 1px solid #CCCCCC;
+  padding: 10px;
+  overflow-y: auto;
 }
 
 .search-dropdown label {
 	display: block;
-    width: 100%;
-    font-weight: 700;
-    color: #676767;
-    text-align: center;
-    background: rgba(96, 96, 96, 0.13);
-    margin-bottom: 20px;
-    padding: 3px;
-    clear: both;
+  width: 100%;
+  font-weight: 700;
+  color: #676767;
+  text-align: center;
+  background: rgba(96, 96, 96, 0.13);
+  margin-bottom: 20px;
+  padding: 3px;
+  clear: both;
 }
 
 .search-dropdown a {
 	display: block;
-    margin-bottom: 30px;
-    overflow: hidden;
+  margin-bottom: 30px;
+  overflow: hidden;
 }
 
 .search-dropdown a img {
 	float: left;
 	width: 70px;
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .search-dropdown a .sdtl-title {
 	float: left;
-    width: 363px;
-    color: #161616;
-    font-weight: 700;
+  width: 363px;
+  color: #161616;
+  font-weight: 700;
 }
 
 .search-dropdown a .sdtl-author {
 	float: left;
-    width: 363px;
-    font-size: 14px;
-    color: #676767;
-    margin-top: 5px;
+  width: 363px;
+  font-size: 14px;
+  color: #676767;
+  margin-top: 5px;
 }
 
 .search-dropdown a .sdtl-description {
 	float: left;
-    width: 363px;
-    margin-top: 10px;
-    color: #161616;
+  width: 363px;
+  margin-top: 10px;
+  color: #161616;
 }
 
 .search-dropdown a .sdtl-description em {
@@ -157,23 +157,23 @@ header .header-container {
 .header-nav-small {
 	display: none;
 	position: fixed;
-    background: white;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    padding: 30px;
-    overflow-y: auto;
-    overflow-x: hidden;
+  background: white;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  padding: 30px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .header-nav-small .hns-close {
-    float: right;
-    font-weight: 600;
-    margin-top: -12px;
-    margin-bottom: 10px;
-    padding-bottom: 20px;
-    padding-left: 20px;
+  float: right;
+  font-weight: 600;
+  margin-top: -12px;
+  margin-bottom: 10px;
+  padding-bottom: 20px;
+  padding-left: 20px;
 }
 
 .header-nav .hn-book-nav, .header-nav .hn-collection-nav,
@@ -274,22 +274,22 @@ header .header-container {
 	border: 1px solid #CCCCCC;
 	padding: 20px;
 	margin-top: 49px;
-    margin-left: 373px;
+  margin-left: 373px;
 }
 
 .user-dropdown div {
 	position: absolute;
-    width: 25px;
-    height: 32px;
-    background: #222222;
-    margin-top: -52px;
-    right: 0;
+  width: 25px;
+  height: 32px;
+  background: #222222;
+  margin-top: -52px;
+  right: 0;
 }
 
 .user-dropdown div svg {
 	float: left;
-    margin-top: 10px;
-    margin-left: 7px;
+  margin-top: 10px;
+  margin-left: 7px;
 }
 
 .user-dropdown a {
@@ -324,8 +324,8 @@ header .header-container {
 
 .sign-form label {
 	display: block;
-    font-weight: 700;
-    text-align: center;
+  font-weight: 700;
+  text-align: center;
 }
 
 .sign-form input[type="text"], .sign-form input[type="password"] {
@@ -346,15 +346,15 @@ input[type="submit"] {
 	display: block;
 	background: #FF4848;
 	font-size: 16px;
-    color: white;
-    padding-left: 1.5em;
-    padding-right: 1.5em;
-    padding-bottom: .6em;
-    padding-top: .4em;
-    border: none;
-    margin: 20px auto 0;
-    outline: none;
-    cursor: pointer;
+  color: white;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  padding-bottom: .6em;
+  padding-top: .4em;
+  border: none;
+  margin: 20px auto 0;
+  outline: none;
+  cursor: pointer;
 }
 
 .quote-of-the-day {
@@ -372,12 +372,12 @@ input[type="submit"] {
 
 .quote-of-the-day label {
 	position: absolute;
-    background: #222222;
-    color: white;
-    font-weight: 600;
-    margin-top: -47px;
-    margin-left: -35px;
-    padding: 6px 8px;
+  background: #222222;
+  color: white;
+  font-weight: 600;
+  margin-top: -47px;
+  margin-left: -35px;
+  padding: 6px 8px;
 }
 
 .quote-of-the-day img {
@@ -478,8 +478,8 @@ input[type="submit"] {
 	width: 1380px;
 	min-height: 300px;
 	margin: 50px 0 30px;
-    clear: both;
-    overflow: hidden;
+  clear: both;
+  overflow: hidden;
 }
 
 .crcb-book-list a {
@@ -498,14 +498,14 @@ input[type="submit"] {
 	float: left;
 	background: #222222;
 	width: 208px;
-    height: 47px;
-    font-size: 24px;
-    font-weight: 600;
-    text-align: center;
+  height: 47px;
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
 	color: white;
 	margin-right: 30px;
-    padding-top: 7px;
-    cursor: pointer;
+  padding-top: 7px;
+  cursor: pointer;
 }
 
 .bc-nav-list .bcnl-item:last-child {
@@ -549,19 +549,19 @@ input[type="submit"] {
 
 .bc-books-list-small {
 	width: 390px;
-    margin: 0 auto;
+  margin: 0 auto;
 }
 
 .bc-books-list-xtra-small a {
 	display: block;
 	width: 100%;
-    margin-top: 50px;
-    overflow: hidden;
+  margin-top: 50px;
+  overflow: hidden;
 }
 
 .bc-books-list-xtra-small a img {
 	display: block;
-    margin: 0 auto;
+  margin: 0 auto;
 }
 
 .bc-pagination {
@@ -609,11 +609,11 @@ input[type="submit"] {
 
 .bc-pagination .left, .bc-pagination .right {
 	width: 60px;
-    height: 47px;
-    text-align: center;
-    border: 4px solid #FF4848;
-    padding-top: 5px;
-    cursor: pointer;
+  height: 47px;
+  text-align: center;
+  border: 4px solid #FF4848;
+  padding-top: 5px;
+  cursor: pointer;
 }
 
 .bc-pagination .right {
@@ -639,6 +639,64 @@ input[type="submit"] {
 
 .bc-pagination .left.none:hover, .bc-pagination .right.none:hover {
 	background: transparent;
+}
+
+.upload-theatre {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 9999;
+}
+
+.ut-container {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  width: 700px;
+  height: 500px;
+  background: white;
+  margin-left: -350px;
+  border: 1px solid #DFDFDF;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  overflow-y: auto;
+}
+
+.utc-label {
+  display: block;
+  font-size: 21px;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #DFDFDF;
+}
+
+.utc-list {
+  overflow: hidden;
+}
+
+.utcl-item {
+  float: left;
+  width: 50%;
+  padding: 30px;
+}
+
+.utcl-item img {
+  float: left;
+  width: 70px;
+  margin-right: 10px;
+}
+
+.utcli-keep {
+  margin-top: 25px;
+  margin-bottom: 10px;
+}
+
+.utcl-item .private-label {
+  margin-right: 10px;
 }
 
 footer {
@@ -680,17 +738,17 @@ footer {
 
 .collections-banner .add-collection-button {
 	position: absolute;
-    background: #FF4848;
-    text-decoration: none;
-    color: white;
-    left: 50%;
-    margin-left: -87.49px;
-    margin-top: 140px;
-    padding-left: 1.5em;
-    padding-right: 1.5em;
-    padding-bottom: .6em;
-    padding-top: .4em;
-    z-index: 1;
+  background: #FF4848;
+  text-decoration: none;
+  color: white;
+  left: 50%;
+  margin-left: -87.49px;
+  margin-top: 140px;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  padding-bottom: .6em;
+  padding-top: .4em;
+  z-index: 1;
 }
 
 @media screen
