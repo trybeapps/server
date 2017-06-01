@@ -82,7 +82,7 @@ func GetHomePage(c *gin.Context) {
     session := sessions.Default(c)
     if session.Get("email") != nil {
         fmt.Println(session.Get("email"))
-        c.HTML(200, "index.html", "")
+        c.HTML(302, "index.html", "")
     }
     c.Redirect(302, "/signin")
 }
@@ -95,7 +95,7 @@ func GetSignIn(c *gin.Context) {
         fmt.Println(session.Get("email"))
         c.Redirect(302, "/")
     }
-    c.HTML(200, "signin.html", "")
+    c.HTML(302, "signin.html", "")
 }
 
 func PostSignIn(c *gin.Context) {
@@ -139,7 +139,7 @@ func PostSignIn(c *gin.Context) {
 }
 
 func GetSignUp(c *gin.Context) {
-    c.HTML(200, "signup.html", "")
+    c.HTML(302, "signup.html", "")
 }
 
 func PostSignUp(c *gin.Context) {
@@ -282,12 +282,12 @@ func ConfirmEmail(c * gin.Context) {
 
         _, err = stmt.Exec(1, userId)
 
-        c.HTML(200, "confirmed.html", gin.H{
+        c.HTML(302, "confirmed.html", gin.H{
             "id": userId,
         })
         return
     } else {
-        c.HTML(200, "expired.html", gin.H{
+        c.HTML(302, "expired.html", gin.H{
             "id": userId,
         })
         return

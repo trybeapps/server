@@ -2,8 +2,21 @@
 <html>
 <head>
 	<title>LibreRead</title>
+	<link href="https://fonts.googleapis.com/css?family=Droid+Sans:700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
+	<link href="/static/css/style.css" rel="stylesheet">
 </head>
 <body>
-	Your token has been expired. <a href="/new-token?id={{.id}}">Resend confirmation</a>
+	<header>
+		<div class="header-container">
+			<a href="/" class="logo">LibreRead</a>
+		</div>
+	</header>
+	<div class="auth-message">Your token has been expired. <a href="/new-token?id={{.id}}">Resend confirmation</a></div>
+	<script
+  		src="https://code.jquery.com/jquery-3.2.1.min.js"
+  		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  		crossorigin="anonymous"></script>
+  	<script src="/static/js/main.js" type="text/javascript"></script>
 </body>
 </html>
