@@ -187,7 +187,7 @@ func PostSignUp(c *gin.Context) {
 
     db.Close()
 
-    go SendEmail(int(id), name, email)
+    go SendConfirmationEmail(int(id), name, email)
 
     c.HTML(302, "confirm_email.html", "")
 
@@ -204,7 +204,7 @@ func randSeq(n int) string {
     return string(b)
 }
 
-func SendEmail(id int, name string, email string) {
+func SendConfirmationEmail(id int, name string, email string) {
 
     // Set home many CPU cores this function wants to use.
     runtime.GOMAXPROCS(runtime.NumCPU())
@@ -335,5 +335,5 @@ func SendNewToken(c * gin.Context) {
         fmt.Println(email)
     }
     rows.Close()
-    go SendEmail(int(userId), name, email)
+    go SendConfirmationEmail(int(userId), name, email)
 }
