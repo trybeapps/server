@@ -264,7 +264,7 @@ header .header-container {
 	fill: #FF4848;
 }
 
-#addFiles {
+.upload-books-form {
   display: none;
 }
 
@@ -644,6 +644,7 @@ input[type="submit"] {
 }
 
 .upload-theatre {
+  display: none;
   width: 100%;
   height: 100%;
   position: fixed;

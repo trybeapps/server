@@ -178,6 +178,40 @@ $(function() {
 
 	$('.hn-book-nav').click(function(e) {
 		e.preventDefault()
-		$('#addFiles').click()
+		$('.upload-books').click()
+	})
+
+	$('.upload-books').change(function(e) {
+		e.preventDefault()
+		// var ext = $(this).val().split('.').pop().toLowerCase();
+		// alert(ext)
+		var files = $(this).get(0).files
+		for (var i = 0; i < files.length; i++) {
+			if (files[i].type == 'application/pdf') {
+				console.log(files[i])
+			}
+			else {
+				alert(files[i].name + '(Wrong file format. Only PDFs are supported.)')
+				continue
+			}
+		}
+		$('.upload-books-form').submit()
+	})
+
+	$('.upload-books-form').submit(function(e) {
+		e.preventDefault()
+		var formData = new FormData($(this)[0])
+		console.log(formData)
+		$.ajax({
+			url: '/upload',
+			type: 'POST',
+			data: formData,
+			contentType: false,
+			cache: false,
+			processData:false,
+            success: function (data) {
+                console.log(data);
+            }
+		})
 	})
 })

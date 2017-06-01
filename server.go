@@ -7,6 +7,9 @@ import (
     "runtime"
     "math/rand"
     "strconv"
+    "io"
+    "mime"
+    "os"
 
     "github.com/gin-gonic/gin"
     "github.com/gin-contrib/sessions"
@@ -72,6 +75,7 @@ func main() {
     r.GET("/confirm-email", ConfirmEmail)
     r.GET("/new-token", SendNewToken)
     r.GET("/signout", GetSignOut)
+    r.POST("/upload", PostUpload)
     r.GET("/collections", GetCollections)
 
     // Listen and serve on 0.0.0.0:8080
@@ -337,6 +341,40 @@ func SendNewToken(c *gin.Context) {
     }
     rows.Close()
     go SendConfirmationEmail(int(userId), name, email)
+}
+
+func PostUpload(c *gin.Context) {
+    multipart, err := c.Request.MultipartReader()
+    CheckError(err)
+
+    for {
+        mimePart, err := multipart.NextPart()
+        
+        if err == io.EOF {
+            break
+        }
+
+        CheckError(err)
+
+        fmt.Println(mimePart)
+
+        disposition, params, err := mime.ParseMediaType(mimePart.Header.Get("Content-Disposition"))
+        CheckError(err)
+        fmt.Println(disposition)
+        fmt.Println(params["filename"])
+
+        if contentType, _, _ := mime.ParseMediaType(mimePart.Header.Get("Content-Type")); contentType == "application/pdf" {
+            out, err := os.Create("./uploads/" + params["filename"])
+            CheckError(err)
+
+            _, err = io.Copy(out, mimePart)
+            CheckError(err)
+
+            out.Close()
+        }
+    }
+
+    c.String(200, "Books uploaded successfully")
 }
 
 func GetCollections(c *gin.Context) {
