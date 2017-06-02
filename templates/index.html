@@ -91,9 +91,10 @@
 		<div class="quote-of-the-day">
 			<div class="qotd-border">
 				<label>QUOTE OF THE DAY</label>
-				<img src="{{.qImage}}" width="50">
+				<img src="{{ .qImage }}" width="50">
 				<div class="quote">{{ .qQuote }}</div>
-				<div class="author">{{ .qAuthor }}</div>
+				<div class="author">- <a target="blank" href="{{ .qAuthorURL }}">{{ .qAuthor }}</a></div>
+				<a target="blank" href="{{ .qFromBookURL }}" class="from-book">{{ .qFromBook }}</a>
 			</div>
 		</div>
 		<div class="currently-reading-container">

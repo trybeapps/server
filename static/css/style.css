@@ -341,8 +341,8 @@ input[type="submit"] {
 	margin-right: 20px;
 }
 
-.quote-of-the-day .quote, .quote-of-the-day .author {
-	float: left;
+.quote-of-the-day .quote, .quote-of-the-day .author, .quote-of-the-day .from-book {
+	float: right;
 	color: #161616;
 	width: 480px;
 	line-height: 24px;
@@ -353,10 +353,19 @@ input[type="submit"] {
 	line-height: 27px;
 }
 
-.quote-of-the-day .author {
+.quote-of-the-day .author, .quote-of-the-day .from-book {
 	float: right;
 	margin-top: 5px;
 	font-weight: 700;
+}
+
+.quote-of-the-day .from-book {
+  display: block;
+  font-weight: normal;
+}
+
+.quote-of-the-day .author a {
+  color: #161616;
 }
 
 .currently-reading-container {
@@ -784,14 +793,14 @@ footer {
     	margin: 0 auto 20px;
   	}
 
-  	.quote-of-the-day .quote, .quote-of-the-day .author {
+  	.quote-of-the-day .quote, .quote-of-the-day .author, .quote-of-the-day .from-book {
   		width: 100%;
     	text-align: center;
     	margin-bottom: 10px;
     	float: none;
   	}
 
-  	.quote-of-the-day .author {
+  	.quote-of-the-day .from-book {
   		margin-bottom: 0;
   	}
   	
