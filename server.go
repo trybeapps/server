@@ -99,66 +99,8 @@ func main() {
     r.POST("/upload", PostUpload)
     r.GET("/collections", GetCollections)
 
-    title, author, pages := GetPdfInfo()
-    fmt.Println(title)
-    fmt.Println(author)
-    fmt.Println(pages)
-
-    // GeneratePDFCover()
-
     // Listen and serve on 0.0.0.0:8080
     r.Run(":8080")
-}
-
-func GeneratePDFCover() {
-    cmd := exec.Command("/usr/local/bin/pdfimages", "-p", "-png", "-f", "1", "-l", "2", 
-        "uploads/Bird_Richard-Thinking_Functionally_with_Haskell-Cambridge_University_Press_2015_41371491567097.pdf", 
-        "cover")
-
-    err := cmd.Run()
-    CheckError(err)
-}
-
-func GetPdfInfo() (string, string, string) {
-    cmd := exec.Command("/usr/local/bin/pdfinfo", 
-        "uploads/Bird_Richard-Thinking_Functionally_with_Haskell-Cambridge_University_Press_2015_41371491567097.pdf")
-    
-    var out bytes.Buffer
-    cmd.Stdout = &out
-    
-    err :=  cmd.Run()
-    CheckError(err)
-    
-    output := out.String()
-    opSplit := strings.Split(output, "\n")
-    
-    title := opSplit[0]
-    author := opSplit[1]
-    pages := ""
-
-    for _, element := range opSplit {
-        if strings.HasPrefix(element, "Pages") {
-            pages = strings.Split(element, ":")[1]
-            pages = strings.Trim(pages, " ")
-            break
-        }
-    }
-
-    if strings.HasPrefix(title, "Title") {
-        title = strings.Split(title, ":")[1]
-        title = strings.Trim(title, " ")
-    } else {
-        title = ""
-    }
-
-    if strings.HasPrefix(author, "Author") {
-        author = strings.Split(author, ":")[1]
-        author = strings.Trim(author, " ")
-    } else {
-        author = ""
-    }
-
-    return title, author, pages
 }
 
 func CheckError(err error) {
@@ -488,7 +430,8 @@ func PostUpload(c *gin.Context) {
         fmt.Println(params["filename"])
 
         if contentType, _, _ := mime.ParseMediaType(mimePart.Header.Get("Content-Type")); contentType == "application/pdf" {
-            out, err := os.Create("./uploads/" + params["filename"])
+            filePath := "./uploads/" + params["filename"]
+            out, err := os.Create(filePath)
             CheckError(err)
 
             _, err = io.Copy(out, mimePart)
@@ -496,13 +439,31 @@ func PostUpload(c *gin.Context) {
 
             out.Close()
 
+            title, author, pages := GetPdfInfo(filePath)
+
+            if title == "" {
+                title = strings.Split(params["filename"], ".pdf")[0]
+                title = strings.Join(strings.Split(title, " "), "_")
+            }
+
+            if author == "" {
+                author = "unknown"
+            }
+
+            pagesInt, err := strconv.Atoi(pages)
+            CheckError(err)
+
+            fmt.Println(title)
+            fmt.Println(author)
+            fmt.Println(pagesInt)
+
             // db, err := sql.Open("sqlite3", "./libreread.db")
             // CheckError(err)
 
-            // ---------------------------------------------------------------------------------
-            // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on
-            // ---------------------------------------------------------------------------------
-            // stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, uploaded_on) VALUES (?, ?, ?)")
+            // // ---------------------------------------------------------------------------------
+            // // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on
+            // // ---------------------------------------------------------------------------------
+            // stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, uploaded_on) VALUES (?, ?, ?, ?, ?, ?, ?)")
             // CheckError(err)
 
             // res, err := stmt.Exec(name, email, hashedPassword)
@@ -518,6 +479,59 @@ func PostUpload(c *gin.Context) {
     }
 
     c.String(200, "Books uploaded successfully")
+}
+
+func GeneratePDFCover() {
+    cmd := exec.Command("/usr/local/bin/pdfimages", "-p", "-png", "-f", "1", "-l", "2", 
+        "uploads/Bird_Richard-Thinking_Functionally_with_Haskell-Cambridge_University_Press_2015_41371491567097.pdf", 
+        "cover")
+
+    err := cmd.Run()
+    CheckError(err)
+}
+
+func GetPdfInfo(filePath string) (string, string, string) {
+    cmd := exec.Command("/usr/local/bin/pdfinfo", filePath)
+    
+    var out bytes.Buffer
+    cmd.Stdout = &out
+    
+    err :=  cmd.Run()
+    CheckError(err)
+    
+    output := out.String()
+    opSplit := strings.Split(output, "\n")
+    
+    title := opSplit[0]
+    author := opSplit[1]
+    pages := ""
+
+    // Get number of pages.
+    for _, element := range opSplit {
+        if strings.HasPrefix(element, "Pages") {
+            pages = strings.Split(element, ":")[1]
+            pages = strings.Trim(pages, " ")
+            break
+        }
+    }
+
+    // Get book title.
+    if strings.HasPrefix(title, "Title") {
+        title = strings.Split(title, ":")[1]
+        title = strings.Trim(title, " ")
+    } else {
+        title = ""
+    }
+
+    // Get author of the uploaded book.
+    if strings.HasPrefix(author, "Author") {
+        author = strings.Split(author, ":")[1]
+        author = strings.Trim(author, " ")
+    } else {
+        author = ""
+    }
+
+    return title, author, pages
 }
 
 func GetCollections(c *gin.Context) {
