@@ -96,13 +96,12 @@ func CheckError(err error) {
 }
 var myClient = &http.Client{Timeout: 10 * time.Second}
 func GetJSON(url string, target interface{}) error {
-    r, err := myClient.Get(url)
-    CheckError(err)
-    defer r.Body.Close()
-    err = json.NewDecoder(r.Body).Decode(target)
-    CheckError(err)
-
-    return json.NewDecoder(r.Body).Decode(target)
+    r, _ := myClient.Get(url)
+    if r != nil {
+        defer r.Body.Close()
+        return json.NewDecoder(r.Body).Decode(target)
+    }
+    return nil
 }
 
 type QS struct {
@@ -120,14 +119,21 @@ func GetHomePage(c *gin.Context) {
 
         q := new(QS)
         GetJSON("http://localhost:3000/quote-of-the-day", q)
-        fmt.Println(q.Author)
-        fmt.Println(q.Image)
-        fmt.Println(q.Quote)
+        var quote, author, image string   
+        if q.Quote != "" {
+            quote = q.Quote
+            author = q.Author
+            image = q.Image
+        } else {
+            quote = "Don't cry because it's over, smile because it happened."
+            author = "- Dr. Seuss"
+            image = "https://images.gr-assets.com/authors/1193930952p2/61105.jpg"
+        }
 
         c.HTML(302, "index.html", gin.H{
-            "qQuote": q.Quote,
-            "qAuthor": q.Author,
-            "qImage": q.Image,
+            "qQuote": quote,
+            "qAuthor": author,
+            "qImage": image,
         })
     }
     c.Redirect(302, "/signin")
