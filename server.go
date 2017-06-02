@@ -67,8 +67,18 @@ func main() {
 
     // Create book table
     // Table: book
-    //
-    // Fields: id, title, filename, author, url, cover, pages, 
+    // ---------------------------------------------------------------------------------
+    // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on
+    // ---------------------------------------------------------------------------------
+    stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `book` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
+        " `title` VARCHAR(255) NOT NULL, `filename` VARCHAR(255) NOT NULL," +
+        " `author` VARCHAR(255) NOT NULL, `url` VARCHAR(255) NOT NULL," +
+        " `cover` VARCHAR(255) NOT NULL, `pages` INTEGER NOT NULL, `current_page` INTEGER DEFAULT 0," +
+        " `uploaded_on` VARCHAR(255) NOT NULL)")
+    CheckError(err)
+
+    _, err = stmt.Exec()
+    CheckError(err)
 
     // Close sqlite3 database
     defer db.Close()
