@@ -12,6 +12,9 @@ import (
     "io"
     "mime"
     "os"
+    "os/exec"
+    "bytes"
+    "strings"
 
     "github.com/gin-gonic/gin"
     "github.com/gin-contrib/sessions"
@@ -95,8 +98,45 @@ func main() {
     r.POST("/upload", PostUpload)
     r.GET("/collections", GetCollections)
 
+    title, author := GetPdfInfo()
+    fmt.Println(title)
+    fmt.Println(author)
+
     // Listen and serve on 0.0.0.0:8080
     r.Run(":8080")
+}
+
+func GetPdfInfo() (string, string) {
+    cmd := exec.Command("/usr/local/bin/pdfinfo", "uploads/Bird_Richard-Thinking_Functionally_with_Haskell-Cambridge_University_Press_2015_41371491567097.pdf")
+    
+    var out bytes.Buffer
+    cmd.Stdout = &out
+    
+    err :=  cmd.Run()
+    CheckError(err)
+    
+    output := out.String()
+    opSplit := strings.Split(output, "\n")
+    
+    fmt.Printf("%q\n", opSplit)
+    title := opSplit[0]
+    author := opSplit[1]
+
+    if strings.HasPrefix(title, "Title") {
+        title = strings.Split(title, ":")[1]
+        title = strings.Trim(title, " ")
+    } else {
+        title = ""
+    }
+
+    if strings.HasPrefix(author, "Author") {
+        author = strings.Split(author, ":")[1]
+        author = strings.Trim(author, " ")
+    } else {
+        author = ""
+    }
+
+    return title, author
 }
 
 func CheckError(err error) {
