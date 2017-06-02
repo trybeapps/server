@@ -32,6 +32,7 @@ func main() {
 
     // Serve static files
     r.Static("/static", "./static")
+    r.Static("/uploads", "./uploads")
 
     // HTML rendering
     r.LoadHTMLGlob("templates/*")
@@ -98,9 +99,10 @@ func main() {
     r.POST("/upload", PostUpload)
     r.GET("/collections", GetCollections)
 
-    // title, author := GetPdfInfo()
-    // fmt.Println(title)
-    // fmt.Println(author)
+    title, author, pages := GetPdfInfo()
+    fmt.Println(title)
+    fmt.Println(author)
+    fmt.Println(pages)
 
     // GeneratePDFCover()
 
@@ -109,14 +111,17 @@ func main() {
 }
 
 func GeneratePDFCover() {
-    cmd := exec.Command("/usr/local/bin/pdfimages", "-p", "-png", "-f", "1", "-l", "2", "uploads/Bird_Richard-Thinking_Functionally_with_Haskell-Cambridge_University_Press_2015_41371491567097.pdf", "cover")
+    cmd := exec.Command("/usr/local/bin/pdfimages", "-p", "-png", "-f", "1", "-l", "2", 
+        "uploads/Bird_Richard-Thinking_Functionally_with_Haskell-Cambridge_University_Press_2015_41371491567097.pdf", 
+        "cover")
 
     err := cmd.Run()
     CheckError(err)
 }
 
-func GetPdfInfo() (string, string) {
-    cmd := exec.Command("/usr/local/bin/pdfinfo", "uploads/Bird_Richard-Thinking_Functionally_with_Haskell-Cambridge_University_Press_2015_41371491567097.pdf")
+func GetPdfInfo() (string, string, string) {
+    cmd := exec.Command("/usr/local/bin/pdfinfo", 
+        "uploads/Bird_Richard-Thinking_Functionally_with_Haskell-Cambridge_University_Press_2015_41371491567097.pdf")
     
     var out bytes.Buffer
     cmd.Stdout = &out
@@ -127,9 +132,17 @@ func GetPdfInfo() (string, string) {
     output := out.String()
     opSplit := strings.Split(output, "\n")
     
-    fmt.Printf("%q\n", opSplit)
     title := opSplit[0]
     author := opSplit[1]
+    pages := ""
+
+    for _, element := range opSplit {
+        if strings.HasPrefix(element, "Pages") {
+            pages = strings.Split(element, ":")[1]
+            pages = strings.Trim(pages, " ")
+            break
+        }
+    }
 
     if strings.HasPrefix(title, "Title") {
         title = strings.Split(title, ":")[1]
@@ -145,7 +158,7 @@ func GetPdfInfo() (string, string) {
         author = ""
     }
 
-    return title, author
+    return title, author, pages
 }
 
 func CheckError(err error) {
@@ -482,6 +495,25 @@ func PostUpload(c *gin.Context) {
             CheckError(err)
 
             out.Close()
+
+            // db, err := sql.Open("sqlite3", "./libreread.db")
+            // CheckError(err)
+
+            // ---------------------------------------------------------------------------------
+            // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on
+            // ---------------------------------------------------------------------------------
+            // stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, uploaded_on) VALUES (?, ?, ?)")
+            // CheckError(err)
+
+            // res, err := stmt.Exec(name, email, hashedPassword)
+            // CheckError(err)
+
+            // id, err := res.LastInsertId()
+            // CheckError(err)
+
+            // fmt.Println(id)
+
+            // db.Close()
         }
     }
 
