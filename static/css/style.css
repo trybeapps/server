@@ -362,6 +362,7 @@ input[type="submit"] {
 .currently-reading-container {
 	width: 100%;
 	background: #222222;
+  margin-bottom: 30px;
 }
 
 .currently-reading-container .crc-bg, .books-container {

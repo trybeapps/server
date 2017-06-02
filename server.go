@@ -3,6 +3,8 @@ package main
 import (
     "fmt"
     "time"
+    "encoding/json"
+    "net/http"
     "database/sql"
     "runtime"
     "math/rand"
@@ -63,6 +65,11 @@ func main() {
     _, err = stmt.Exec()
     CheckError(err)
 
+    // Create book table
+    // Table: book
+    //
+    // Fields: id, title, filename, author, url, cover, pages, 
+
     // Close sqlite3 database
     defer db.Close()
 
@@ -87,6 +94,22 @@ func CheckError(err error) {
         panic(err)
     }
 }
+var myClient = &http.Client{Timeout: 10 * time.Second}
+func GetJSON(url string, target interface{}) error {
+    r, err := myClient.Get(url)
+    CheckError(err)
+    defer r.Body.Close()
+    err = json.NewDecoder(r.Body).Decode(target)
+    CheckError(err)
+
+    return json.NewDecoder(r.Body).Decode(target)
+}
+
+type QS struct {
+    Author string
+    Image string
+    Quote string
+}
 
 func GetHomePage(c *gin.Context) {
     // Get session from cookie. Check if email exists
@@ -94,7 +117,18 @@ func GetHomePage(c *gin.Context) {
     session := sessions.Default(c)
     if session.Get("email") != nil {
         fmt.Println(session.Get("email"))
-        c.HTML(302, "index.html", "")
+
+        q := new(QS)
+        GetJSON("http://localhost:3000/quote-of-the-day", q)
+        fmt.Println(q.Author)
+        fmt.Println(q.Image)
+        fmt.Println(q.Quote)
+
+        c.HTML(302, "index.html", gin.H{
+            "qQuote": q.Quote,
+            "qAuthor": q.Author,
+            "qImage": q.Image,
+        })
     }
     c.Redirect(302, "/signin")
 }
@@ -349,7 +383,7 @@ func PostUpload(c *gin.Context) {
 
     for {
         mimePart, err := multipart.NextPart()
-        
+
         if err == io.EOF {
             break
         }
