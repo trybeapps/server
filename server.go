@@ -98,12 +98,21 @@ func main() {
     r.POST("/upload", PostUpload)
     r.GET("/collections", GetCollections)
 
-    title, author := GetPdfInfo()
-    fmt.Println(title)
-    fmt.Println(author)
+    // title, author := GetPdfInfo()
+    // fmt.Println(title)
+    // fmt.Println(author)
+
+    // GeneratePDFCover()
 
     // Listen and serve on 0.0.0.0:8080
     r.Run(":8080")
+}
+
+func GeneratePDFCover() {
+    cmd := exec.Command("/usr/local/bin/pdfimages", "-p", "-png", "-f", "1", "-l", "2", "uploads/Bird_Richard-Thinking_Functionally_with_Haskell-Cambridge_University_Press_2015_41371491567097.pdf", "cover")
+
+    err := cmd.Run()
+    CheckError(err)
 }
 
 func GetPdfInfo() (string, string) {
