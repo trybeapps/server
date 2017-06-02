@@ -19,8 +19,8 @@ func main() {
 
 func GetQuote(c *gin.Context) {
     c.JSON(200, gin.H{
-        "quote": "Don't cry because it's over, smile because it happened.",
-        "author": "- Dr.Seuss",
-        "image": "localhost:3000/static/img/seuss.jpg",
+        "quote": "So many things are possible just as long as you don't know they're impossible.",
+        "author": "— Norton Juster",
+        "image": "https://images.gr-assets.com/authors/1201117378p5/214.jpg",
     })
 }
