@@ -211,6 +211,7 @@ $(function() {
 			processData:false,
             success: function (data) {
                 alert(data)
+                window.location.reload(false)
             }
 		})
 	})

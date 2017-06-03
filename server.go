@@ -63,7 +63,7 @@ func main() {
     stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `confirm` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
         " `token` VARCHAR(255) NOT NULL, `date_generated` VARCHAR(255) NOT NULL," +
         " `date_expires` VARCHAR(255) NOT NULL, `date_used` VARCHAR(255), " +
-        " `used` INTEGER DEFAULT 0, user_id INTEGER NOT NULL)")
+        " `used` INTEGER DEFAULT 0, `user_id` INTEGER NOT NULL)")
     CheckError(err)
 
     _, err = stmt.Exec()
@@ -78,7 +78,8 @@ func main() {
         " `title` VARCHAR(255) NOT NULL, `filename` VARCHAR(255) NOT NULL," +
         " `author` VARCHAR(255) NOT NULL, `url` VARCHAR(255) NOT NULL," +
         " `cover` VARCHAR(255) NOT NULL, `pages` INTEGER NOT NULL, `current_page` INTEGER DEFAULT 0," +
-        " `uploaded_on` VARCHAR(255) NOT NULL)")
+        " `uploaded_on` VARCHAR(255) NOT NULL, `currently_reading` INTEGER DEFAULT 0," +
+        " `user_id` INTEGER NOT NULL)")
     CheckError(err)
 
     _, err = stmt.Exec()
@@ -410,114 +411,132 @@ func SendNewToken(c *gin.Context) {
 }
 
 func PostUpload(c *gin.Context) {
-    multipart, err := c.Request.MultipartReader()
-    CheckError(err)
+    session := sessions.Default(c)
+    if session.Get("email") != nil {
+        fmt.Println(session.Get("email"))
 
-    for {
-        mimePart, err := multipart.NextPart()
+        db, err := sql.Open("sqlite3", "./libreread.db")
+        CheckError(err)
 
-        if err == io.EOF {
-            break
+        rows, err := db.Query("select id from user where email = ?", session.Get("email"))
+        CheckError(err)
+
+        var userId int
+
+        if rows.Next() {
+            err := rows.Scan(&userId)
+            CheckError(err)
+
+            fmt.Println("User id: " + strconv.Itoa(userId))
         }
-
+        rows.Close()
+        
+        multipart, err := c.Request.MultipartReader()
         CheckError(err)
 
-        fmt.Println(mimePart)
+        for {
+            mimePart, err := multipart.NextPart()
 
-        disposition, params, err := mime.ParseMediaType(mimePart.Header.Get("Content-Disposition"))
-        CheckError(err)
-        fmt.Println(disposition)
-        fmt.Println(params["filename"])
+            if err == io.EOF {
+                break
+            }
 
-        if contentType, _, _ := mime.ParseMediaType(mimePart.Header.Get("Content-Type")); contentType == "application/pdf" {
-            fileName := strings.Split(params["filename"], ".pdf")[0]
-            fileName = strings.Join(strings.Split(fileName, " "), "_") + ".pdf"
-            fmt.Println("filename: " + fileName)
-
-            db, err := sql.Open("sqlite3", "./libreread.db")
             CheckError(err)
 
-            rows, err := db.Query("select id from book where filename = ?", fileName)
+            fmt.Println(mimePart)
+
+            disposition, params, err := mime.ParseMediaType(mimePart.Header.Get("Content-Disposition"))
             CheckError(err)
+            fmt.Println(disposition)
+            fmt.Println(params["filename"])
 
-            var BookId int
+            if contentType, _, _ := mime.ParseMediaType(mimePart.Header.Get("Content-Type")); contentType == "application/pdf" {
+                fileName := strings.Split(params["filename"], ".pdf")[0]
+                fileName = strings.Join(strings.Split(fileName, " "), "_") + ".pdf"
+                fmt.Println("filename: " + fileName)
 
-            if rows.Next() {
-                err := rows.Scan(&BookId)
+                rows, err = db.Query("select id from book where filename = ?", fileName)
                 CheckError(err)
 
-                fmt.Println("Book id: " + strconv.Itoa(BookId))
-            }
-            rows.Close()
+                var bookId int
 
-            if BookId != 0 {
-                c.String(200, fileName + " already exists. ")
-                continue
-            }
+                if rows.Next() {
+                    err := rows.Scan(&bookId)
+                    CheckError(err)
+
+                    fmt.Println("Book id: " + strconv.Itoa(bookId))
+                }
+                rows.Close()
+
+                if bookId != 0 {
+                    c.String(200, fileName + " already exists. ")
+                    continue
+                }
             
-            filePath := "./uploads/" + fileName
+                filePath := "./uploads/" + fileName
             
-            out, err := os.Create(filePath)
-            CheckError(err)
+                out, err := os.Create(filePath)
+                CheckError(err)
 
-            _, err = io.Copy(out, mimePart)
-            CheckError(err)
+                _, err = io.Copy(out, mimePart)
+                CheckError(err)
 
-            out.Close()
+                out.Close()
 
-            title, author, pages := GetPdfInfo(filePath)
+                title, author, pages := GetPdfInfo(filePath)
 
-            if title == "" {
-                title = fileName
-            }
+                if title == "" {
+                    title = fileName
+                }
 
-            if author == "" {
-                author = "unknown"
-            }
+                if author == "" {
+                    author = "unknown"
+                }
 
-            pagesInt, err := strconv.Atoi(pages)
-            CheckError(err)
+                pagesInt, err := strconv.Atoi(pages)
+                CheckError(err)
 
-            fmt.Println("Book title: " + title)
-            fmt.Println("Book author: " + author)
-            fmt.Println("Total pages: " + pages)
+                fmt.Println("Book title: " + title)
+                fmt.Println("Book author: " + author)
+                fmt.Println("Total pages: " + pages)
 
-            url := "/book/" + fileName
-            fmt.Println("Book URL: " + url)
+                url := "/book/" + fileName
+                fmt.Println("Book URL: " + url)
 
-            coverPath := "./uploads/img/" + fileName
+                coverPath := "./uploads/img/" + fileName
 
-            GeneratePDFCover(filePath, coverPath)
+                GeneratePDFCover(filePath, coverPath)
 
-            cover := ""
+                cover := ""
 
-            if _, err := os.Stat(coverPath + "-001-000.png"); err == nil {
-                cover = "/book/cover/" + fileName + "-001-000.png"
-            }
+                if _, err := os.Stat(coverPath + "-001-000.png"); err == nil {
+                    cover = "/book/cover/" + fileName + "-001-000.png"
+                }
 
-            fmt.Println("Book cover URL: " + cover)
+                fmt.Println("Book cover URL: " + cover)
 
-            t := time.Now()
+                t := time.Now()
     
-            uploadedOn := t.Format("20060102150405")
-            fmt.Println("Uploaded on: " + uploadedOn)
+                uploadedOn := t.Format("20060102150405")
+                fmt.Println("Uploaded on: " + uploadedOn)
 
-            // ---------------------------------------------------------------------------------
-            // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on
-            // ---------------------------------------------------------------------------------
-            stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, uploaded_on) VALUES (?, ?, ?, ?, ?, ?, ?)")
-            CheckError(err)
+                // ---------------------------------------------------------------------------------
+                // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on
+                // ---------------------------------------------------------------------------------
+                stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, uploaded_on, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+                CheckError(err)
 
-            res, err := stmt.Exec(title, fileName, author, url, cover, pagesInt, uploadedOn)
-            CheckError(err)
+                res, err := stmt.Exec(title, fileName, author, url, cover, pagesInt, uploadedOn, userId)
+                CheckError(err)
 
-            id, err := res.LastInsertId()
-            CheckError(err)
+                id, err := res.LastInsertId()
+                CheckError(err)
 
-            fmt.Println(id)
+                fmt.Println(id)
 
-            db.Close()
-            c.String(200, fileName + " uploaded successfully. ")
+                db.Close()
+                c.String(200, fileName + " uploaded successfully. ")
+            }
         }
     }
 }
