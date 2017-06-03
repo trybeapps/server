@@ -71,9 +71,9 @@ func main() {
 
     // Create book table
     // Table: book
-    // ---------------------------------------------------------------------------------
-    // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on
-    // ---------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
+    // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
+    // ------------------------------------------------------------------------------------------
     stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `book` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
         " `title` VARCHAR(255) NOT NULL, `filename` VARCHAR(255) NOT NULL," +
         " `author` VARCHAR(255) NOT NULL, `url` VARCHAR(255) NOT NULL," +
@@ -128,6 +128,12 @@ type QS struct {
     Quote string
 }
 
+type BS struct {
+    Title string
+    URL string
+    Cover string
+}
+
 func GetHomePage(c *gin.Context) {
     // Get session from cookie. Check if email exists
     // show Home page else redirect to signin page.
@@ -147,8 +153,62 @@ func GetHomePage(c *gin.Context) {
             q.FromBookURL = "https://www.goodreads.com/work/1782584"
         }
 
+        db, err := sql.Open("sqlite3", "./libreread.db")
+        CheckError(err)
+
+        rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
+        CheckError(err)
+
+        var id int
+        if rows.Next() {
+            err := rows.Scan(&id)
+            CheckError(err)
+            fmt.Println(id)
+        }
+        rows.Close()
+
+        // ------------------------------------------------------------------------------------------
+        // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
+        // ------------------------------------------------------------------------------------------
+        rows, err = db.Query("SELECT title, url, cover FROM `book` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ?, ?", id, 6, 18)
+        CheckError(err)
+
+        var b = []BS{}
+        
+        var (
+            title string
+            url string
+            cover string
+        )
+        for rows.Next() {
+            err = rows.Scan(
+                &title,
+                &url,
+                &cover,
+            )
+            CheckError(err)
+            fmt.Println(title)
+            b = append(b, BS{ 
+                title, 
+                url, 
+                cover,
+            })
+        }
+        rows.Close()
+        db.Close()
+
+        fmt.Println(b)
+
+        // var d = []BS{}
+        // fmt.Println(d)
+        // for i := 0; i < len(b); i = i + 4 {
+        //     for j
+        //     fmt.Println(i)
+        // }
+
         c.HTML(302, "index.html", gin.H{
             "q": q,
+            "b": b,
         })
     }
     c.Redirect(302, "/signin")
@@ -508,9 +568,9 @@ func PostUpload(c *gin.Context) {
                 uploadedOn := t.Format("20060102150405")
                 fmt.Println("Uploaded on: " + uploadedOn)
 
-                // ---------------------------------------------------------------------------------
-                // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on
-                // ---------------------------------------------------------------------------------
+                // ------------------------------------------------------------------------------------------
+                // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
+                // ------------------------------------------------------------------------------------------
                 stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, uploaded_on, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
                 CheckError(err)
 

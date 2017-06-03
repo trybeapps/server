@@ -141,6 +141,15 @@
 		</div>
 		<div class="books-container">
 			<div class="bc-books-list">
+			{{ range .b }}
+				<div>
+					<a href="{{.URL}}">
+						<img src="{{.Cover}}" width="205">
+					</a>
+				</div>
+			{{ end }}
+			</div>
+			<div class="bc-books-list">
 				<div>
 					<a href="/">
 						<img src="/static/img/book_1.png" width="205">
