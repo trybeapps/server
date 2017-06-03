@@ -210,7 +210,7 @@ $(function() {
 			cache: false,
 			processData:false,
             success: function (data) {
-                console.log(data);
+                alert(data)
             }
 		})
 	})

@@ -433,7 +433,30 @@ func PostUpload(c *gin.Context) {
             fileName := strings.Split(params["filename"], ".pdf")[0]
             fileName = strings.Join(strings.Split(fileName, " "), "_") + ".pdf"
             fmt.Println("filename: " + fileName)
+
+            db, err := sql.Open("sqlite3", "./libreread.db")
+            CheckError(err)
+
+            rows, err := db.Query("select id from book where filename = ?", fileName)
+            CheckError(err)
+
+            var BookId int
+
+            if rows.Next() {
+                err := rows.Scan(&BookId)
+                CheckError(err)
+
+                fmt.Println("Book id: " + strconv.Itoa(BookId))
+            }
+            rows.Close()
+
+            if BookId != 0 {
+                c.String(200, fileName + " already exists. ")
+                continue
+            }
+            
             filePath := "./uploads/" + fileName
+            
             out, err := os.Create(filePath)
             CheckError(err)
 
@@ -479,9 +502,6 @@ func PostUpload(c *gin.Context) {
             uploadedOn := t.Format("20060102150405")
             fmt.Println("Uploaded on: " + uploadedOn)
 
-            db, err := sql.Open("sqlite3", "./libreread.db")
-            CheckError(err)
-
             // ---------------------------------------------------------------------------------
             // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on
             // ---------------------------------------------------------------------------------
@@ -497,10 +517,9 @@ func PostUpload(c *gin.Context) {
             fmt.Println(id)
 
             db.Close()
+            c.String(200, fileName + " uploaded successfully. ")
         }
     }
-
-    c.String(200, "Books uploaded successfully")
 }
 
 func GeneratePDFCover(filePath, coverPath string) {
