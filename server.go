@@ -170,10 +170,10 @@ func GetHomePage(c *gin.Context) {
         // ------------------------------------------------------------------------------------------
         // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
         // ------------------------------------------------------------------------------------------
-        rows, err = db.Query("SELECT title, url, cover FROM `book` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ?, ?", id, 6, 18)
+        rows, err = db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ?, ?", id, 0, 18)
         CheckError(err)
 
-        var b = []BS{}
+        b := []BS{}
         
         var (
             title string
@@ -187,28 +187,42 @@ func GetHomePage(c *gin.Context) {
                 &cover,
             )
             CheckError(err)
-            fmt.Println(title)
+
             b = append(b, BS{ 
                 title, 
                 url, 
                 cover,
             })
         }
+
         rows.Close()
         db.Close()
 
-        fmt.Println(b)
-
-        // var d = []BS{}
-        // fmt.Println(d)
-        // for i := 0; i < len(b); i = i + 4 {
-        //     for j
-        //     fmt.Println(i)
-        // }
+        bOne := []BS{}
+        bTwo := []BS{}
+        bThree := []BS{}
+        for i := 0; i < len(b); i += 6 {
+            j := i + 6
+            for j > len(b) {
+                j -= 1
+            }
+            if i == 0 {
+                bOne = b[i:j]
+            } else if i == 6 {
+                bTwo = b[i:j]
+            } else {
+                bThree = b[i:j]
+            }
+        }
+        fmt.Println(bOne)
+        fmt.Println(bTwo)
+        fmt.Println(bThree)
 
         c.HTML(302, "index.html", gin.H{
             "q": q,
-            "b": b,
+            "bOne": bOne,
+            "bTwo": bTwo,
+            "bThree": bThree,
         })
     }
     c.Redirect(302, "/signin")

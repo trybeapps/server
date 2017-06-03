@@ -141,74 +141,26 @@
 		</div>
 		<div class="books-container">
 			<div class="bc-books-list">
-			{{ range .b }}
 				<div>
+				{{ range .bOne }}
 					<a href="{{.URL}}">
 						<img src="{{.Cover}}" width="205">
 					</a>
-				</div>
-			{{ end }}
-			</div>
-			<div class="bc-books-list">
-				<div>
-					<a href="/">
-						<img src="/static/img/book_1.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_2.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_3.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_4.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_2.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_1.png" width="205">
-					</a>
+				{{ end }}
 				</div>
 				<div>
-					<a href="/">
-						<img src="/static/img/book_2.png" width="205">
+				{{ range .bTwo }}
+					<a href="{{.URL}}">
+						<img src="{{.Cover}}" width="205">
 					</a>
-					<a href="/">
-						<img src="/static/img/book_3.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_1.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_4.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_1.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_1.png" width="205">
-					</a>
+				{{ end }}
 				</div>
 				<div>
-					<a href="/">
-						<img src="/static/img/book_2.png" width="205">
+				{{ range .bThree }}
+					<a href="{{.URL}}">
+						<img src="{{.Cover}}" width="205">
 					</a>
-					<a href="/">
-						<img src="/static/img/book_2.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_3.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_4.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_1.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_2.png" width="205">
-					</a>
+				{{ end }}
 				</div>
 			</div>
 			<div class="bc-books-list-medium">
