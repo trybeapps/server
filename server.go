@@ -137,30 +137,18 @@ func GetHomePage(c *gin.Context) {
 
         q := new(QS)
         GetJSON("http://localhost:3000/quote-of-the-day", q)
-        var quote, author, authorURL, image, fromBook, fromBookURL string   
-        if q.Quote != "" {
-            quote = q.Quote
-            author = q.Author
-            authorURL = q.AuthorURL
-            image = q.Image
-            fromBook = q.FromBook
-            fromBookURL = q.FromBookURL
-        } else {
-            quote = "So many things are possible just as long as you don't know they're impossible."
-            author = "Norton Juster"
-            authorURL = "https://www.goodreads.com/author/show/214.Norton_Juster"
-            image = "https://images.gr-assets.com/authors/1201117378p5/214.jpg"
-            fromBook = "The Phantom Tollbooth"
-            fromBookURL = "https://www.goodreads.com/work/1782584"
+
+        if q.Quote == "" {
+            q.Quote = "So many things are possible just as long as you don't know they're impossible."
+            q.Author = "Norton Juster"
+            q.AuthorURL = "https://www.goodreads.com/author/show/214.Norton_Juster"
+            q.Image = "https://images.gr-assets.com/authors/1201117378p5/214.jpg"
+            q.FromBook = "The Phantom Tollbooth"
+            q.FromBookURL = "https://www.goodreads.com/work/1782584"
         }
 
         c.HTML(302, "index.html", gin.H{
-            "qQuote": quote,
-            "qAuthor": author,
-            "qAuthorURL": authorURL,
-            "qImage": image,
-            "qFromBook": fromBook,
-            "qFromBookURL": fromBookURL,
+            "q": q,
         })
     }
     c.Redirect(302, "/signin")
