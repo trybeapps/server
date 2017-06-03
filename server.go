@@ -430,7 +430,10 @@ func PostUpload(c *gin.Context) {
         fmt.Println(params["filename"])
 
         if contentType, _, _ := mime.ParseMediaType(mimePart.Header.Get("Content-Type")); contentType == "application/pdf" {
-            filePath := "./uploads/" + params["filename"]
+            fileName := strings.Split(params["filename"], ".pdf")[0]
+            fileName = strings.Join(strings.Split(fileName, " "), "_") + ".pdf"
+            fmt.Println("filename: " + fileName)
+            filePath := "./uploads/" + fileName
             out, err := os.Create(filePath)
             CheckError(err)
 
@@ -442,8 +445,7 @@ func PostUpload(c *gin.Context) {
             title, author, pages := GetPdfInfo(filePath)
 
             if title == "" {
-                title = strings.Split(params["filename"], ".pdf")[0]
-                title = strings.Join(strings.Split(title, " "), "_")
+                title = fileName
             }
 
             if author == "" {
@@ -453,38 +455,56 @@ func PostUpload(c *gin.Context) {
             pagesInt, err := strconv.Atoi(pages)
             CheckError(err)
 
-            fmt.Println(title)
-            fmt.Println(author)
-            fmt.Println(pagesInt)
+            fmt.Println("Book title: " + title)
+            fmt.Println("Book author: " + author)
+            fmt.Println("Total pages: " + pages)
 
-            // db, err := sql.Open("sqlite3", "./libreread.db")
-            // CheckError(err)
+            url := "/book/" + fileName
+            fmt.Println("Book URL: " + url)
 
-            // // ---------------------------------------------------------------------------------
-            // // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on
-            // // ---------------------------------------------------------------------------------
-            // stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, uploaded_on) VALUES (?, ?, ?, ?, ?, ?, ?)")
-            // CheckError(err)
+            coverPath := "./uploads/img/" + fileName
 
-            // res, err := stmt.Exec(name, email, hashedPassword)
-            // CheckError(err)
+            GeneratePDFCover(filePath, coverPath)
 
-            // id, err := res.LastInsertId()
-            // CheckError(err)
+            cover := ""
 
-            // fmt.Println(id)
+            if _, err := os.Stat(coverPath + "-001-000.png"); err == nil {
+                cover = "/book/cover/" + fileName + "-001-000.png"
+            }
 
-            // db.Close()
+            fmt.Println("Book cover URL: " + cover)
+
+            t := time.Now()
+    
+            uploadedOn := t.Format("20060102150405")
+            fmt.Println("Uploaded on: " + uploadedOn)
+
+            db, err := sql.Open("sqlite3", "./libreread.db")
+            CheckError(err)
+
+            // ---------------------------------------------------------------------------------
+            // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on
+            // ---------------------------------------------------------------------------------
+            stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, uploaded_on) VALUES (?, ?, ?, ?, ?, ?, ?)")
+            CheckError(err)
+
+            res, err := stmt.Exec(title, fileName, author, url, cover, pagesInt, uploadedOn)
+            CheckError(err)
+
+            id, err := res.LastInsertId()
+            CheckError(err)
+
+            fmt.Println(id)
+
+            db.Close()
         }
     }
 
     c.String(200, "Books uploaded successfully")
 }
 
-func GeneratePDFCover() {
-    cmd := exec.Command("/usr/local/bin/pdfimages", "-p", "-png", "-f", "1", "-l", "2", 
-        "uploads/Bird_Richard-Thinking_Functionally_with_Haskell-Cambridge_University_Press_2015_41371491567097.pdf", 
-        "cover")
+func GeneratePDFCover(filePath, coverPath string) {
+    cmd := exec.Command("/usr/local/bin/pdfimages", "-p", "-png", "-f", "1", "-l", "2",  filePath, coverPath)
 
     err := cmd.Run()
     CheckError(err)
