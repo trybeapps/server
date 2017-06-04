@@ -15,6 +15,7 @@ import (
     "os/exec"
     "bytes"
     "strings"
+    "reflect"
 
     "github.com/gin-gonic/gin"
     "github.com/gin-contrib/sessions"
@@ -42,6 +43,7 @@ func main() {
     // Open sqlite3 database
     db, err := sql.Open("sqlite3", "./libreread.db")
     CheckError(err)
+    fmt.Println(reflect.TypeOf(db))
 
     // Create user table
     // Table: user
@@ -88,7 +90,7 @@ func main() {
     CheckError(err)
 
     // Close sqlite3 database
-    defer db.Close()
+    db.Close()
 
     // Router
     r.GET("/", GetHomePage)
