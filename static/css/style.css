@@ -702,6 +702,52 @@ footer {
 @media screen 
   and (max-width: 1300px) {
 
+    header {
+      height: 108px;
+    }
+
+    .nav-up {
+      top: -108px;
+    }
+
+    header .header-container {
+      width: 100%;
+    }
+
+    .search-box {
+      display: block;
+      float: none;
+      width: 100%;
+      margin-top: 60px;
+      margin-left: 0;
+    }
+
+    .search-dropdown {
+      width: 100%;
+      margin-top: 48px;
+      margin-left: -30px;
+      max-height: 600px;
+    }
+
+    .search-dropdown a img {
+      width: 14%;
+    }
+
+    .search-dropdown a .sdtl-title, .search-dropdown a .sdtl-author, .search-dropdown a .sdtl-description {
+      width: 82%;
+    }
+
+    .header-nav {
+      display: none;
+    }
+
+    .menu-icon {
+      float: right;
+      display: block;
+      margin-top: -80px;
+      cursor: pointer;
+    }
+
   	.currently-reading-container .crc-bg, .books-container {
   		width: 870px;
   	}
@@ -716,53 +762,7 @@ footer {
 }
 
 @media screen
-  and (max-device-width: 1024px) {
-
-  	header {
-  		height: 108px;
-  	}
-
-  	.nav-up {
-  		top: -108px;
-  	}
-
-  	header .header-container {
-  		width: 100%;
-  	}
-
-  	.search-box {
-  		display: block;
-    	float: none;
-    	width: 100%;
-    	margin-top: 60px;
-    	margin-left: 0;
-  	}
-
-  	.search-dropdown {
-    	width: 100%;
-    	margin-top: 48px;
-    	margin-left: -30px;
-    	max-height: 600px;
-  	}
-
-  	.search-dropdown a img {
-  		width: 14%;
-  	}
-
-  	.search-dropdown a .sdtl-title, .search-dropdown a .sdtl-author, .search-dropdown a .sdtl-description {
-  		width: 82%;
-  	}
-
-  	.header-nav {
-  		display: none;
-  	}
-
-  	.menu-icon {
-  		float: right;
-  		display: block;
-    	margin-top: -80px;
-    	cursor: pointer;
-  	}
+  and (max-width: 1024px) {
 
   	.page-container {
   		margin-top: 108px;
