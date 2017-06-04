@@ -100,7 +100,8 @@ func main() {
     r.GET("/new-token", SendNewToken)
     r.GET("/signout", GetSignOut)
     r.POST("/upload", PostUpload)
-    r.GET("/book/cover/:filename", SendCover)
+    r.GET("/book/:bookname", SendBook)
+    r.GET("/cover/:covername", SendBookCover)
     r.GET("/collections", GetCollections)
 
     // Listen and serve on 0.0.0.0:8080
@@ -113,9 +114,15 @@ func CheckError(err error) {
     }
 }
 
-func SendCover(c *gin.Context) {
-    name := c.Param("filename")
-    fmt.Println(name)
+func SendBook(c *gin.Context) {
+    name := c.Param("bookname")
+    filePath := "./uploads/" + name
+
+    c.File(filePath)
+}
+
+func SendBookCover(c *gin.Context) {
+    name := c.Param("covername")
     filePath := "./uploads/img/" + name
 
     c.File(filePath)
@@ -584,7 +591,7 @@ func PostUpload(c *gin.Context) {
                 cover := ""
 
                 if _, err := os.Stat(coverPath + "-001-000.png"); err == nil {
-                    cover = "/book/cover/" + fileName + "-001-000.png"
+                    cover = "/cover/" + fileName + "-001-000.png"
                 }
 
                 fmt.Println("Book cover URL: " + cover)
