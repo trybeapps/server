@@ -2163,3 +2163,17 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
     display: none;
   }
 }
+
+/* Custom styles */
+.pdfjs-delete-book {
+  color: #161616;
+  margin-top: 5px;
+  background: white;
+  text-decoration: none;
+  padding: 3px;
+  margin-right: 10px;
+}
+
+#scaleSelectContainer {
+  margin-top: 6px;
+}

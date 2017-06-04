@@ -27,25 +27,15 @@ See https://github.com/adobe-type-tools/cmap-resources
     <meta name="google" content="notranslate">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>PDF.js viewer</title>
-
-
     <link rel="stylesheet" href="../static/css/viewer.css">
-
-
-
-<!-- This snippet is used in production (included from viewer.html) -->
-<link rel="resource" type="application/l10n" href="../static/js/pdfjs/web/locale/locale.properties">
-<script src="../static/js/pdfjs/build/pdf.js"></script>
-<script src="../static/js/pdfjs/build/pdf.worker.js"></script>
-
-
+	<!-- This snippet is used in production (included from viewer.html) -->
+	<link rel="resource" type="application/l10n" href="../static/js/pdfjs/web/locale/locale.properties">
+	<script src="../static/js/pdfjs/build/pdf.js"></script>
+	<script src="../static/js/pdfjs/build/pdf.worker.js"></script>
     <script src="../static/js/pdfjs/web/viewer.js"></script>
-
   </head>
-
   <body tabindex="1" class="loadingInProgress">
     <div id="outerContainer">
-
       <div id="sidebarContainer">
         <div id="toolbarSidebar">
           <div class="splitToolbarButton toggled">
@@ -179,6 +169,7 @@ See https://github.com/adobe-type-tools/cmap-resources
                 <span id="numPages" class="toolbarLabel"></span>
               </div>
               <div id="toolbarViewerRight">
+              	<a href="/delete-book" class="pdfjs-delete-book">Delete book</a>
                 <button id="presentationMode" class="toolbarButton presentationMode hiddenLargeView" title="Switch to Presentation Mode" tabindex="31" data-l10n-id="presentation_mode">
                   <span data-l10n-id="presentation_mode_label">Presentation Mode</span>
                 </button>
