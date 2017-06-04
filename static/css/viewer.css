@@ -2128,6 +2128,36 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   }
 }
 
+/* Custom styles */
+
+.pdfjs-delete-book {
+  color: #161616;
+  margin-top: 5px;
+  background: white;
+  text-decoration: none;
+  padding: 3px;
+  margin-right: 10px;
+}
+
+.pdfjs-delete-book-icon {
+  display: none;
+  float: left;
+  margin-top: 7px;
+  margin-left: -17px;
+}
+
+.delete-book span {
+  float: left;
+  margin-top: 9px;
+  margin-left: 1px;
+}
+
+#scaleSelectContainer {
+  margin-top: 6px;
+}
+
+/* End custom styles */
+
 @media all and (max-width: 770px) {
   #outerContainer .hiddenLargeView {
     display: none;
@@ -2162,18 +2192,13 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   #scaleSelectContainer {
     display: none;
   }
-}
 
-/* Custom styles */
-.pdfjs-delete-book {
-  color: #161616;
-  margin-top: 5px;
-  background: white;
-  text-decoration: none;
-  padding: 3px;
-  margin-right: 10px;
-}
-
-#scaleSelectContainer {
-  margin-top: 6px;
+  /* Custom styles */
+  .pdfjs-delete-book-icon {
+    display: block;
+  }
+  .pdfjs-delete-book {
+    display: none;
+  }
+  /* End custom styles */
 }

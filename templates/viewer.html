@@ -90,6 +90,10 @@ See https://github.com/adobe-type-tools/cmap-resources
 
         <div id="secondaryToolbar" class="secondaryToolbar hidden doorHangerRight">
           <div id="secondaryToolbarButtonContainer">
+          	<button id="secondaryDeleteBook" class="secondaryToolbarButton delete-book visibleLargeView" title="Delete this book" tabindex="51">
+          		<svg class="pdfjs-delete-book-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 48 48"><g fill="none" stroke="#fff" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"><path d="M2 2h44v44H2z"/><path data-color="color-2" d="M32 16L16 32m16 0L16 16"/></g></svg>
+          		<span>Delete book</span>
+          	</button>
             <button id="secondaryPresentationMode" class="secondaryToolbarButton presentationMode visibleLargeView" title="Switch to Presentation Mode" tabindex="51" data-l10n-id="presentation_mode">
               <span data-l10n-id="presentation_mode_label">Presentation Mode</span>
             </button>
@@ -169,7 +173,7 @@ See https://github.com/adobe-type-tools/cmap-resources
                 <span id="numPages" class="toolbarLabel"></span>
               </div>
               <div id="toolbarViewerRight">
-              	<a href="/delete-book" class="pdfjs-delete-book">Delete book</a>
+              	<a href="" id="deleteBook" class="pdfjs-delete-book">Delete book</a>
                 <button id="presentationMode" class="toolbarButton presentationMode hiddenLargeView" title="Switch to Presentation Mode" tabindex="31" data-l10n-id="presentation_mode">
                   <span data-l10n-id="presentation_mode_label">Presentation Mode</span>
                 </button>
@@ -346,6 +350,29 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     </div> <!-- outerContainer -->
     <div id="printContainer"></div>
+    <script type="text/javascript">
+    	var delEl = document.getElementById('deleteBook');
+    	var del2El = document.getElementById('secondaryDeleteBook');
+
+		delEl.addEventListener('click', function(e) {
+			e.preventDefault();
+			delBook();
+		}, false);
+		
+		del2El.addEventListener('click', function(e) {
+			e.preventDefault();
+			delBook();
+		}, false);
+
+		function delBook() {
+			var retVal = confirm("Do you want to delete this book?");
+            if( retVal == true ) {
+    			var fileName = window.location.pathname.split('/').pop();
+    			var filePath = '/delete-book/' + fileName;
+    			window.location.href = filePath;
+    		}
+		}
+    </script>
   </body>
 </html>
 

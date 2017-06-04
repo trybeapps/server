@@ -9493,7 +9493,7 @@ exports.ViewHistory = ViewHistory;
 
 "use strict";
 
-var fileName = window.location.pathname.split( '/' ).pop();
+var fileName = window.location.pathname.split('/').pop();
 var fileURL = "/uploads/" + fileName;
 var DEFAULT_URL = fileURL;
 ;
