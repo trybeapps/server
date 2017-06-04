@@ -34,6 +34,8 @@ func main() {
     r.Static("/static", "./static")
     r.Static("/uploads", "./uploads")
 
+    http.Handle("/book/cover/", http.StripPrefix("/book/cover/", http.FileServer(http.Dir("./uploads"))))
+
     // HTML rendering
     r.LoadHTMLGlob("templates/*")
 
@@ -98,6 +100,7 @@ func main() {
     r.GET("/new-token", SendNewToken)
     r.GET("/signout", GetSignOut)
     r.POST("/upload", PostUpload)
+    r.GET("/book/cover/:filename", SendCover)
     r.GET("/collections", GetCollections)
 
     // Listen and serve on 0.0.0.0:8080
@@ -109,6 +112,15 @@ func CheckError(err error) {
         panic(err)
     }
 }
+
+func SendCover(c *gin.Context) {
+    name := c.Param("filename")
+    fmt.Println(name)
+    filePath := "./uploads/img/" + name
+
+    c.File(filePath)
+}
+
 var myClient = &http.Client{Timeout: 10 * time.Second}
 func GetJSON(url string, target interface{}) error {
     r, _ := myClient.Get(url)
