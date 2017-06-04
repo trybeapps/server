@@ -103,7 +103,6 @@ func main() {
     r.GET("/book/:bookname", SendBook)
     r.GET("/cover/:covername", SendBookCover)
     r.GET("/collections", GetCollections)
-    r.GET("/viewer", GetViewer)
 
     // Listen and serve on 0.0.0.0:8080
     r.Run(":8080")
@@ -115,15 +114,8 @@ func CheckError(err error) {
     }
 }
 
-func GetViewer(c *gin.Context) {
-    c.HTML(200, "viewer.html", "")
-}
-
 func SendBook(c *gin.Context) {
-    name := c.Param("bookname")
-    filePath := "./uploads/" + name
-
-    c.File(filePath)
+    c.HTML(200, "viewer.html", "")
 }
 
 func SendBookCover(c *gin.Context) {
