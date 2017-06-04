@@ -153,6 +153,8 @@ type BS struct {
     Cover string
 }
 
+type BSList []BS
+
 func GetHomePage(c *gin.Context) {
     // Get session from cookie. Check if email exists
     // show Home page else redirect to signin page.
@@ -217,31 +219,27 @@ func GetHomePage(c *gin.Context) {
         rows.Close()
         db.Close()
 
-        bOne := []BS{}
-        bTwo := []BS{}
-        bThree := []BS{}
+        booksList := []BSList{}
         for i := 0; i < len(b); i += 6 {
             j := i + 6
             for j > len(b) {
                 j -= 1
             }
             if i == 0 {
-                bOne = b[i:j]
+                booksList = append(booksList, b[i:j])
             } else if i == 6 {
-                bTwo = b[i:j]
+                booksList = append(booksList, b[i:j])
             } else {
-                bThree = b[i:j]
+                booksList = append(booksList, b[i:j])
             }
         }
-        fmt.Println(bOne)
-        fmt.Println(bTwo)
-        fmt.Println(bThree)
+        fmt.Println("\n\n\n\n")
+        fmt.Println(booksList)
 
         c.HTML(302, "index.html", gin.H{
             "q": q,
-            "bOne": bOne,
-            "bTwo": bTwo,
-            "bThree": bThree,
+            "booksList": booksList,
+
         })
     }
     c.Redirect(302, "/signin")

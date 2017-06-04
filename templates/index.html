@@ -141,27 +141,15 @@
 		</div>
 		<div class="books-container">
 			<div class="bc-books-list">
-				<div>
-				{{ range .bOne }}
-					<a href="{{.URL}}">
-						<img src="{{.Cover}}" width="205">
-					</a>
+				{{ range .booksList }}
+					<div>
+						{{ range . }}
+							<a href="{{.URL}}">
+								<img src="{{.Cover}}" width="205">
+							</a>
+						{{ end }}
+					</div>
 				{{ end }}
-				</div>
-				<div>
-				{{ range .bTwo }}
-					<a href="{{.URL}}">
-						<img src="{{.Cover}}" width="205">
-					</a>
-				{{ end }}
-				</div>
-				<div>
-				{{ range .bThree }}
-					<a href="{{.URL}}">
-						<img src="{{.Cover}}" width="205">
-					</a>
-				{{ end }}
-				</div>
 			</div>
 			<div class="bc-books-list-medium">
 				<div>
