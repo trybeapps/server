@@ -35,8 +35,6 @@ func main() {
     r.Static("/static", "./static")
     r.Static("/uploads", "./uploads")
 
-    http.Handle("/book/cover/", http.StripPrefix("/book/cover/", http.FileServer(http.Dir("./uploads"))))
-
     // HTML rendering
     r.LoadHTMLGlob("templates/*")
 
