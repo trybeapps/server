@@ -225,13 +225,7 @@ func GetHomePage(c *gin.Context) {
             for j > len(b) {
                 j -= 1
             }
-            if i == 0 {
-                booksList = append(booksList, b[i:j])
-            } else if i == 6 {
-                booksList = append(booksList, b[i:j])
-            } else {
-                booksList = append(booksList, b[i:j])
-            }
+            booksList = append(booksList, b[i:j])
         }
         fmt.Println("\n\n\n\n")
         fmt.Println(booksList)
@@ -239,7 +233,6 @@ func GetHomePage(c *gin.Context) {
         c.HTML(302, "index.html", gin.H{
             "q": q,
             "booksList": booksList,
-
         })
     }
     c.Redirect(302, "/signin")
