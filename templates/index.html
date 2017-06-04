@@ -152,60 +152,33 @@
 				{{ end }}
 			</div>
 			<div class="bc-books-list-medium">
-				<div>
-					<a href="/">
-						<img src="/static/img/book_2.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_2.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_1.png" width="205">
-					</a>
-				</div>
-				<div>
-					<a href="/">
-						<img src="/static/img/book_1.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_2.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_1.png" width="205">
-					</a>
-				</div>
+				{{ range .booksListMedium }}
+					<div>
+					{{ range .}}
+						<a href="{{.URL}}">
+							<img src="{{.Cover}}" width="205">
+						</a>
+					{{ end }}
+					</div>
+				{{ end }}
 			</div>
 			<div class="bc-books-list-small">
-				<div>
-					<a href="/">
-						<img src="/static/img/book_2.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_2.png" width="205">
-					</a>
-				</div>
-				<div>
-					<a href="/">
-						<img src="/static/img/book_1.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_2.png" width="205">
-					</a>
-				</div>
+				{{ range .booksListSmall }}
+					<div>
+					{{ range .}}
+						<a href="{{.URL}}">
+							<img src="{{.Cover}}" width="205">
+						</a>
+					{{ end }}
+					</div>
+				{{ end }}
 			</div>
 			<div class="bc-books-list-xtra-small">
-				<a href="/">
-					<img src="/static/img/book_2.png" width="205">
-				</a>
-				<a href="/">
-					<img src="/static/img/book_2.png" width="205">
-				</a>
-				<a href="/">
-					<img src="/static/img/book_1.png" width="205">
-				</a>
-				<a href="/">
-					<img src="/static/img/book_2.png" width="205">
-				</a>
+				{{ range .booksListXtraSmall }}
+					<a href="{{.URL}}">
+						<img src="{{.Cover}}" width="205">
+					</a>
+				{{ end }}
 			</div>
 			<div class="bc-pagination">
 				<a href="/" class="left none">

@@ -227,12 +227,33 @@ func GetHomePage(c *gin.Context) {
             }
             booksList = append(booksList, b[i:j])
         }
-        fmt.Println("\n\n\n\n")
-        fmt.Println(booksList)
+
+        booksListMedium := []BSList{}
+        for i := 0; i < len(b); i += 3 {
+            j := i + 3
+            for j > len(b) {
+                j -= 1
+            }
+            booksListMedium = append(booksListMedium, b[i:j])
+        }
+
+        booksListSmall := []BSList{}
+        for i := 0; i < len(b); i += 2 {
+            j := i + 2
+            for j > len(b) {
+                j -= 1
+            }
+            booksListSmall = append(booksListSmall, b[i:j])
+        }
+
+        booksListXtraSmall := b
 
         c.HTML(302, "index.html", gin.H{
             "q": q,
             "booksList": booksList,
+            "booksListMedium": booksListMedium,
+            "booksListSmall": booksListSmall,
+            "booksListXtraSmall": booksListXtraSmall,
         })
     }
     c.Redirect(302, "/signin")
