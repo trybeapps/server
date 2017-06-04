@@ -144,7 +144,7 @@
 				{{ range .booksList }}
 					<div>
 						{{ range . }}
-							<a href="{{.URL}}">
+							<a href="{{.URL}}" title="{{ .Title }}">
 								<img src="{{.Cover}}" width="205">
 							</a>
 						{{ end }}
@@ -155,7 +155,7 @@
 				{{ range .booksListMedium }}
 					<div>
 					{{ range .}}
-						<a href="{{.URL}}">
+						<a href="{{.URL}}" title="{{ .Title }}">
 							<img src="{{.Cover}}" width="205">
 						</a>
 					{{ end }}
@@ -166,7 +166,7 @@
 				{{ range .booksListSmall }}
 					<div>
 					{{ range .}}
-						<a href="{{.URL}}">
+						<a href="{{.URL}}" title="{{ .Title }}">
 							<img src="{{.Cover}}" width="205">
 						</a>
 					{{ end }}
@@ -175,7 +175,7 @@
 			</div>
 			<div class="bc-books-list-xtra-small">
 				{{ range .booksListXtraSmall }}
-					<a href="{{.URL}}">
+					<a href="{{.URL}}" title="{{ .Title }}">
 						<img src="{{.Cover}}" width="205">
 					</a>
 				{{ end }}
