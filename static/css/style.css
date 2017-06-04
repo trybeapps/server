@@ -748,6 +748,10 @@ footer {
       cursor: pointer;
     }
 
+    .page-container {
+      margin-top: 108px;
+    }
+
   	.currently-reading-container .crc-bg, .books-container {
   		width: 870px;
   	}
@@ -759,15 +763,6 @@ footer {
   	.bc-books-list-medium {
   		display: block;
   	}
-}
-
-@media screen
-  and (max-width: 1024px) {
-
-  	.page-container {
-  		margin-top: 108px;
-  	}
-
 }
 
 @media screen
