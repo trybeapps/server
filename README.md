@@ -1,6 +1,8 @@
 # LibreRead
 Free(Libre) Ebook reader coming soon.
 
+![Alt text](/static/img/screenshot.png?raw=true "Home Page")
+
 ### Features and Goals:
  - Self-hosted.
  - Simple setup script.
