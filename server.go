@@ -272,7 +272,7 @@ func GetHomePage(c *gin.Context) {
             "booksListMedium": booksListMedium,
             "booksListSmall": booksListSmall,
             "booksListXtraSmall": booksListXtraSmall,
-            "tp": 11,
+            "tp": tp,
         })
     }
     c.Redirect(302, "/signin")
@@ -386,7 +386,7 @@ func GetPagination(c *gin.Context) {
             "booksListMedium": booksListMedium,
             "booksListSmall": booksListSmall,
             "booksListXtraSmall": booksListXtraSmall,
-            "tp": 11,
+            "tp": tp,
         })
     }
     c.Redirect(302, "/signin")
