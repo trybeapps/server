@@ -215,4 +215,8 @@ $(function() {
             }
 		})
 	})
+
+	$('.bc-pagination .none').click(function(e) {
+		e.preventDefault()
+	})
 })
