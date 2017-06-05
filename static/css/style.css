@@ -511,7 +511,7 @@ input[type="submit"] {
 }
 
 .bc-pagination {
-	width: 382px;
+	width: 392px;
 	margin: 80px auto 0;
 	overflow: hidden;
 }
@@ -537,6 +537,10 @@ input[type="submit"] {
 	font-weight: 600;
 	cursor: default;
 	color: #BEBEBE;
+}
+
+.bc-pagination .dots-one {
+  display: none;
 }
 
 .bc-pagination a:hover {
