@@ -103,6 +103,7 @@ func main() {
     r.GET("/book/:bookname", SendBook)
     r.GET("/cover/:covername", SendBookCover)
     r.GET("/collections", GetCollections)
+    r.GET("/books/:pagination", GetPagination)
 
     // Listen and serve on 0.0.0.0:8080
     r.Run(":8080")
@@ -185,6 +186,17 @@ func GetHomePage(c *gin.Context) {
         }
         rows.Close()
 
+        // Check total number of rows in book table
+        rows, err = db.Query("SELECT COUNT(*) AS count FROM `book`")
+        CheckError(err)
+
+        var count int
+        for rows.Next() {
+            err = rows.Scan(&count,)
+            CheckError(err)
+            fmt.Println(count)
+        }
+
         // ------------------------------------------------------------------------------------------
         // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
         // ------------------------------------------------------------------------------------------
@@ -254,6 +266,11 @@ func GetHomePage(c *gin.Context) {
         })
     }
     c.Redirect(302, "/signin")
+}
+
+func GetPagination(c *gin.Context) {
+    pagination := c.Param("pagination")
+    fmt.Println(pagination)
 }
 
 func GetSignIn(c *gin.Context) {
