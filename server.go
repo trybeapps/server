@@ -78,8 +78,19 @@ func main() {
         " `title` VARCHAR(255) NOT NULL, `filename` VARCHAR(255) NOT NULL," +
         " `author` VARCHAR(255) NOT NULL, `url` VARCHAR(255) NOT NULL," +
         " `cover` VARCHAR(255) NOT NULL, `pages` INTEGER NOT NULL, `current_page` INTEGER DEFAULT 0," +
-        " `uploaded_on` VARCHAR(255) NOT NULL, `currently_reading` INTEGER DEFAULT 0," +
-        " `user_id` INTEGER NOT NULL)")
+        " `uploaded_on` VARCHAR(255) NOT NULL, `user_id` INTEGER NOT NULL)")
+    CheckError(err)
+
+    _, err = stmt.Exec()
+    CheckError(err)
+
+    // Create currently_reading table
+    // Table: currently_reading
+    // -------------------
+    // Fields: id, user_id
+    // -------------------
+    stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `currently_reading` (`id` INTEGER PRIMARY KEY AUTOINCREMENT,"+
+        " `book_id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `date_read` VARCHAR(255) NOT NULL)")
     CheckError(err)
 
     _, err = stmt.Exec()
@@ -114,7 +125,76 @@ func CheckError(err error) {
 }
 
 func SendBook(c *gin.Context) {
-    c.HTML(200, "viewer.html", "")
+    session := sessions.Default(c)
+    if session.Get("email") != nil {
+        fmt.Println(session.Get("email"))
+
+        name := c.Param("bookname")
+        fmt.Println(name)
+
+        db, err := sql.Open("sqlite3", "./libreread.db")
+        CheckError(err)
+
+        rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
+        CheckError(err)
+
+        var userId int
+        if rows.Next() {
+            err := rows.Scan(&userId)
+            CheckError(err)
+        }
+        fmt.Println(userId)
+        rows.Close()
+
+        rows, err = db.Query("SELECT `id` FROM `book` WHERE `filename` = ?", name)
+        CheckError(err)
+
+        var bookId int
+        if rows.Next() {
+            err := rows.Scan(&bookId)
+            CheckError(err)
+        }
+        fmt.Println(bookId)
+        rows.Close()
+
+        t := time.Now()
+    
+        dateRead := t.Format("20060102150405")
+        fmt.Println("Date read: " + dateRead)
+
+        rows, err = db.Query("SELECT `id` FROM `currently_reading` WHERE `book_id` = ?", bookId)
+        CheckError(err)
+
+        var currentlyReadingId int
+        if rows.Next() {
+            err := rows.Scan(&currentlyReadingId)
+            CheckError(err)
+        }
+        fmt.Println(currentlyReadingId)
+        rows.Close()
+
+        if currentlyReadingId == 0 {
+            stmt, err := db.Prepare("INSERT INTO `currently_reading` (book_id, user_id, date_read) VALUES (?, ?, ?)")
+            CheckError(err)
+
+            res, err := stmt.Exec(bookId, userId, dateRead)
+            CheckError(err)
+
+            id, err := res.LastInsertId()
+            CheckError(err)
+
+            fmt.Println(id)
+        } else {
+            stmt, err := db.Prepare("UPDATE `currently_reading` SET date_read=? WHERE id=?")
+            CheckError(err)
+
+            _, err = stmt.Exec(dateRead, currentlyReadingId)
+            CheckError(err)
+        }
+        
+        c.HTML(200, "viewer.html", "")
+    }
+    c.Redirect(302, "/signin")
 }
 
 func SendBookCover(c *gin.Context) {
@@ -184,8 +264,52 @@ func GetHomePage(c *gin.Context) {
         fmt.Println(id)
         rows.Close()
 
+        // Get currently reading books.
+        rows, err = db.Query("SELECT `book_id` FROM `currently_reading` WHERE `user_id` = ? ORDER BY `date_read` DESC LIMIT ?, ?", id, 0, 12)
+        CheckError(err)
+
+        var crBooks []int
+        for rows.Next() {
+            var crBook int
+            err = rows.Scan(&crBook,)
+            CheckError(err)
+
+            crBooks = append(crBooks, crBook)
+        }
+        fmt.Println(crBooks)
+        rows.Close()
+
+        // Get book title, url, cover for currently reading books.
+        crb := []BS{}
+        for _, num := range crBooks {
+            rows, err = db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `id` = ?", num)
+            CheckError(err)
+            
+            var (
+                title string
+                url string
+                cover string
+            )
+            if rows.Next() {
+                err = rows.Scan(
+                    &title,
+                    &url,
+                    &cover,
+                )
+                CheckError(err)
+
+                crb = append(crb, BS{ 
+                    title, 
+                    url, 
+                    cover,
+                })
+            }
+            rows.Close()
+        }
+        fmt.Println(crb)
+
         // Check total number of rows in book table
-        rows, err = db.Query("SELECT COUNT(*) AS count FROM `book`")
+        rows, err = db.Query("SELECT COUNT(*) AS count FROM `book` WHERE `user_id` = ?", id)
         CheckError(err)
 
         var count int
@@ -268,6 +392,7 @@ func GetHomePage(c *gin.Context) {
 
         c.HTML(302, "index.html", gin.H{
             "q": q,
+            "crb": crb,
             "booksList": booksList,
             "booksListMedium": booksListMedium,
             "booksListSmall": booksListSmall,
@@ -594,6 +719,7 @@ func ConfirmEmail(c *gin.Context) {
         CheckError(err)
 
         _, err = stmt.Exec(1, userId)
+        CheckError(err)
 
         c.HTML(302, "confirmed.html", gin.H{
             "id": userId,

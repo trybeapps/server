@@ -109,33 +109,11 @@
 					</div>
 				</div>
 				<div class="crcb-book-list" data-simple-slider>
-					<a href="/">
-						<img src="/static/img/book_1.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_2.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_3.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_4.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_1.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_2.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_3.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_4.png" width="205">
-					</a>
-					<a href="/">
-						<img src="/static/img/book_1.png" width="205">
-					</a>
+					{{ range .crb }}
+						<a href="{{ .URL }}">
+							<img src="{{ .Cover }}" width="205">
+						</a>
+					{{ end }}
 				</div>		
 			</div>
 		</div>
