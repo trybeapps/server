@@ -641,10 +641,10 @@ func PostUpload(c *gin.Context) {
 
                 fmt.Println(id)
 
-                db.Close()
                 c.String(200, fileName + " uploaded successfully. ")
             }
         }
+        db.Close()
     }
 }
 
