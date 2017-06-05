@@ -185,10 +185,11 @@
 					<svg width="33" height="20" viewBox="0 0 33 20" xmlns="http://www.w3.org/2000/svg"><title>Group 2</title><g stroke="#222" stroke-width="3" fill="none" fill-rule="evenodd"><path d="M33 10.143H3"/><path stroke-linecap="square" d="M10.143 17.286L3 10.143 10.143 3"/></g></svg>
 				</a>
 				<a href="" class="num none first-num">1</a>
+				<div class="dots dots-one">...</div>
 				<a href="/books/2" class="num second-num">2</a>
 				<a href="/books/3" class="num third-num">3</a>
 				<a href="/books/4" class="num fourth-num">4</a>
-				<div class="dots">...</div>
+				<div class="dots dots-two">...</div>
 				<a href="/books/{{ .tp }}" class="num end-num">{{ .tp }}</a>
 				<a href="/books/2" class="right">
 					<svg width="33" height="20" viewBox="0 0 33 20" xmlns="http://www.w3.org/2000/svg"><title>Group 3</title><g stroke="#222" stroke-width="3" fill="none" fill-rule="evenodd"><path d="M0 10.143h30"/><path stroke-linecap="square" d="M22.857 3L30 10.143l-7.143 7.143"/></g></svg>
@@ -205,9 +206,19 @@
   	<script type="text/javascript">
   		// Pagination code
   		var totalPages = parseInt({{.tp}})
-
+  		$('.bc-pagination .dots-one').hide()
+  		var windowWidth = $(window).width()
+  		
   		if (totalPages > 9) {
-  			$('.bc-pagination').css('width', '403px')
+  			if (windowWidth <= 740) {
+  				$('.bc-pagination').css('width', '231px')
+  			} else {
+  				$('.bc-pagination').css('width', '403px')
+  			}
+  		} else if (totalPages <= 9 && totalPages > 5) {
+  			if (windowWidth <= 740) {
+  				$('.bc-pagination').css('width', '220px')
+  			}
   		}
 
   		if (totalPages <= 5) {
@@ -215,14 +226,29 @@
 
   			if (totalPages == 4) {
   				$('.bc-pagination .end-num').hide()
-  				$('.bc-pagination').css('width', '304px')
+  				if (windowWidth <= 740) {
+  					$('.bc-pagination .fourth-num').css('margin-right', 0)
+  					$('.bc-pagination').css('width', '132px')
+  				} else {
+  					$('.bc-pagination').css('width', '304px')
+  				}
   			} else if (totalPages == 3) {
   				$('.bc-pagination .end-num, .bc-pagination .fourth-num').hide()
-  				$('.bc-pagination').css('width', '263px')
+  				if (windowWidth <= 740) {
+  					$('.bc-pagination .third-num').css('margin-right', 0)
+  					$('.bc-pagination').css('width', '91px')
+  				} else {
+  					$('.bc-pagination').css('width', '263px')
+  				}
   			} else if (totalPages == 2) {
   				$('.bc-pagination .end-num, .bc-pagination .fourth-num, .bc-pagination .third-num').hide()
-  				$('.bc-pagination').css('width', '223px')
-  			} else if (totalPages < 1) {
+  				if (windowWidth <= 740) {
+  					$('.bc-pagination .second-num').css('margin-right', 0)
+  					$('.bc-pagination').css('width', '51px')
+  				} else {
+  					$('.bc-pagination').css('width', '223px')
+  				}
+  			} else if (totalPages <= 1) {
   				$('.bc-pagination').hide()
   			} else {
   				$('.bc-pagination').css('width', '345px')

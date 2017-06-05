@@ -156,6 +156,8 @@
   		// Pagination code
   		$('.bc-pagination .left').removeClass('none')
 
+  		var windowWidth = $(window).width()
+
   		var totalPages = parseInt({{.tp}})
   		var currentPage = parseInt({{.pagination}})
 
@@ -166,14 +168,29 @@
   		if (totalPages <= 4) {
   			if (totalPages == 4) {
   				$('.bc-pagination .end-num').hide()
-  				$('.bc-pagination').css('width', '304px')
+  				if (windowWidth <= 740) {
+  					$('.bc-pagination .fourth-num').css('margin-right', 0)
+  					$('.bc-pagination').css('width', '132px')
+  				} else {
+  					$('.bc-pagination').css('width', '304px')
+  				}
   			} else if (totalPages == 3) {
   				$('.bc-pagination .end-num, .bc-pagination .fourth-num').hide()
-  				$('.bc-pagination').css('width', '263px')
+  				if (windowWidth <= 740) {
+  					$('.bc-pagination .third-num').css('margin-right', 0)
+  					$('.bc-pagination').css('width', '91px')
+  				} else {
+  					$('.bc-pagination').css('width', '263px')
+  				}
   			} else if (totalPages == 2) {
   				$('.bc-pagination .end-num, .bc-pagination .fourth-num, .bc-pagination .third-num').hide()
-  				$('.bc-pagination').css('width', '223px')
-  			} else if (totalPages < 1) {
+  				if (windowWidth <= 740) {
+  					$('.bc-pagination .second-num').css('margin-right', 0)
+  					$('.bc-pagination').css('width', '51px')
+  				} else {
+  					$('.bc-pagination').css('width', '223px')
+  				}
+  			} else if (totalPages <= 1) {
   				$('.bc-pagination').hide()
   			}
 
@@ -187,7 +204,16 @@
   		} else {
   			$('.bc-pagination').css('width', '440px')
   			if (totalPages > 9) {
-  				$('.bc-pagination').css('width', '481px')
+  				if (windowWidth <= 740) {
+  					$('.bc-pagination').css('width', '309px')
+  				}
+				else {
+  					$('.bc-pagination').css('width', '481px')	
+  				}
+  			} else {
+  				if (windowWidth <= 740) {
+  					$('.bc-pagination').css('width', '268px')
+  				}
   			}
   			$('.bc-pagination .first-num').removeClass('none')
   			$('.bc-pagination .dots-one').show()
@@ -200,13 +226,31 @@
   			if (currentPage == (totalPages-2)) {
   				$('.bc-pagination').css('width', '392px')
   				if (totalPages > 9) {
-  					$('.bc-pagination').css('width', '434px')
+  					if (windowWidth <= 740) {
+  						$('.bc-pagination').css('width', '262px')
+  					}
+  					else {
+  						$('.bc-pagination').css('width', '434px')	
+  					}
+  				} else {
+  					if (windowWidth <= 740) {
+  						$('.bc-pagination').css('width', '220px')
+  					}
   				}
   				$('.bc-pagination .dots-two').hide()
   			} else if (currentPage == (totalPages-1)) {
   				$('.bc-pagination').css('width', '392px')
   				if (totalPages > 9) {
-  					$('.bc-pagination').css('width', '434px')
+  					if (windowWidth <= 740) {
+  						$('.bc-pagination').css('width', '262px')
+  					}
+  					else {
+  						$('.bc-pagination').css('width', '434px')	
+  					}
+  				} else {
+  					if (windowWidth <= 740) {
+  						$('.bc-pagination').css('width', '220px')
+  					}
   				}
   				$('.bc-pagination .dots-two').hide()
   				$('.bc-pagination .end-num').addClass('none').removeClass('none')
@@ -216,7 +260,16 @@
   			} else if (currentPage == totalPages) {
   				$('.bc-pagination').css('width', '392px')
   				if (totalPages > 9) {
-  					$('.bc-pagination').css('width', '434px')
+  					if (windowWidth <= 740) {
+  						$('.bc-pagination').css('width', '262px')
+  					}
+  					else {
+  						$('.bc-pagination').css('width', '434px')	
+  					}
+  				} else {
+  					if (windowWidth <= 740) {
+  						$('.bc-pagination').css('width', '220px')
+  					}
   				}
   				$('.bc-pagination .dots-two').hide()
   				$('.bc-pagination .end-num').addClass('none')
@@ -229,13 +282,31 @@
   				$('.bc-pagination .dots-one').hide()
   				$('.bc-pagination').css('width', '392px')
   				if (totalPages > 9) {
-  					$('.bc-pagination').css('width', '434px')
+  					if (windowWidth <= 740) {
+  						$('.bc-pagination').css('width', '231px')
+  					}
+  					else {
+  						$('.bc-pagination').css('width', '434px')	
+  					}
+  				} else {
+  					if (windowWidth <= 740) {
+  						$('.bc-pagination').css('width', '220px')
+  					}
   				}
   			} else if (currentPage == 2) {
   				$('.bc-pagination .dots-one').hide()
   				$('.bc-pagination').css('width', '392px')
   				if (totalPages > 9) {
-  					$('.bc-pagination').css('width', '434px')
+  					if (windowWidth <= 740) {
+  						$('.bc-pagination').css('width', '231px')
+  					}
+  					else {
+  						$('.bc-pagination').css('width', '434px')	
+  					}
+  				} else {
+  					if (windowWidth <= 740) {
+  						$('.bc-pagination').css('width', '220px')
+  					}
   				}
   				$('.bc-pagination .second-num').text(currentPage).attr('href', '/books/' + currentPage).addClass('none')
   				$('.bc-pagination .third-num').text(currentPage + 1).attr('href', '/books/' + (currentPage + 1)).removeClass('none')
@@ -244,7 +315,16 @@
   				$('.bc-pagination .dots-one').hide()
   				$('.bc-pagination').css('width', '392px')
   				if (totalPages > 9) {
-  					$('.bc-pagination').css('width', '434px')
+  					if (windowWidth <= 740) {
+  						$('.bc-pagination').css('width', '231px')
+  					}
+  					else {
+  						$('.bc-pagination').css('width', '434px')	
+  					}
+  				} else {
+  					if (windowWidth <= 740) {
+  						$('.bc-pagination').css('width', '220px')
+  					}
   				}
   				$('.bc-pagination .second-num').text(currentPage+1).attr('href', '/books/' + (currentPage + 1))
   				$('.bc-pagination .third-num').text(currentPage+2).attr('href', '/books/' + (currentPage + 2)).removeClass('none')
