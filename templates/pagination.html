@@ -218,11 +218,13 @@
   				$('.bc-pagination').css('width', '392px')
   			} else if (currentPage == 2) {
   				$('.bc-pagination .dots-one').hide()
+  				$('.bc-pagination').css('width', '392px')
   				$('.bc-pagination .second-num').text(currentPage).attr('href', '/books/' + currentPage).addClass('none')
   				$('.bc-pagination .third-num').text(currentPage + 1).attr('href', '/books/' + (currentPage + 1)).removeClass('none')
-  				$('.bc-pagination .fourth-num').text(currentPage + 2).attr('/href', '/books/' + (currentPage + 2))
+  				$('.bc-pagination .fourth-num').text(currentPage + 2).attr('href', '/books/' + (currentPage + 2))
   			} else if (currentPage == 1) {
   				$('.bc-pagination .dots-one').hide()
+  				$('.bc-pagination').css('width', '392px')
   				$('.bc-pagination .second-num').text(currentPage+1).attr('href', '/books/' + (currentPage + 1))
   				$('.bc-pagination .third-num').text(currentPage+2).attr('href', '/books/' + (currentPage + 2)).removeClass('none')
   				$('.bc-pagination .fourth-num').text(currentPage+3).attr('href', '/books/' + (currentPage + 3))
