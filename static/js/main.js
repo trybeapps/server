@@ -69,7 +69,10 @@ $(function() {
 	}
 
 	var crcbCounter = 0
-	var crcbHeight = parseInt($('.crcb-book-list a:first-child img')[0].getBoundingClientRect().height)
+	var crcbHeight = 0
+	if ($('.crcb-book-list').length > 0) {
+		crcbHeight = parseInt($('.crcb-book-list a:first-child img')[0].getBoundingClientRect().height)
+	}
 	$('.crcb-book-list').css('height', crcbHeight + 'px')
 	$('.crcb-book-list a').each(function() {
 		var thisHeight = parseInt($(this).children('img')[0].getBoundingClientRect().height)
@@ -211,7 +214,7 @@ $(function() {
 			processData:false,
             success: function (data) {
                 alert(data)
-                window.location.reload(false)
+                window.location.href = "/"
             }
 		})
 	})

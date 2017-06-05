@@ -180,8 +180,8 @@ func GetHomePage(c *gin.Context) {
         if rows.Next() {
             err := rows.Scan(&id)
             CheckError(err)
-            fmt.Println(id)
         }
+        fmt.Println(id)
         rows.Close()
 
         // Check total number of rows in book table
@@ -279,8 +279,117 @@ func GetHomePage(c *gin.Context) {
 }
 
 func GetPagination(c *gin.Context) {
-    pagination := c.Param("pagination")
-    fmt.Println(pagination)
+    session := sessions.Default(c)
+    if session.Get("email") != nil {
+        fmt.Println(session.Get("email"))
+        pagination, err := strconv.Atoi(c.Param("pagination"))
+        CheckError(err)
+
+        db, err := sql.Open("sqlite3", "./libreread.db")
+        CheckError(err)
+
+        rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
+        CheckError(err)
+
+        var id int
+        if rows.Next() {
+            err := rows.Scan(&id)
+            CheckError(err)
+        }
+        fmt.Println(id)
+        rows.Close()
+
+        // Check total number of rows in book table
+        rows, err = db.Query("SELECT COUNT(*) AS count FROM `book`")
+        CheckError(err)
+
+        var count int
+        for rows.Next() {
+            err = rows.Scan(&count,)
+            CheckError(err)
+        }
+        fmt.Println(count)
+
+        var totalPages float64 = float64(float64(count) / 18.0)
+        totalPagesDecimal := fmt.Sprintf("%.1f", totalPages)
+
+        var tp int64
+        if strings.Split(totalPagesDecimal, ".")[1] == "0" {
+            tp = int64(totalPages)
+        } else {
+            tp = int64(totalPages) + 1
+        }
+        fmt.Println(tp)
+
+        // ------------------------------------------------------------------------------------------
+        // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
+        // ------------------------------------------------------------------------------------------
+        rows, err = db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ?, ?", id, ( pagination - 1 ) * 18, 18)
+        CheckError(err)
+
+        b := []BS{}
+        
+        var (
+            title string
+            url string
+            cover string
+        )
+        for rows.Next() {
+            err = rows.Scan(
+                &title,
+                &url,
+                &cover,
+            )
+            CheckError(err)
+
+            b = append(b, BS{ 
+                title, 
+                url, 
+                cover,
+            })
+        }
+        rows.Close()
+        db.Close()
+
+        booksList := []BSList{}
+        for i := 0; i < len(b); i += 6 {
+            j := i + 6
+            for j > len(b) {
+                j -= 1
+            }
+            booksList = append(booksList, b[i:j])
+        }
+
+        booksListMedium := []BSList{}
+        for i := 0; i < len(b); i += 3 {
+            j := i + 3
+            for j > len(b) {
+                j -= 1
+            }
+            booksListMedium = append(booksListMedium, b[i:j])
+        }
+
+        booksListSmall := []BSList{}
+        for i := 0; i < len(b); i += 2 {
+            j := i + 2
+            for j > len(b) {
+                j -= 1
+            }
+            booksListSmall = append(booksListSmall, b[i:j])
+        }
+
+        booksListXtraSmall := b
+
+        c.HTML(302, "pagination.html", gin.H{
+            "pagination": pagination,
+            "booksList": booksList,
+            "booksListMedium": booksListMedium,
+            "booksListSmall": booksListSmall,
+            "booksListXtraSmall": booksListXtraSmall,
+            "tp": tp,
+        })
+    }
+    c.Redirect(302, "/signin")
 }
 
 func GetSignIn(c *gin.Context) {
