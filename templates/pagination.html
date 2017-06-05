@@ -186,6 +186,9 @@
 
   		} else {
   			$('.bc-pagination').css('width', '440px')
+  			if (totalPages > 9) {
+  				$('.bc-pagination').css('width', '481px')
+  			}
   			$('.bc-pagination .first-num').removeClass('none')
   			$('.bc-pagination .dots-one').show()
 
@@ -196,9 +199,15 @@
 
   			if (currentPage == (totalPages-2)) {
   				$('.bc-pagination').css('width', '392px')
+  				if (totalPages > 9) {
+  					$('.bc-pagination').css('width', '434px')
+  				}
   				$('.bc-pagination .dots-two').hide()
   			} else if (currentPage == (totalPages-1)) {
   				$('.bc-pagination').css('width', '392px')
+  				if (totalPages > 9) {
+  					$('.bc-pagination').css('width', '434px')
+  				}
   				$('.bc-pagination .dots-two').hide()
   				$('.bc-pagination .end-num').addClass('none').removeClass('none')
   				$('.bc-pagination .fourth-num').text(currentPage).attr('href', '/books/' + currentPage).addClass('none')
@@ -206,6 +215,9 @@
   				$('.bc-pagination .second-num').text(currentPage-2).attr('href', '/books/' + (currentPage-2))
   			} else if (currentPage == totalPages) {
   				$('.bc-pagination').css('width', '392px')
+  				if (totalPages > 9) {
+  					$('.bc-pagination').css('width', '434px')
+  				}
   				$('.bc-pagination .dots-two').hide()
   				$('.bc-pagination .end-num').addClass('none')
   				$('.bc-pagination .fourth-num').text(currentPage-1).attr('href', '/books/' + (currentPage-1))
@@ -216,15 +228,24 @@
   			if (currentPage == 3) {
   				$('.bc-pagination .dots-one').hide()
   				$('.bc-pagination').css('width', '392px')
+  				if (totalPages > 9) {
+  					$('.bc-pagination').css('width', '434px')
+  				}
   			} else if (currentPage == 2) {
   				$('.bc-pagination .dots-one').hide()
   				$('.bc-pagination').css('width', '392px')
+  				if (totalPages > 9) {
+  					$('.bc-pagination').css('width', '434px')
+  				}
   				$('.bc-pagination .second-num').text(currentPage).attr('href', '/books/' + currentPage).addClass('none')
   				$('.bc-pagination .third-num').text(currentPage + 1).attr('href', '/books/' + (currentPage + 1)).removeClass('none')
   				$('.bc-pagination .fourth-num').text(currentPage + 2).attr('href', '/books/' + (currentPage + 2))
   			} else if (currentPage == 1) {
   				$('.bc-pagination .dots-one').hide()
   				$('.bc-pagination').css('width', '392px')
+  				if (totalPages > 9) {
+  					$('.bc-pagination').css('width', '434px')
+  				}
   				$('.bc-pagination .second-num').text(currentPage+1).attr('href', '/books/' + (currentPage + 1))
   				$('.bc-pagination .third-num').text(currentPage+2).attr('href', '/books/' + (currentPage + 2)).removeClass('none')
   				$('.bc-pagination .fourth-num').text(currentPage+3).attr('href', '/books/' + (currentPage + 3))

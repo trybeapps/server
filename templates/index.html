@@ -206,6 +206,10 @@
   		// Pagination code
   		var totalPages = parseInt({{.tp}})
 
+  		if (totalPages > 9) {
+  			$('.bc-pagination').css('width', '403px')
+  		}
+
   		if (totalPages <= 5) {
   			$('.bc-pagination .dots').hide()
 
