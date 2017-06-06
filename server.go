@@ -4,6 +4,7 @@ import (
     "fmt"
     "time"
     "encoding/json"
+    "encoding/base64"
     "net/http"
     "database/sql"
     "runtime"
@@ -906,7 +907,7 @@ func UploadBook(c *gin.Context) {
 
                 out.Close()
 
-                title, author, pages := GetPdfInfo(filePath)
+                title, author, pages := GetPDFInfo(filePath)
 
                 if title == "" {
                     title = fileName
@@ -916,7 +917,7 @@ func UploadBook(c *gin.Context) {
                     author = "unknown"
                 }
 
-                pagesInt, err := strconv.Atoi(pages)
+                pagesInt, err := strconv.ParseInt(pages, 10, 64)
                 CheckError(err)
 
                 fmt.Println("Book title: " + title)
@@ -957,11 +958,70 @@ func UploadBook(c *gin.Context) {
 
                 fmt.Println(id)
 
+                go FeedContent(filePath, userId, id, title, author, url, cover, pagesInt)
+
                 c.String(200, fileName + " uploaded successfully. ")
             }
         }
         db.Close()
     }
+}
+
+func FeedContent(filePath string, userId int64, bookId int64, title string, author string, url string, cover string, pagesInt int64) {
+    // Set home many CPU cores this function wants to use.
+    runtime.GOMAXPROCS(runtime.NumCPU())
+    fmt.Println(runtime.NumCPU())
+
+    t := time.Now()
+    timeNow := t.Format("20060102150405")
+    path := "./uploads/splitpdf_" + strconv.Itoa(int(userId)) + "_" + timeNow
+    if _, err := os.Stat(path); os.IsNotExist(err) {
+        os.Mkdir(path, 0700)
+    }
+    fmt.Println(path)
+    fmt.Println(filePath)
+    PDFSeparate(path, filePath)
+
+    var i int64
+    for i = 1; i < (pagesInt + 1); i += 1 {
+        pagePath :=  path + "/" + strconv.Itoa(int(i)) + ".pdf"
+        data, err := ioutil.ReadFile(pagePath)
+        CheckError(err)
+        
+        sEnc := base64.StdEncoding.EncodeToString([]byte(string(data)))
+
+        bookDetail := BDS{
+            TheData: sEnc,
+            Title: title,
+            Author: author,
+            URL: url,
+            Cover: cover,
+            Page: i,
+        }
+
+        b, err :=  json.Marshal(bookDetail)
+        CheckError(err)
+
+        indexURL := "http://localhost:9200/lr_index/book_detail/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) + "_" + strconv.Itoa(int(i)) + "?pipeline=attachment"
+        fmt.Println("Index URL: " + indexURL)
+        PutJSON(indexURL , b)
+    }
+}
+
+type BDS struct {
+    TheData string `json:"thedata"`
+    Title string `json:"title"`
+    Author string `json:"author"`
+    URL string `json:"url"`
+    Cover string `json:"cover"`
+    Page int64 `json:"page"`
+}
+
+func PDFSeparate(path string, filePath string) {
+    cmd := exec.Command("/usr/local/bin/pdfseparate", filePath, path + "/%d.pdf")
+
+    err := cmd.Run()
+    CheckError(err)
 }
 
 func GeneratePDFCover(filePath, coverPath string) {
@@ -971,7 +1031,7 @@ func GeneratePDFCover(filePath, coverPath string) {
     CheckError(err)
 }
 
-func GetPdfInfo(filePath string) (string, string, string) {
+func GetPDFInfo(filePath string) (string, string, string) {
     cmd := exec.Command("/usr/local/bin/pdfinfo", filePath)
     
     var out bytes.Buffer
