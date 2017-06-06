@@ -144,7 +144,7 @@ func main() {
     r.GET("/confirm-email", ConfirmEmail)
     r.GET("/new-token", SendNewToken)
     r.GET("/signout", GetSignOut)
-    r.POST("/upload", PostUpload)
+    r.POST("/upload", UploadBook)
     r.GET("/book/:bookname", SendBook)
     r.GET("/cover/:covername", SendBookCover)
     r.GET("/collections", GetCollections)
@@ -831,7 +831,7 @@ func SendNewToken(c *gin.Context) {
     go SendConfirmationEmail(int64(userId), name, email)
 }
 
-func PostUpload(c *gin.Context) {
+func UploadBook(c *gin.Context) {
     session := sessions.Default(c)
     if session.Get("email") != nil {
         fmt.Println(session.Get("email"))
