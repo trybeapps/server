@@ -106,8 +106,8 @@ func main() {
         Processors: []ASP{
             ASP{
                 Attachment: ASPA{
-                Field: "thedata",
-                IndexedChars: -1,
+                    Field: "thedata",
+                    IndexedChars: -1,
                 },
             },
         },
@@ -120,6 +120,20 @@ func main() {
     fmt.Println(b)
 
     PutJSON("http://localhost:9200/_ingest/pipeline/attachment", b)
+
+    // Init Elasticsearch index
+    index := &IS{
+        ISS{
+            NumberOfShards: 4,
+            NumberOfReplicas: 0,
+        },
+    }
+
+    b, err =  json.Marshal(index)
+    CheckError(err)
+    fmt.Println(b)
+
+    PutJSON("http://localhost:9200/lr_index", b)
 
     // Router
     r.GET("/", GetHomePage)
@@ -158,7 +172,7 @@ func GetJSON(url string, target interface{}) error {
 
 func PutJSON(url string, message []byte) {
     fmt.Println(url)
-    req, err := http.NewRequest("POST", url, bytes.NewBuffer(message))
+    req, err := http.NewRequest("PUT", url, bytes.NewBuffer(message))
     res, err := myClient.Do(req)
     CheckError(err)
     content, err := ioutil.ReadAll(res.Body)
@@ -168,7 +182,7 @@ func PutJSON(url string, message []byte) {
 
 type AS struct {
     Description string `json:"description"`
-    Processors []ASP `json:"Processors"`
+    Processors []ASP `json:"processors"`
 }
 
 type ASP struct {
@@ -178,6 +192,15 @@ type ASP struct {
 type ASPA struct {
     Field string `json:"field"`
     IndexedChars int64 `json:"indexed_chars"`
+}
+
+type IS struct {
+    Settings ISS `json:"settings"`
+}
+
+type ISS struct {
+    NumberOfShards int64 `json:"number_of_shards"`
+    NumberOfReplicas int64 `json:"number_of_replicas"`
 }
 
 func SendBook(c *gin.Context) {
