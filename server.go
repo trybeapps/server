@@ -10,6 +10,7 @@ import (
     "math/rand"
     "strconv"
     "io"
+    "io/ioutil"
     "mime"
     "os"
     "os/exec"
@@ -100,7 +101,25 @@ func main() {
     db.Close()
 
     // Init Elasticsearch attachment
+    attachment := &AS{
+        Description: "Process documents",
+        Processors: []ASP{
+            ASP{
+                Attachment: ASPA{
+                Field: "thedata",
+                IndexedChars: -1,
+                },
+            },
+        },
+    }
 
+    fmt.Println(attachment)
+
+    b, err :=  json.Marshal(attachment)
+    CheckError(err)
+    fmt.Println(b)
+
+    PutJSON("http://localhost:9200/_ingest/pipeline/attachment", b)
 
     // Router
     r.GET("/", GetHomePage)
@@ -125,6 +144,40 @@ func CheckError(err error) {
     if err != nil {
         panic(err)
     }
+}
+
+var myClient = &http.Client{Timeout: 10 * time.Second}
+func GetJSON(url string, target interface{}) error {
+    r, _ := myClient.Get(url)
+    if r != nil {
+        defer r.Body.Close()
+        return json.NewDecoder(r.Body).Decode(target)
+    }
+    return nil
+}
+
+func PutJSON(url string, message []byte) {
+    fmt.Println(url)
+    req, err := http.NewRequest("POST", url, bytes.NewBuffer(message))
+    res, err := myClient.Do(req)
+    CheckError(err)
+    content, err := ioutil.ReadAll(res.Body)
+    CheckError(err)
+    fmt.Println(string(content))
+}
+
+type AS struct {
+    Description string `json:"description"`
+    Processors []ASP `json:"Processors"`
+}
+
+type ASP struct {
+    Attachment ASPA `json:"attachment"`
+}
+
+type ASPA struct {
+    Field string `json:"field"`
+    IndexedChars int64 `json:"indexed_chars"`
 }
 
 func SendBook(c *gin.Context) {
@@ -205,16 +258,6 @@ func SendBookCover(c *gin.Context) {
     filePath := "./uploads/img/" + name
 
     c.File(filePath)
-}
-
-var myClient = &http.Client{Timeout: 10 * time.Second}
-func GetJSON(url string, target interface{}) error {
-    r, _ := myClient.Get(url)
-    if r != nil {
-        defer r.Body.Close()
-        return json.NewDecoder(r.Body).Decode(target)
-    }
-    return nil
 }
 
 type QS struct {
