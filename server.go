@@ -150,6 +150,7 @@ func main() {
     r.GET("/cover/:covername", SendBookCover)
     r.GET("/collections", GetCollections)
     r.GET("/books/:pagination", GetPagination)
+    r.GET("/autocomplete", GetAutocomplete)
 
     // Listen and serve on 0.0.0.0:8080
     r.Run(":8080")
@@ -958,6 +959,25 @@ func UploadBook(c *gin.Context) {
 
                 fmt.Println(id)
 
+                // Feed book info to ES
+                bookInfo := BIS{
+                    Title: title,
+                    Author: author,
+                    URL: url,
+                    Cover: cover,
+                }
+
+                fmt.Println(bookInfo)
+
+                indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(id))
+                fmt.Println(indexURL)
+
+                b, err :=  json.Marshal(bookInfo)
+                CheckError(err)
+
+                PutJSON(indexURL, b)
+
+                // Feed book content to ES
                 go FeedContent(filePath, userId, id, title, author, url, cover, pagesInt)
 
                 c.String(200, fileName + " uploaded successfully. ")
@@ -965,6 +985,13 @@ func UploadBook(c *gin.Context) {
         }
         db.Close()
     }
+}
+
+type BIS struct {
+    Title string `json:"title"`
+    Author string `json:"author"`
+    URL string `json:"url"`
+    Cover string `json:"cover"`
 }
 
 func FeedContent(filePath string, userId int64, bookId int64, title string, author string, url string, cover string, pagesInt int64) {
@@ -1002,7 +1029,9 @@ func FeedContent(filePath string, userId int64, bookId int64, title string, auth
         b, err :=  json.Marshal(bookDetail)
         CheckError(err)
 
-        indexURL := "http://localhost:9200/lr_index/book_detail/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) + "_" + strconv.Itoa(int(i)) + "?pipeline=attachment"
+        indexURL := "http://localhost:9200/lr_index/book_detail/" + 
+            strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) +
+            "_" + strconv.Itoa(int(i)) + "?pipeline=attachment"
         fmt.Println("Index URL: " + indexURL)
         PutJSON(indexURL , b)
     }
@@ -1073,6 +1102,12 @@ func GetPDFInfo(filePath string) (string, string, string) {
     }
 
     return title, author, pages
+}
+
+func GetAutocomplete(c *gin.Context) {
+    q := c.Request.URL.Query()
+    term := q["term"][0]
+    fmt.Println(term)
 }
 
 func GetCollections(c *gin.Context) {
