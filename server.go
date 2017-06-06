@@ -99,6 +99,9 @@ func main() {
     // Close sqlite3 database
     db.Close()
 
+    // Init Elasticsearch attachment
+
+
     // Router
     r.GET("/", GetHomePage)
     r.GET("/signin", GetSignIn)
@@ -138,7 +141,7 @@ func SendBook(c *gin.Context) {
         rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
         CheckError(err)
 
-        var userId int
+        var userId int64
         if rows.Next() {
             err := rows.Scan(&userId)
             CheckError(err)
@@ -149,7 +152,7 @@ func SendBook(c *gin.Context) {
         rows, err = db.Query("SELECT `id` FROM `book` WHERE `filename` = ?", name)
         CheckError(err)
 
-        var bookId int
+        var bookId int64
         if rows.Next() {
             err := rows.Scan(&bookId)
             CheckError(err)
@@ -165,7 +168,7 @@ func SendBook(c *gin.Context) {
         rows, err = db.Query("SELECT `id` FROM `currently_reading` WHERE `book_id` = ?", bookId)
         CheckError(err)
 
-        var currentlyReadingId int
+        var currentlyReadingId int64
         if rows.Next() {
             err := rows.Scan(&currentlyReadingId)
             CheckError(err)
@@ -256,7 +259,7 @@ func GetHomePage(c *gin.Context) {
         rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
         CheckError(err)
 
-        var id int
+        var id int64
         if rows.Next() {
             err := rows.Scan(&id)
             CheckError(err)
@@ -268,9 +271,9 @@ func GetHomePage(c *gin.Context) {
         rows, err = db.Query("SELECT `book_id` FROM `currently_reading` WHERE `user_id` = ? ORDER BY `date_read` DESC LIMIT ?, ?", id, 0, 12)
         CheckError(err)
 
-        var crBooks []int
+        var crBooks []int64
         for rows.Next() {
-            var crBook int
+            var crBook int64
             err = rows.Scan(&crBook,)
             CheckError(err)
 
@@ -312,7 +315,7 @@ func GetHomePage(c *gin.Context) {
         rows, err = db.Query("SELECT COUNT(*) AS count FROM `book` WHERE `user_id` = ?", id)
         CheckError(err)
 
-        var count int
+        var count int64
         for rows.Next() {
             err = rows.Scan(&count,)
             CheckError(err)
@@ -416,7 +419,7 @@ func GetPagination(c *gin.Context) {
         rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
         CheckError(err)
 
-        var id int
+        var id int64
         if rows.Next() {
             err := rows.Scan(&id)
             CheckError(err)
@@ -428,7 +431,7 @@ func GetPagination(c *gin.Context) {
         rows, err = db.Query("SELECT COUNT(*) AS count FROM `book`")
         CheckError(err)
 
-        var count int
+        var count int64
         for rows.Next() {
             err = rows.Scan(&count,)
             CheckError(err)
@@ -610,7 +613,7 @@ func PostSignUp(c *gin.Context) {
 
     db.Close()
 
-    go SendConfirmationEmail(int(id), name, email)
+    go SendConfirmationEmail(int64(id), name, email)
 
     c.HTML(302, "confirm_email.html", "")
 
@@ -619,7 +622,7 @@ func PostSignUp(c *gin.Context) {
 // For confirm email token
 var letters = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-func randSeq(n int) string {
+func randSeq(n int64) string {
     b := make([]rune, n)
     for i := range b {
         b[i] = letters[rand.Intn(len(letters))]
@@ -627,7 +630,7 @@ func randSeq(n int) string {
     return string(b)
 }
 
-func SendConfirmationEmail(id int, name string, email string) {
+func SendConfirmationEmail(id int64, name string, email string) {
 
     // Set home many CPU cores this function wants to use.
     runtime.GOMAXPROCS(runtime.NumCPU())
@@ -690,9 +693,9 @@ func ConfirmEmail(c *gin.Context) {
     CheckError(err)
 
     var (
-        id int
+        id int64
         dateExpires string
-        userId int
+        userId int64
     )
     
     if rows.Next() {
@@ -759,7 +762,7 @@ func SendNewToken(c *gin.Context) {
         fmt.Println(email)
     }
     rows.Close()
-    go SendConfirmationEmail(int(userId), name, email)
+    go SendConfirmationEmail(int64(userId), name, email)
 }
 
 func PostUpload(c *gin.Context) {
@@ -773,13 +776,14 @@ func PostUpload(c *gin.Context) {
         rows, err := db.Query("select id from user where email = ?", session.Get("email"))
         CheckError(err)
 
-        var userId int
+        var userId int64
 
         if rows.Next() {
             err := rows.Scan(&userId)
             CheckError(err)
 
-            fmt.Println("User id: " + strconv.Itoa(userId))
+            userIdString := fmt.Sprintf("%v", userId)
+            fmt.Println("User id: " + userIdString)
         }
         rows.Close()
         
@@ -810,13 +814,14 @@ func PostUpload(c *gin.Context) {
                 rows, err = db.Query("select id from book where filename = ?", fileName)
                 CheckError(err)
 
-                var bookId int
+                var bookId int64
 
                 if rows.Next() {
                     err := rows.Scan(&bookId)
                     CheckError(err)
 
-                    fmt.Println("Book id: " + strconv.Itoa(bookId))
+                    bookIdString := fmt.Sprintf("%v", bookId)
+                    fmt.Println("Book id: " + bookIdString)
                 }
                 rows.Close()
 
