@@ -175,6 +175,7 @@ func GetJSON(url string, target interface{}) error {
 func PutJSON(url string, message []byte) {
     fmt.Println(url)
     req, err := http.NewRequest("PUT", url, bytes.NewBuffer(message))
+    CheckError(err)
     res, err := myClient.Do(req)
     CheckError(err)
     content, err := ioutil.ReadAll(res.Body)
@@ -1104,10 +1105,52 @@ func GetPDFInfo(filePath string) (string, string, string) {
     return title, author, pages
 }
 
+type BIP struct {
+    Source []string `json:"_source"`
+    Query BIPQ `json:"query"`
+}
+
+type BIPQ struct {
+    MultiMatch MMQ `json:"multi_match"`
+}
+
+type MMQ struct {
+    Query string `json:"query"`
+    Fields []string `json:"fields"`
+}
+
 func GetAutocomplete(c *gin.Context) {
     q := c.Request.URL.Query()
     term := q["term"][0]
     fmt.Println(term)
+
+    payloadInfo := &BIP{
+        Source: []string{"title", "author", "url", "cover"},
+        Query: BIPQ{
+            MultiMatch: MMQ{
+                Query: term,
+                Fields: []string{"title", "author"},
+            },
+        },
+    }
+
+    b, err :=  json.Marshal(payloadInfo)
+    CheckError(err)
+
+    indexURL := "http://localhost:9200/lr_index/book_info/_search"
+    fmt.Println("Index URL: " + indexURL)
+    GetJSONPassPayload(indexURL , b)
+
+}
+
+func GetJSONPassPayload(url string, payload []byte) {
+    req, err := http.NewRequest("GET", url, bytes.NewBuffer(payload))
+    CheckError(err)
+    res, err := myClient.Do(req)
+    CheckError(err)
+    content, err := ioutil.ReadAll(res.Body)
+    CheckError(err)
+    fmt.Println(string(content))
 }
 
 func GetCollections(c *gin.Context) {
