@@ -1036,6 +1036,9 @@ func FeedContent(filePath string, userId int64, bookId int64, title string, auth
         fmt.Println("Index URL: " + indexURL)
         PutJSON(indexURL , b)
     }
+
+    // Remove the splitted files as it is not needed now.
+    defer os.RemoveAll(path)
 }
 
 type BDS struct {

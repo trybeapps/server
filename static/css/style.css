@@ -117,7 +117,7 @@ header .header-container {
 }
 
 .search-dropdown a .sdtl-title {
-	float: left;
+	float: right;
   width: 363px;
   color: #161616;
   font-weight: 700;
@@ -128,7 +128,7 @@ header .header-container {
 }
 
 .search-dropdown a .sdtl-author {
-	float: left;
+	float: right;
   width: 363px;
   font-size: 14px;
   color: #676767;
