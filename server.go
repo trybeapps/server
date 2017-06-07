@@ -1139,11 +1139,37 @@ func GetAutocomplete(c *gin.Context) {
 
     indexURL := "http://localhost:9200/lr_index/book_info/_search"
     fmt.Println("Index URL: " + indexURL)
-    GetJSONPassPayload(indexURL , b)
 
+    res := GetJSONPassPayload(indexURL , b)
+    target := BIRS{}
+    json.Unmarshal(res, &target)
+
+    hits := target.Hits.Hits
+    hitsBIS := []BIS{}
+    for _, el := range hits {
+        hitsBIS = append(hitsBIS, BIS{
+            Title: el.Source.Title,
+            Author: el.Source.Author,
+            URL: el.Source.URL,
+            Cover: el.Source.Cover,
+        })        
+    }
+    c.JSON(200, hitsBIS)
 }
 
-func GetJSONPassPayload(url string, payload []byte) {
+type BIRS struct {
+    Hits BIRSH `json:"hits"`
+}
+
+type BIRSH struct {
+    Hits []BIRSHH `json:"hits"`
+}
+
+type BIRSHH struct {
+    Source BIS `json:"_source"`
+}
+
+func GetJSONPassPayload(url string, payload []byte) []byte {
     req, err := http.NewRequest("GET", url, bytes.NewBuffer(payload))
     CheckError(err)
     res, err := myClient.Do(req)
@@ -1151,6 +1177,7 @@ func GetJSONPassPayload(url string, payload []byte) {
     content, err := ioutil.ReadAll(res.Body)
     CheckError(err)
     fmt.Println(string(content))
+    return content
 }
 
 func GetCollections(c *gin.Context) {
