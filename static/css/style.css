@@ -123,6 +123,10 @@ header .header-container {
   font-weight: 700;
 }
 
+.search-dropdown a .sdtl-title span {
+  font-weight: normal;
+}
+
 .search-dropdown a .sdtl-author {
 	float: left;
   width: 363px;
@@ -132,7 +136,7 @@ header .header-container {
 }
 
 .search-dropdown a .sdtl-description {
-	float: left;
+	float: right;
   width: 363px;
   margin-top: 10px;
   color: #161616;

@@ -218,7 +218,32 @@ $(function() {
 					term: $(this).val()
 				},
 				success: function(data) {
-					console.log(data['book_detail'][0]['highlight']['attachment.content'][0])
+					var html = ''
+					for (i in data['book_info']) {
+						html += '<a href="' + data['book_info'][i].url + '">' +
+							'<img src="' + data['book_info'][i].cover + '">' +
+						    '<div class="sdtl-title">' + data['book_info'][i].title + '</div>' +
+						    '<div class="sdtl-author">' + data['book_info'][i].author + '</div></a>'
+
+					}
+					$('.sd-title-list').html(html)
+
+					html = ''
+					console.log(data['book_detail'])
+					for (i in data['book_detail']) {
+						html += '<a href="' + data['book_detail'][i]['_source'].url + '#page=' + data['book_detail'][i]['_source'].page + '">' +
+						    '<img src="' + data['book_detail'][i]['_source'].cover + '">' +
+						    '<div class="sdtl-title">' + data['book_detail'][i]['_source'].title + ' <span>(Page ' + data['book_detail'][i]['_source'].page + ')</span></div>' +
+						    '<div class="sdtl-author">' + data['book_detail'][i]['_source'].author + '</div>'
+
+						var content = data['book_detail'][i]['highlight']['attachment.content']
+						console.log(content)
+						for (j in content) {
+							html += '<div class="sdtl-description">' + data['book_detail'][i]['highlight']['attachment.content'][j] + '</div>'
+						}
+						html += '</a>'
+					}
+					$('.sd-content-list').html(html)
 				}
 			})
 		}
