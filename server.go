@@ -1119,6 +1119,34 @@ type MMQ struct {
     Fields []string `json:"fields"`
 }
 
+type BDP struct {
+    Source []string `json:"_source"`
+    Query BDPQ `json:"query"`
+    Highlight BDPH `json:"highlight"`
+}
+
+type BDPQ struct {
+    MatchPhrase BDPQAC `json:"match_phrase"`
+}
+
+type BDPQAC struct {
+    AttachmentContent string `json:"attachment.content"`
+}
+
+type BDPH struct {
+    Fields BDPHF `json:"fields"`
+}
+
+type BDPHF struct {
+    AttachmentContent BDPHFAC `json:"attachment.content"`
+}
+
+type BDPHFAC struct {
+    FragmentSize int64 `json:"fragment_size"`
+    NumberOfFragments int64 `json:"number_of_fragments"`
+    NoMatchSize int64 `json:"no_match_size"`
+}
+
 func GetAutocomplete(c *gin.Context) {
     q := c.Request.URL.Query()
     term := q["term"][0]
@@ -1154,7 +1182,83 @@ func GetAutocomplete(c *gin.Context) {
             Cover: el.Source.Cover,
         })        
     }
-    c.JSON(200, hitsBIS)
+
+    payloadDetail := &BDP{
+        Source: []string{"title", "author", "url", "cover", "page"},
+        Query: BDPQ{
+            MatchPhrase: BDPQAC{
+                AttachmentContent: term,
+            },
+        },
+        Highlight: BDPH{
+            Fields: BDPHF{
+                AttachmentContent: BDPHFAC{
+                    FragmentSize: 150,
+                    NumberOfFragments: 3,
+                    NoMatchSize: 150,
+                },
+            },
+        },
+    }
+    b, err =  json.Marshal(payloadDetail)
+    CheckError(err)
+
+    indexURL = "http://localhost:9200/lr_index/book_detail/_search"
+    fmt.Println("Index URL: " + indexURL)
+
+    res = GetJSONPassPayload(indexURL , b)
+    target2 := BDRS{}
+    json.Unmarshal(res, &target2)
+
+    hits2 := target2.Hits.Hits
+    hitsBDRS := []BDRSHS{}
+    for _, el := range hits2 {
+        fmt.Println(el.Source)
+        fmt.Println(el.Highlight)
+        hitsBDRS = append(hitsBDRS, BDRSHS{
+            Source: el.Source,
+            Highlight: el.Highlight,
+        })
+    }
+    fmt.Println("\n\n\n\n\n\n")
+    fmt.Println(hitsBDRS)
+
+    bsr := BSR{
+        BookInfo: hitsBIS,
+        BookDetail: hitsBDRS,
+    }
+
+    c.JSON(200, bsr)
+}
+
+type BSR struct {
+    BookInfo []BIS `json:"book_info"`
+    BookDetail []BDRSHS `json:"book_detail"`
+}
+
+type BDRS struct {
+    Hits BDRSH `json:"hits"`
+}
+
+type BDRSH struct {
+    Hits []BDRSHS `json:"hits"`
+}
+
+type BDRSHS struct {
+    Source BDS2 `json:"_source"`
+    Highlight BDH `json:"highlight"`
+}
+
+type BDH struct {
+    AttachmentContent []string `json:"attachment.content"`
+}
+
+type BDS2 struct {
+    Title string `json:"title"`
+    Author string `json:"author"`
+    URL string `json:"url"`
+    Cover string `json:"cover"`
+    Page int64 `json:"page"`
 }
 
 type BIRS struct {

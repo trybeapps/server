@@ -55,7 +55,7 @@ $(function() {
 
 	var crcbCounter = 0
 	var crcbHeight = 0
-	if ($('.crcb-book-list').length > 0) {
+	if ($('.crcb-book-list a').length > 0) {
 		crcbHeight = parseInt($('.crcb-book-list a:first-child img')[0].getBoundingClientRect().height)
 	}
 	$('.crcb-book-list').css('height', crcbHeight + 'px')
@@ -218,7 +218,7 @@ $(function() {
 					term: $(this).val()
 				},
 				success: function(data) {
-					console.log(data)
+					console.log(data['book_detail'][0]['highlight']['attachment.content'][0])
 				}
 			})
 		}
