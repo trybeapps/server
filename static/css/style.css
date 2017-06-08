@@ -648,6 +648,11 @@ footer {
   z-index: 1;
 }
 
+.collections-list {
+  width: 1440px;
+  min-height: 700px;
+}
+
 @media screen
   and (max-width: 1440px) { 
   	

@@ -1064,7 +1064,7 @@ type BDS struct {
 func PDFSeparate(path string, filePath string, wg *sync.WaitGroup) error {
     runtime.GOMAXPROCS(runtime.NumCPU())
     fmt.Println(runtime.NumCPU())
-    cmd := exec.Command("/usr/local/bin/pdfseparate", filePath, path + "/%d.pdf")
+    cmd := exec.Command("pdfseparate", filePath, path + "/%d.pdf")
 
     err := cmd.Start()
     CheckError(err)
@@ -1076,14 +1076,14 @@ func PDFSeparate(path string, filePath string, wg *sync.WaitGroup) error {
 }
 
 func GeneratePDFCover(filePath, coverPath string) {
-    cmd := exec.Command("/usr/local/bin/pdfimages", "-p", "-png", "-f", "1", "-l", "2",  filePath, coverPath)
+    cmd := exec.Command("pdfimages", "-p", "-png", "-f", "1", "-l", "2",  filePath, coverPath)
 
     err := cmd.Run()
     CheckError(err)
 }
 
 func GetPDFInfo(filePath string) (string, string, string) {
-    cmd := exec.Command("/usr/local/bin/pdfinfo", filePath)
+    cmd := exec.Command("pdfinfo", filePath)
     
     var out bytes.Buffer
     cmd.Stdout = &out
