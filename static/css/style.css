@@ -651,6 +651,54 @@ footer {
 .collections-list {
   width: 1440px;
   min-height: 700px;
+  margin: 50px 0;
+  padding: 0 30px;
+}
+
+.collections-list a {
+  position: relative;
+  float: left;
+  width: 315px;
+  height: 360px;
+  margin-right: 30px;
+  margin-bottom: 50px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.collections-list a::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "";
+  width: 315px;
+  height: 360px;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.collections-list a img {
+  width: 100%;
+  margin-top: -50px;
+}
+
+.collections-list a .text {
+  position: absolute;
+  top: 0;
+  padding: 0 20px;
+  margin-top: 20px;
+  z-index: 1;
+}
+
+.collections-list a .title {
+  font-size: 34px;
+  font-weight: 700;
+  color: white;
+}
+
+.collections-list a .description {
+  color: white;
+  line-height: 24px;
+  margin-top: 10px;
 }
 
 @media screen
