@@ -17,6 +17,7 @@ import (
     "os/exec"
     "bytes"
     "strings"
+    "sync"
 
     "github.com/gin-gonic/gin"
     "github.com/gin-contrib/sessions"
@@ -1008,11 +1009,21 @@ func FeedContent(filePath string, userId int64, bookId int64, title string, auth
     }
     fmt.Println(path)
     fmt.Println(filePath)
-    PDFSeparate(path, filePath)
+
+    fmt.Println("\n\n\n\n\n")
+    fmt.Println(title)
+    var wg sync.WaitGroup
+    wg.Add(1)
+    go PDFSeparate(path, filePath, &wg)
+    wg.Wait()
+    fmt.Println("wg done!")
 
     var i int64
     for i = 1; i < (pagesInt + 1); i += 1 {
         pagePath :=  path + "/" + strconv.Itoa(int(i)) + ".pdf"
+        if _, err := os.Stat(pagePath); os.IsNotExist(err) {
+            continue
+        }
         data, err := ioutil.ReadFile(pagePath)
         CheckError(err)
         
@@ -1050,11 +1061,18 @@ type BDS struct {
     Page int64 `json:"page"`
 }
 
-func PDFSeparate(path string, filePath string) {
+func PDFSeparate(path string, filePath string, wg *sync.WaitGroup) error {
+    runtime.GOMAXPROCS(runtime.NumCPU())
+    fmt.Println(runtime.NumCPU())
     cmd := exec.Command("/usr/local/bin/pdfseparate", filePath, path + "/%d.pdf")
 
-    err := cmd.Run()
+    err := cmd.Start()
     CheckError(err)
+    fmt.Println("Waiting for command to finish...")
+    err = cmd.Wait()
+    fmt.Printf("Command finished with error: %v", err)
+    wg.Done()
+    return nil
 }
 
 func GeneratePDFCover(filePath, coverPath string) {
