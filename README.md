@@ -1,5 +1,5 @@
 # LibreRead
-Free(Libre) Ebook reader coming soon.
+Free(Libre) Ebook reader coming soon. If you think what I'm building is promising, you could [sponsor my development](https://www.patreon.com/mysticmode). That will help me continue working on this software full-time.
 
 ![Alt text](/static/img/screenshot.png?raw=true "Home Page")
 
