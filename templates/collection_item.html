@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>LibreRead</title>
+	<link href="https://fonts.googleapis.com/css?family=Droid+Sans:700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
+	<link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+	<header>
+		<div class="header-container">
+			<a href="/" class="logo">LibreRead</a>
+			<input type="text" class="search-box" placeholder="Type here to search..">
+			<div class="search-dropdown">
+				<label>Title</label>
+				<div class="sd-title-list">
+				</div>
+				<label>Content</label>
+				<div class="sd-content-list">
+				</div>
+			</div>
+			<svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48"><g fill="none" stroke="#676767" stroke-width="4" stroke-linecap="square" stroke-miterlimit="10"><path data-color="color-2" d="M2 21h44v6H2z"/><path d="M2 5h44v6H2zm0 32h44v6H2z"/></g></svg>
+			<form enctype="multipart/form-data" action="/upload" class="upload-books-form">
+				<input type="file" class="upload-books" name="upload" multiple="multiple">
+			</form>
+			<div class="header-nav">
+				<a href="/" class="hn-book-nav">
+					<svg class="nc-icon outline" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48"><g fill="none" stroke="#676767" stroke-width="4" stroke-miterlimit="10"><path data-cap="butt" data-color="color-2" d="M2 32h12m0 0h12m5.509.107l11.893-1.598"/><path stroke-linecap="square" d="M2 4h12v40H2z"/><path data-color="color-2" stroke-linecap="square" d="M8 10v10"/><path stroke-linecap="square" d="M14 4h12v40H14z"/><path data-color="color-2" stroke-linecap="square" d="M20 10v10"/><path stroke-linecap="square" d="M27.782 4.357L39.675 2.76l5.324 39.644L33.106 44z"/><path data-color="color-2" stroke-linecap="square" d="M34.527 9.504l1.331 9.911"/></g></svg>
+					<label>Add new books</label>
+				</a>
+				<a href="/collections" class="hn-collection-nav">
+					<svg class="nc-icon outline" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48"><g fill="none" stroke="#676767" stroke-width="4" stroke-linecap="square" stroke-miterlimit="10"><path data-color="color-2" d="M38 9v6m-6-6v6m-6-6v6m-6 0h-6m26 20h-6m-12-6v6m-6-6v6m12-6v6m-18-6v6m-4 7v4m36-4v4"/><path d="M2 22h44M2 2h44v40H2z"/></g></svg>
+					<label>Collections</label>
+				</a>
+				<a href="/" class="hn-settings-nav">
+					<svg class="nc-icon outline" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48"><g fill="none" stroke="#676767" stroke-width="4" stroke-linecap="square" stroke-miterlimit="10"><path d="M46 28v-8h-4.11a3.366 3.366 0 0 1-3.112-2.097c-.574-1.392-.218-2.805.701-3.724l2.907-2.907-5.657-5.657-2.907 2.907c-.919.919-2.332 1.275-3.724.701A3.367 3.367 0 0 1 28 6.11V2h-8v4.11a3.366 3.366 0 0 1-2.097 3.112c-1.392.574-2.805.218-3.724-.701l-2.907-2.907-5.657 5.657 2.907 2.907c.919.919 1.275 2.332.701 3.724A3.367 3.367 0 0 1 6.11 20H2v8h4.11c1.293 0 2.55.743 3.129 2.138a3.367 3.367 0 0 1-.718 3.683l-2.907 2.907 5.657 5.657 2.907-2.907a3.367 3.367 0 0 1 3.683-.718c1.391.578 2.139 1.832 2.139 3.13V46h8v-4.11c0-1.293.743-2.55 2.138-3.129a3.367 3.367 0 0 1 3.683.718l2.907 2.907 5.657-5.657-2.907-2.907c-.919-.919-1.275-2.332-.701-3.724A3.368 3.368 0 0 1 41.89 28H46z"/><circle data-color="color-2" cx="24" cy="24" r="6"/></g></svg>
+					<label>Settings</label>
+				</a>
+				<a href="/signout" class="hn-sign-out-nav">
+					<svg class="nc-icon glyph" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48"><g fill="#676767"><path data-color="color-2" d="M25 15h-2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1z"/><path d="M24 47C12.421 47 3 37.579 3 26c0-8.141 4.771-15.619 12.157-19.052l1.686 3.627C10.863 13.354 7 19.409 7 26c0 9.374 7.626 17 17 17s17-7.626 17-17c0-6.592-3.865-12.647-9.847-15.428l1.686-3.627C40.227 10.378 45 17.857 45 26c0 11.579-9.421 21-21 21z"/></g></svg>
+					<label>Sign out</label>
+				</a>
+			</div>
+			<div class="header-nav-small">
+				<div class="hns-close">Close</div>
+				<a href="/" class="hn-book-nav">
+					<svg class="nc-icon outline" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48"><g fill="none" stroke="#676767" stroke-width="4" stroke-miterlimit="10"><path data-cap="butt" data-color="color-2" d="M2 32h12m0 0h12m5.509.107l11.893-1.598"/><path stroke-linecap="square" d="M2 4h12v40H2z"/><path data-color="color-2" stroke-linecap="square" d="M8 10v10"/><path stroke-linecap="square" d="M14 4h12v40H14z"/><path data-color="color-2" stroke-linecap="square" d="M20 10v10"/><path stroke-linecap="square" d="M27.782 4.357L39.675 2.76l5.324 39.644L33.106 44z"/><path data-color="color-2" stroke-linecap="square" d="M34.527 9.504l1.331 9.911"/></g></svg>
+					<label>Add new books</label>
+				</a>
+				<a href="/collections" class="hn-collection-nav">
+					<svg class="nc-icon outline" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48"><g fill="none" stroke="#676767" stroke-width="4" stroke-linecap="square" stroke-miterlimit="10"><path data-color="color-2" d="M38 9v6m-6-6v6m-6-6v6m-6 0h-6m26 20h-6m-12-6v6m-6-6v6m12-6v6m-18-6v6m-4 7v4m36-4v4"/><path d="M2 22h44M2 2h44v40H2z"/></g></svg>
+					<label>Collections</label>
+				</a>
+				<a href="/" class="hn-settings-nav">
+					<svg class="nc-icon outline" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48"><g fill="none" stroke="#676767" stroke-width="4" stroke-linecap="square" stroke-miterlimit="10"><path d="M46 28v-8h-4.11a3.366 3.366 0 0 1-3.112-2.097c-.574-1.392-.218-2.805.701-3.724l2.907-2.907-5.657-5.657-2.907 2.907c-.919.919-2.332 1.275-3.724.701A3.367 3.367 0 0 1 28 6.11V2h-8v4.11a3.366 3.366 0 0 1-2.097 3.112c-1.392.574-2.805.218-3.724-.701l-2.907-2.907-5.657 5.657 2.907 2.907c.919.919 1.275 2.332.701 3.724A3.367 3.367 0 0 1 6.11 20H2v8h4.11c1.293 0 2.55.743 3.129 2.138a3.367 3.367 0 0 1-.718 3.683l-2.907 2.907 5.657 5.657 2.907-2.907a3.367 3.367 0 0 1 3.683-.718c1.391.578 2.139 1.832 2.139 3.13V46h8v-4.11c0-1.293.743-2.55 2.138-3.129a3.367 3.367 0 0 1 3.683.718l2.907 2.907 5.657-5.657-2.907-2.907c-.919-.919-1.275-2.332-.701-3.724A3.368 3.368 0 0 1 41.89 28H46z"/><circle data-color="color-2" cx="24" cy="24" r="6"/></g></svg>
+					<label>Account settings</label>
+				</a>
+				<a href="/signout" class="hn-sign-out-nav">
+					<svg class="nc-icon glyph" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48"><g fill="#676767"><path data-color="color-2" d="M25 15h-2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1z"/><path d="M24 47C12.421 47 3 37.579 3 26c0-8.141 4.771-15.619 12.157-19.052l1.686 3.627C10.863 13.354 7 19.409 7 26c0 9.374 7.626 17 17 17s17-7.626 17-17c0-6.592-3.865-12.647-9.847-15.428l1.686-3.627C40.227 10.378 45 17.857 45 26c0 11.579-9.421 21-21 21z"/></g></svg>
+					<label>Sign out</label>
+				</a>
+			</div>
+		</div>
+	</header>
+	<div class="page-container">
+		<div class="books-container">
+			<div class="bc-books-list">
+				{{ range .booksList }}
+					<div>
+						{{ range . }}
+							<a href="{{.URL}}" title="{{ .Title }}">
+								<img src="{{.Cover}}" width="205">
+							</a>
+						{{ end }}
+					</div>
+				{{ end }}
+			</div>
+			<div class="bc-books-list-medium">
+				{{ range .booksListMedium }}
+					<div>
+					{{ range .}}
+						<a href="{{.URL}}" title="{{ .Title }}">
+							<img src="{{.Cover}}" width="205">
+						</a>
+					{{ end }}
+					</div>
+				{{ end }}
+			</div>
+			<div class="bc-books-list-small">
+				{{ range .booksListSmall }}
+					<div>
+					{{ range .}}
+						<a href="{{.URL}}" title="{{ .Title }}">
+							<img src="{{.Cover}}" width="205">
+						</a>
+					{{ end }}
+					</div>
+				{{ end }}
+			</div>
+			<div class="bc-books-list-xtra-small">
+				{{ range .booksListXtraSmall }}
+					<a href="{{.URL}}" title="{{ .Title }}">
+						<img src="{{.Cover}}" width="205">
+					</a>
+				{{ end }}
+			</div>
+			<div class="bc-pagination">
+				<a href="" class="left none">
+					<svg width="33" height="20" viewBox="0 0 33 20" xmlns="http://www.w3.org/2000/svg"><title>Group 2</title><g stroke="#222" stroke-width="3" fill="none" fill-rule="evenodd"><path d="M33 10.143H3"/><path stroke-linecap="square" d="M10.143 17.286L3 10.143 10.143 3"/></g></svg>
+				</a>
+				<a href="" class="num none first-num">1</a>
+				<div class="dots dots-one">...</div>
+				<a href="/books/2" class="num second-num">2</a>
+				<a href="/books/3" class="num third-num">3</a>
+				<a href="/books/4" class="num fourth-num">4</a>
+				<div class="dots dots-two">...</div>
+				<a href="/books/{{ .tp }}" class="num end-num">{{ .tp }}</a>
+				<a href="/books/2" class="right">
+					<svg width="33" height="20" viewBox="0 0 33 20" xmlns="http://www.w3.org/2000/svg"><title>Group 3</title><g stroke="#222" stroke-width="3" fill="none" fill-rule="evenodd"><path d="M0 10.143h30"/><path stroke-linecap="square" d="M22.857 3L30 10.143l-7.143 7.143"/></g></svg>
+				</a>
+			</div>
+		</div>
+	</div>
+	<footer></footer>
+	<script
+  		src="https://code.jquery.com/jquery-3.2.1.min.js"
+  		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  		crossorigin="anonymous"></script>
+  	<script src="/static/js/main.js" type="text/javascript"></script>
+  	<script type="text/javascript">
+  		// Pagination code
+  		var totalPages = parseInt({{.tp}})
+  		$('.bc-pagination .dots-one').hide()
+  		var windowWidth = $(window).width()
+  		
+  		if (totalPages > 9) {
+  			if (windowWidth <= 740) {
+  				$('.bc-pagination').css('width', '231px')
+  			} else {
+  				$('.bc-pagination').css('width', '403px')
+  			}
+  		} else if (totalPages <= 9 && totalPages > 5) {
+  			if (windowWidth <= 740) {
+  				$('.bc-pagination').css('width', '220px')
+  			}
+  		}
+
+  		if (totalPages <= 5) {
+  			$('.bc-pagination .dots').hide()
+
+  			if (totalPages == 4) {
+  				$('.bc-pagination .end-num').hide()
+  				if (windowWidth <= 740) {
+  					$('.bc-pagination .fourth-num').css('margin-right', 0)
+  					$('.bc-pagination').css('width', '132px')
+  				} else {
+  					$('.bc-pagination').css('width', '304px')
+  				}
+  			} else if (totalPages == 3) {
+  				$('.bc-pagination .end-num, .bc-pagination .fourth-num').hide()
+  				if (windowWidth <= 740) {
+  					$('.bc-pagination .third-num').css('margin-right', 0)
+  					$('.bc-pagination').css('width', '91px')
+  				} else {
+  					$('.bc-pagination').css('width', '263px')
+  				}
+  			} else if (totalPages == 2) {
+  				$('.bc-pagination .end-num, .bc-pagination .fourth-num, .bc-pagination .third-num').hide()
+  				if (windowWidth <= 740) {
+  					$('.bc-pagination .second-num').css('margin-right', 0)
+  					$('.bc-pagination').css('width', '51px')
+  				} else {
+  					$('.bc-pagination').css('width', '223px')
+  				}
+  			} else if (totalPages <= 1) {
+  				$('.bc-pagination').hide()
+  			} else {
+  				$('.bc-pagination').css('width', '345px')
+  			}
+  		}
+  	</script>
+</body>
+</html>

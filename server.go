@@ -168,6 +168,7 @@ func main() {
     r.GET("/collections", GetCollections)
     r.GET("/add-collection", GetAddCollection)
     r.POST("/post-new-collection", PostNewCollection)
+    r.GET("/collection/:id", GetCollection)
 
     // Listen and serve on 0.0.0.0:8080
     r.Run(":8080")
@@ -761,7 +762,7 @@ func SendConfirmationEmail(id int64, name string, email string) {
 
     // Send the confirmation email
     if err := d.DialAndSend(m); err != nil {
-        panic(err)
+        log.Fatal(err)
     }
 }
 
@@ -1518,6 +1519,65 @@ func PostNewCollection(c *gin.Context) {
         db.Close()
 
         c.String(200, strconv.Itoa(int(id)))
+    }
+    c.Redirect(302, "/signin")
+}
+
+func GetCollection(c *gin.Context) {
+    session := sessions.Default(c)
+    if session.Get("email") != nil {
+        fmt.Println(session.Get("email"))
+
+        id := c.Param("id")
+        fmt.Println(id)
+
+        db, err := sql.Open("sqlite3", "./libreread.db")
+        CheckError(err)
+
+        rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
+        CheckError(err)
+
+        var userId int64
+        if rows.Next() {
+            err := rows.Scan(&userId)
+            CheckError(err)
+        }
+        fmt.Println(userId)
+        rows.Close()
+
+        rows, err = db.Query("select books from collection where user_id = ?", userId)
+        CheckError(err)
+
+        var books string
+        if rows.Next() {
+            err := rows.Scan(&books)
+            CheckError(err)
+        }
+        fmt.Println(books)
+        rows.Close()
+
+        bookSplit := strings.Split(books, ",")
+        fmt.Println(bookSplit)
+
+        for i := len(bookSplit)-1; i >= 0; i-- {
+            fmt.Println(bookSplit[i])
+            bookStr, err := strconv.Atoi(bookSplit[i])
+            rows, err := db.Query("select url, cover from book where id = ?", bookStr)
+            CheckError(err)
+
+            if rows.Next() {
+                var (
+                    url string
+                    cover string
+                )
+                err := rows.Scan(&url, &cover)
+                CheckError(err)
+                fmt.Println(url)
+            }
+        }
+
+        db.Close()
+        c.HTML(302, "collection_item.html", "")
     }
     c.Redirect(302, "/signin")
 }
