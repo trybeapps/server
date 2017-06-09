@@ -152,6 +152,7 @@ func main() {
     r.GET("/collections", GetCollections)
     r.GET("/books/:pagination", GetPagination)
     r.GET("/autocomplete", GetAutocomplete)
+    r.GET("/add-collection", GetAddCollection)
 
     // Listen and serve on 0.0.0.0:8080
     r.Run(":8080")
@@ -1307,4 +1308,8 @@ func GetJSONPassPayload(url string, payload []byte) []byte {
 
 func GetCollections(c *gin.Context) {
     c.HTML(302, "collections.html", "")
+}
+
+func GetAddCollection(c *gin.Context) {
+    c.HTML(302, "add_collection.html", "")
 }
