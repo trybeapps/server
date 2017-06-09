@@ -59,6 +59,10 @@ header .header-container {
 	cursor: pointer;
 }
 
+.logo span {
+  font-size: 11px;
+}
+
 .logo:hover {
 	color: #FF4848;
 }

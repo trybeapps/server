@@ -1621,15 +1621,6 @@ func GetCollection(c *gin.Context) {
 
         booksListXtraSmall := b
 
-        // c.HTML(302, "pagination.html", gin.H{
-        //     "pagination": pagination,
-        //     "booksList": booksList,
-        //     "booksListMedium": booksListMedium,
-        //     "booksListSmall": booksListSmall,
-        //     "booksListXtraSmall": booksListXtraSmall,
-        //     "tp": tp,
-        // })
-
         c.HTML(302, "collection_item.html", gin.H{
             "title": title,
             "description": description,
