@@ -88,64 +88,18 @@
 		</div>
 	</header>
 	<div class="page-container">
-		<form class="add-collection-container">
+		<form action="/post-new-collection" method="post" class="add-collection-container">
 			<label>Add new collection</label>
-			<input type="text" class="title" placeholder="Enter collection title">
-			<textarea placeholder="Enter-description"></textarea>
+			<input type="text" name="title" class="title" placeholder="Enter collection title">
+			<textarea name="description" class="description" placeholder="Enter-description"></textarea>
 			<div class="add-books">
 				<label>Select books you want to add to this collection</label>
-				<div class="ab-item">
-					<input type="checkbox">
-					<img src="/static/img/book_1.png" width="100">
-				</div>
-				<div class="ab-item">
-					<input type="checkbox">
-					<img src="/static/img/book_1.png" width="100">
-				</div>
-				<div class="ab-item">
-					<input type="checkbox">
-					<img src="/static/img/book_1.png" width="100">
-				</div>
-				<div class="ab-item">
-					<input type="checkbox">
-					<img src="/static/img/book_1.png" width="100">
-				</div>
-				<div class="ab-item">
-					<input type="checkbox">
-					<img src="/static/img/book_1.png" width="100">
-				</div>
-				<div class="ab-item">
-					<input type="checkbox">
-					<img src="/static/img/book_1.png" width="100">
-				</div>
-				<div class="ab-item">
-					<input type="checkbox">
-					<img src="/static/img/book_1.png" width="100">
-				</div>
-				<div class="ab-item">
-					<input type="checkbox">
-					<img src="/static/img/book_1.png" width="100">
-				</div>
-				<div class="ab-item">
-					<input type="checkbox">
-					<img src="/static/img/book_1.png" width="100">
-				</div>
-				<div class="ab-item">
-					<input type="checkbox">
-					<img src="/static/img/book_1.png" width="100">
-				</div>
-				<div class="ab-item">
-					<input type="checkbox">
-					<img src="/static/img/book_1.png" width="100">
-				</div>
-				<div class="ab-item">
-					<input type="checkbox">
-					<img src="/static/img/book_1.png" width="100">
-				</div>
-				<div class="ab-item">
-					<input type="checkbox">
-					<img src="/static/img/book_1.png" width="100">
-				</div>
+				{{ range .books }}
+					<div class="ab-item">
+						<input type="checkbox" value="{{ .BookId }}">
+						<img src="{{ .Cover }}" width="100" height="160">
+					</div>
+				{{ end }}
 			</div>
 			<input type="submit" value="Submit">
 		</form>

@@ -92,8 +92,21 @@ func main() {
     // -------------------
     // Fields: id, user_id
     // -------------------
-    stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `currently_reading` (`id` INTEGER PRIMARY KEY AUTOINCREMENT,"+
+    stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `currently_reading` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
         " `book_id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `date_read` VARCHAR(255) NOT NULL)")
+    CheckError(err)
+
+    _, err = stmt.Exec()
+    CheckError(err)
+
+    // Create collection table
+    // Table: collection
+    // ----------------------------------------------
+    // Fields: id, title, description, books, user_id
+    // ----------------------------------------------
+    stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `collection` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
+        " `title` VARCHAR(255) NOT NULL, `description` VARCHAR(1200) NOT NULL, `books` VARCHAR(1200) NOT NULL," +
+        " `cover` VARCHAR(255) NULL, `user_id` INTEGER NOT NULL)")
     CheckError(err)
 
     _, err = stmt.Exec()
@@ -149,10 +162,11 @@ func main() {
     r.POST("/upload", UploadBook)
     r.GET("/book/:bookname", SendBook)
     r.GET("/cover/:covername", SendBookCover)
-    r.GET("/collections", GetCollections)
     r.GET("/books/:pagination", GetPagination)
     r.GET("/autocomplete", GetAutocomplete)
+    r.GET("/collections", GetCollections)
     r.GET("/add-collection", GetAddCollection)
+    r.POST("/post-new-collection", PostNewCollection)
 
     // Listen and serve on 0.0.0.0:8080
     r.Run(":8080")
@@ -1307,9 +1321,190 @@ func GetJSONPassPayload(url string, payload []byte) []byte {
 }
 
 func GetCollections(c *gin.Context) {
-    c.HTML(302, "collections.html", "")
+    session := sessions.Default(c)
+    if session.Get("email") != nil {
+        fmt.Println(session.Get("email"))
+        
+        db, err := sql.Open("sqlite3", "./libreread.db")
+        CheckError(err)
+
+        rows, err := db.Query("select id from user where email = ?", session.Get("email"))
+        CheckError(err)
+
+        var userId int64
+
+        if rows.Next() {
+            err := rows.Scan(&userId)
+            CheckError(err)
+
+            userIdString := fmt.Sprintf("%v", userId)
+            fmt.Println("User id: " + userIdString)
+        }
+        rows.Close()
+
+        rows, err = db.Query("select title, description, books, cover from collection where user_id = ?", userId)
+        CheckError(err)
+
+        cbks := []CBKS{}
+        for rows.Next() {
+            var (
+                title string
+                description string
+                books string
+                cover string
+            )
+            err := rows.Scan(&title, &description, &books, &cover)
+            CheckError(err)
+
+            cbks = append(cbks, CBKS{
+                Title: title,
+                Description: description,
+                Books: books,
+                Cover: cover,
+            })
+        }
+        fmt.Println(cbks)
+
+        db.Close()
+        c.HTML(302, "collections.html", "")
+    }
+    c.Redirect(302, "/signin")
+}
+
+type CBKS struct {
+    Title string
+    Description string
+    Books string
+    Cover string
 }
 
 func GetAddCollection(c *gin.Context) {
-    c.HTML(302, "add_collection.html", "")
+    session := sessions.Default(c)
+    if session.Get("email") != nil {
+        fmt.Println(session.Get("email"))
+        
+        db, err := sql.Open("sqlite3", "./libreread.db")
+        CheckError(err)
+
+        rows, err := db.Query("select id from user where email = ?", session.Get("email"))
+        CheckError(err)
+
+        var userId int64
+
+        if rows.Next() {
+            err := rows.Scan(&userId)
+            CheckError(err)
+
+            userIdString := fmt.Sprintf("%v", userId)
+            fmt.Println("User id: " + userIdString)
+        }
+        rows.Close()
+
+        rows, err = db.Query("select id, cover from book where user_id = ?", userId)
+        CheckError(err)
+
+        books := []BCSL{}
+
+        for rows.Next() {
+            var (
+                b int64
+                c string
+            )
+            err :=  rows.Scan(&b, &c)
+            CheckError(err)
+
+            books = append(books, BCSL{
+                BookId: b,
+                Cover: c,
+            })
+        }
+        fmt.Println(books)
+
+        db.Close()
+
+        c.HTML(302, "add_collection.html", gin.H{
+            "books": books,
+        })
+    }
+
+    c.Redirect(302, "/signin")
+}
+
+type BCSL struct {
+    BookId int64
+    Cover string
+}
+
+type PCS struct {
+    Title string `json:"title"`
+    Description string `json:"description"`
+    Books []int64 `json:"id"`
+}
+
+func PostNewCollection(c *gin.Context) {
+    session := sessions.Default(c)
+    if session.Get("email") != nil {
+        fmt.Println(session.Get("email"))
+        
+        db, err := sql.Open("sqlite3", "./libreread.db")
+        CheckError(err)
+
+        rows, err := db.Query("select id from user where email = ?", session.Get("email"))
+        CheckError(err)
+
+        var userId int64
+
+        if rows.Next() {
+            err := rows.Scan(&userId)
+            CheckError(err)
+
+            userIdString := fmt.Sprintf("%v", userId)
+            fmt.Println("User id: " + userIdString)
+        }
+        rows.Close()
+    
+        pc := PCS{}
+        err = c.BindJSON(&pc)
+        CheckError(err)
+
+        rows, err = db.Query("select cover from book where id = ?", pc.Books[len(pc.Books) -1 ])
+        CheckError(err)
+
+        var cover string
+        if rows.Next() {
+            err := rows.Scan(&cover)
+            CheckError(err)
+        }
+        fmt.Println(cover)
+        rows.Close()
+
+        var books string
+        for i, num := range pc.Books {
+            if i == (len(pc.Books) - 1) {
+                books += strconv.Itoa(int(num))
+                break
+            }
+            books += strconv.Itoa(int(num)) + ","
+        }
+        fmt.Println(books)   
+
+        // ----------------------------------------------
+        // Fields: id, title, description, books, user_id
+        // ----------------------------------------------
+        stmt, err := db.Prepare("INSERT INTO `collection` (title, description, books, cover, user_id) VALUES (?, ?, ?, ?, ?)")
+        CheckError(err)
+
+        res, err := stmt.Exec(pc.Title, pc.Description, books, cover, userId)
+        CheckError(err)
+
+        id, err := res.LastInsertId()
+        CheckError(err)
+
+        fmt.Println(id)
+
+        db.Close()
+
+        c.String(200, strconv.Itoa(int(id)))
+    }
+    c.Redirect(302, "/signin")
 }

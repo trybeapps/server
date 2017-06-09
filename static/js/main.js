@@ -249,6 +249,35 @@ $(function() {
 		}
 	})
 
+	$('.add-collection-container').submit(function(e) {
+		e.preventDefault()
+		var title = $(this).children('.title').val()
+		var description = $(this).children('.description').val()
+		var id = []
+		
+		$('.add-collection-container .add-books .ab-item').each(function() {
+			var $checkBox = $(this).children('input[type="checkbox"]')
+			if ($checkBox.is(':checked')) {
+				id.push(parseInt($checkBox.val()))
+			}
+		})
+		data = {
+			'title': title,
+			'description': description,
+			'id': id
+		}
+
+		$.ajax({
+			url: '/post-new-collection',
+			type: 'POST',
+			data: JSON.stringify(data),
+			contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                window.location.href = "/collection/" + data
+            }
+		})
+	})
+
 	$(document).click(function(e) {
 		if ( $(e.target).closest('.search-dropdown').length == 0 && $(e.target).closest('.search-box').length == 0 ) {
 			$('.search-dropdown').hide()
