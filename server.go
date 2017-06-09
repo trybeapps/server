@@ -18,6 +18,7 @@ import (
     "bytes"
     "strings"
     "sync"
+    "log"
 
     "github.com/gin-gonic/gin"
     "github.com/gin-contrib/sessions"
@@ -174,7 +175,7 @@ func main() {
 
 func CheckError(err error) {
     if err != nil {
-        panic(err)
+        log.Fatal(err)
     }
 }
 
@@ -1342,36 +1343,48 @@ func GetCollections(c *gin.Context) {
         }
         rows.Close()
 
-        rows, err = db.Query("select title, description, books, cover from collection where user_id = ?", userId)
+        rows, err = db.Query("select id, title, description, books, cover from collection where user_id = ?", userId)
         CheckError(err)
 
         cbks := []CBKS{}
         for rows.Next() {
             var (
+                id int64
                 title string
                 description string
                 books string
-                cover string
+                cover sql.NullString
             )
-            err := rows.Scan(&title, &description, &books, &cover)
+            err := rows.Scan(&id, &title, &description, &books, &cover)
             CheckError(err)
-
+            
+            var c string
+            if (cover.Valid) {
+                c = cover.String
+            } else {
+                c = ""
+            }
+            
             cbks = append(cbks, CBKS{
+                Id: id,
                 Title: title,
                 Description: description,
                 Books: books,
-                Cover: cover,
+                Cover: c,
             })
         }
         fmt.Println(cbks)
 
         db.Close()
-        c.HTML(302, "collections.html", "")
+        c.HTML(302, "collections.html", gin.H{
+            "cbks": cbks,
+        })
     }
     c.Redirect(302, "/signin")
 }
 
 type CBKS struct {
+    Id int64
     Title string
     Description string
     Books string
