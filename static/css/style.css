@@ -701,6 +701,73 @@ footer {
   margin-top: 10px;
 }
 
+.add-collection-container {
+  width: 685px;
+  margin: 50px auto;
+  padding: 0 30px;
+  min-height: 700px;
+}
+
+.add-collection-container label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.add-collection-container input[type="text"], .add-collection-container textarea {
+  display: block;
+  width: 625px;
+  height: 34px;
+  font-size: 16px;
+  border: 1px solid #B1B1B1;
+  padding: 0 10px;
+  outline: none;
+  margin-bottom: 20px;
+}
+
+.add-collection-container textarea {
+  height: 120px;
+  padding: 10px;
+  resize: vertical;
+}
+
+.add-collection-container .add-books {
+  width: 625px;
+  min-height: 200px;
+  max-height: 500px;
+  border: 1px solid #B1B1B1;
+  background: white;
+  padding: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.add-collection-container .add-books label {
+  margin-bottom: 30px;
+}
+
+.add-collection-container .add-books .ab-item {
+  float: left;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.add-collection-container .add-books .ab-item input[type="checkbox"] {
+  float: left;
+}
+
+.add-collection-container .add-books .ab-item img {
+  float: left;
+  margin-left: 10px;
+}
+
+.add-collection-container input[type="submit"] {
+  display: block;
+  margin: 20px auto;
+}
+
 @media screen
   and (max-width: 1440px) { 
   	
