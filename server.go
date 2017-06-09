@@ -361,7 +361,7 @@ func GetHomePage(c *gin.Context) {
         var crBooks []int64
         for rows.Next() {
             var crBook int64
-            err = rows.Scan(&crBook,)
+            err = rows.Scan(&crBook)
             CheckError(err)
 
             crBooks = append(crBooks, crBook)
@@ -1545,12 +1545,16 @@ func GetCollection(c *gin.Context) {
         fmt.Println(userId)
         rows.Close()
 
-        rows, err = db.Query("select books from collection where user_id = ?", userId)
+        rows, err = db.Query("select title, description, books from collection where id = ?", id)
         CheckError(err)
 
-        var books string
+        var (
+            title string
+            description string
+            books string
+        )
         if rows.Next() {
-            err := rows.Scan(&books)
+            err := rows.Scan(&title, &description, &books)
             CheckError(err)
         }
         fmt.Println(books)
@@ -1559,25 +1563,81 @@ func GetCollection(c *gin.Context) {
         bookSplit := strings.Split(books, ",")
         fmt.Println(bookSplit)
 
+        b := []BS{}
         for i := len(bookSplit)-1; i >= 0; i-- {
             fmt.Println(bookSplit[i])
-            bookStr, err := strconv.Atoi(bookSplit[i])
-            rows, err := db.Query("select url, cover from book where id = ?", bookStr)
+            bookInt, err := strconv.Atoi(bookSplit[i])
+            CheckError(err)
+            
+            rows, err := db.Query("select title, url, cover from book where id = ?", bookInt)
             CheckError(err)
 
             if rows.Next() {
                 var (
+                    title string
                     url string
                     cover string
                 )
-                err := rows.Scan(&url, &cover)
+                err := rows.Scan(&title, &url, &cover)
                 CheckError(err)
-                fmt.Println(url)
+
+                b = append(b, BS{
+                    Title: title,
+                    URL: url,
+                    Cover: cover,
+                })
             }
+            rows.Close()
+        }
+        fmt.Println(b)
+        db.Close()
+
+        booksList := []BSList{}
+        for i := 0; i < len(b); i += 6 {
+            j := i + 6
+            for j > len(b) {
+                j -= 1
+            }
+            booksList = append(booksList, b[i:j])
         }
 
-        db.Close()
-        c.HTML(302, "collection_item.html", "")
+        booksListMedium := []BSList{}
+        for i := 0; i < len(b); i += 3 {
+            j := i + 3
+            for j > len(b) {
+                j -= 1
+            }
+            booksListMedium = append(booksListMedium, b[i:j])
+        }
+
+        booksListSmall := []BSList{}
+        for i := 0; i < len(b); i += 2 {
+            j := i + 2
+            for j > len(b) {
+                j -= 1
+            }
+            booksListSmall = append(booksListSmall, b[i:j])
+        }
+
+        booksListXtraSmall := b
+
+        // c.HTML(302, "pagination.html", gin.H{
+        //     "pagination": pagination,
+        //     "booksList": booksList,
+        //     "booksListMedium": booksListMedium,
+        //     "booksListSmall": booksListSmall,
+        //     "booksListXtraSmall": booksListXtraSmall,
+        //     "tp": tp,
+        // })
+
+        c.HTML(302, "collection_item.html", gin.H{
+            "title": title,
+            "description": description,
+            "booksList": booksList,
+            "booksListMedium": booksListMedium,
+            "booksListSmall": booksListSmall,
+            "booksListXtraSmall": booksListXtraSmall,
+        })
     }
     c.Redirect(302, "/signin")
 }
