@@ -176,7 +176,7 @@ func main() {
 
 func CheckError(err error) {
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 }
 
@@ -893,31 +893,39 @@ func UploadBook(c *gin.Context) {
 			CheckError(err)
 			fmt.Println(disposition)
 			fmt.Println(params["filename"])
+			contentType, _, _ := mime.ParseMediaType(mimePart.Header.Get("Content-Type"))
 
-			if contentType, _, _ := mime.ParseMediaType(mimePart.Header.Get("Content-Type")); contentType == "application/pdf" {
-				fileName := strings.Split(params["filename"], ".pdf")[0]
+			// Store file in /uploads/ dir
+			var fileName string
+			if contentType == "application/pdf" {
+				fileName = strings.Split(params["filename"], ".pdf")[0]
 				fileName = strings.Join(strings.Split(fileName, " "), "_") + ".pdf"
-				fmt.Println("filename: " + fileName)
+			} else if contentType == "application/epub+zip" {
+				fileName = strings.Split(params["filename"], ".epub")[0]
+				fileName = strings.Join(strings.Split(fileName, " "), "_") + ".epub"
+			}
+			fmt.Println("filename: " + fileName)
 
-				rows, err = db.Query("select id from book where filename = ?", fileName)
+			rows, err = db.Query("select id from book where filename = ?", fileName)
+			CheckError(err)
+
+			var bookId int64
+
+			if rows.Next() {
+				err := rows.Scan(&bookId)
 				CheckError(err)
 
-				var bookId int64
+				bookIdString := fmt.Sprintf("%v", bookId)
+				fmt.Println("Book id: " + bookIdString)
+			}
+			rows.Close()
 
-				if rows.Next() {
-					err := rows.Scan(&bookId)
-					CheckError(err)
+			if bookId != 0 {
+				c.String(200, fileName+" already exists. ")
+				continue
+			}
 
-					bookIdString := fmt.Sprintf("%v", bookId)
-					fmt.Println("Book id: " + bookIdString)
-				}
-				rows.Close()
-
-				if bookId != 0 {
-					c.String(200, fileName+" already exists. ")
-					continue
-				}
-
+			if contentType == "application/pdf" {
 				filePath := "./uploads/" + fileName
 
 				out, err := os.Create(filePath)
@@ -1001,6 +1009,16 @@ func UploadBook(c *gin.Context) {
 				go FeedContent(filePath, userId, id, title, author, url, cover, pagesInt)
 
 				c.String(200, fileName+" uploaded successfully. ")
+			} else if contentType == "application/epub+zip" {
+				filePath := "./uploads/" + fileName
+
+				out, err := os.Create(filePath)
+				CheckError(err)
+
+				_, err = io.Copy(out, mimePart)
+				CheckError(err)
+
+				out.Close()
 			}
 		}
 		db.Close()
