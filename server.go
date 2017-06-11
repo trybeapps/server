@@ -1,708 +1,709 @@
 package main
 
 import (
-    "fmt"
-    "time"
-    "encoding/json"
-    "encoding/base64"
-    "net/http"
-    "database/sql"
-    "runtime"
-    "math/rand"
-    "strconv"
-    "io"
-    "io/ioutil"
-    "mime"
-    "os"
-    "os/exec"
-    "bytes"
-    "strings"
-    "sync"
-    "log"
+	"bytes"
+	"database/sql"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"math/rand"
+	"mime"
+	"net/http"
+	"os"
+	"os/exec"
+	"runtime"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
 
-    "github.com/gin-gonic/gin"
-    "github.com/gin-contrib/sessions"
-    "golang.org/x/crypto/bcrypt"
-    _ "github.com/mattn/go-sqlite3"
-    "gopkg.in/gomail.v2"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
+	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/gomail.v2"
 )
 
 func main() {
-    r := gin.Default()
+	r := gin.Default()
 
-    // Initiate session management (cookie-based)
-    store := sessions.NewCookieStore([]byte("secret"))
-    r.Use(sessions.Sessions("mysession", store))
+	// Initiate session management (cookie-based)
+	store := sessions.NewCookieStore([]byte("secret"))
+	r.Use(sessions.Sessions("mysession", store))
 
-    // Serve static files
-    r.Static("/static", "./static")
-    r.Static("/uploads", "./uploads")
+	// Serve static files
+	r.Static("/static", "./static")
+	r.Static("/uploads", "./uploads")
 
-    // HTML rendering
-    r.LoadHTMLGlob("templates/*")
+	// HTML rendering
+	r.LoadHTMLGlob("templates/*")
 
-    // Open sqlite3 database
-    db, err := sql.Open("sqlite3", "./libreread.db")
-    CheckError(err)
+	// Open sqlite3 database
+	db, err := sql.Open("sqlite3", "./libreread.db")
+	CheckError(err)
 
-    // Create user table
-    // Table: user
-    // -------------------------------------------------
-    // Fields: id, name, email, password_hash, confirmed
-    // -------------------------------------------------
-    stmt, err := db.Prepare("CREATE TABLE IF NOT EXISTS `user` " +
-        "(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` VARCHAR(255) NOT NULL," +
-        " `email` VARCHAR(255) UNIQUE NOT NULL, `password_hash` VARCHAR(255) NOT NULL," +
-        " `confirmed` INTEGER DEFAULT 0)")
-    CheckError(err)
-    
-    _, err = stmt.Exec()
-    CheckError(err)
+	// Create user table
+	// Table: user
+	// -------------------------------------------------
+	// Fields: id, name, email, password_hash, confirmed
+	// -------------------------------------------------
+	stmt, err := db.Prepare("CREATE TABLE IF NOT EXISTS `user` " +
+		"(`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` VARCHAR(255) NOT NULL," +
+		" `email` VARCHAR(255) UNIQUE NOT NULL, `password_hash` VARCHAR(255) NOT NULL," +
+		" `confirmed` INTEGER DEFAULT 0)")
+	CheckError(err)
 
-    // Create confirm table
-    // Table: confirm
-    // -----------------------------------------------------------------------------------------------------------
-    // Fields: id, token, date_generated, date_expires, date_used, used, user_id (foreign key referencing user id)
-    // -----------------------------------------------------------------------------------------------------------
-    stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `confirm` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
-        " `token` VARCHAR(255) NOT NULL, `date_generated` VARCHAR(255) NOT NULL," +
-        " `date_expires` VARCHAR(255) NOT NULL, `date_used` VARCHAR(255), " +
-        " `used` INTEGER DEFAULT 0, `user_id` INTEGER NOT NULL)")
-    CheckError(err)
+	_, err = stmt.Exec()
+	CheckError(err)
 
-    _, err = stmt.Exec()
-    CheckError(err)
+	// Create confirm table
+	// Table: confirm
+	// -----------------------------------------------------------------------------------------------------------
+	// Fields: id, token, date_generated, date_expires, date_used, used, user_id (foreign key referencing user id)
+	// -----------------------------------------------------------------------------------------------------------
+	stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `confirm` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
+		" `token` VARCHAR(255) NOT NULL, `date_generated` VARCHAR(255) NOT NULL," +
+		" `date_expires` VARCHAR(255) NOT NULL, `date_used` VARCHAR(255), " +
+		" `used` INTEGER DEFAULT 0, `user_id` INTEGER NOT NULL)")
+	CheckError(err)
 
-    // Create book table
-    // Table: book
-    // ------------------------------------------------------------------------------------------
-    // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
-    // ------------------------------------------------------------------------------------------
-    stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `book` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
-        " `title` VARCHAR(255) NOT NULL, `filename` VARCHAR(255) NOT NULL," +
-        " `author` VARCHAR(255) NOT NULL, `url` VARCHAR(255) NOT NULL," +
-        " `cover` VARCHAR(255) NOT NULL, `pages` INTEGER NOT NULL, `current_page` INTEGER DEFAULT 0," +
-        " `uploaded_on` VARCHAR(255) NOT NULL, `user_id` INTEGER NOT NULL)")
-    CheckError(err)
+	_, err = stmt.Exec()
+	CheckError(err)
 
-    _, err = stmt.Exec()
-    CheckError(err)
+	// Create book table
+	// Table: book
+	// ------------------------------------------------------------------------------------------
+	// Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
+	// ------------------------------------------------------------------------------------------
+	stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `book` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
+		" `title` VARCHAR(255) NOT NULL, `filename` VARCHAR(255) NOT NULL," +
+		" `author` VARCHAR(255) NOT NULL, `url` VARCHAR(255) NOT NULL," +
+		" `cover` VARCHAR(255) NOT NULL, `pages` INTEGER NOT NULL, `current_page` INTEGER DEFAULT 0," +
+		" `uploaded_on` VARCHAR(255) NOT NULL, `user_id` INTEGER NOT NULL)")
+	CheckError(err)
 
-    // Create currently_reading table
-    // Table: currently_reading
-    // -------------------
-    // Fields: id, user_id
-    // -------------------
-    stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `currently_reading` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
-        " `book_id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `date_read` VARCHAR(255) NOT NULL)")
-    CheckError(err)
+	_, err = stmt.Exec()
+	CheckError(err)
 
-    _, err = stmt.Exec()
-    CheckError(err)
+	// Create currently_reading table
+	// Table: currently_reading
+	// -------------------
+	// Fields: id, user_id
+	// -------------------
+	stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `currently_reading` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
+		" `book_id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `date_read` VARCHAR(255) NOT NULL)")
+	CheckError(err)
 
-    // Create collection table
-    // Table: collection
-    // ----------------------------------------------
-    // Fields: id, title, description, books, user_id
-    // ----------------------------------------------
-    stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `collection` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
-        " `title` VARCHAR(255) NOT NULL, `description` VARCHAR(1200) NOT NULL, `books` VARCHAR(1200) NOT NULL," +
-        " `cover` VARCHAR(255) NULL, `user_id` INTEGER NOT NULL)")
-    CheckError(err)
+	_, err = stmt.Exec()
+	CheckError(err)
 
-    _, err = stmt.Exec()
-    CheckError(err)
+	// Create collection table
+	// Table: collection
+	// ----------------------------------------------
+	// Fields: id, title, description, books, user_id
+	// ----------------------------------------------
+	stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `collection` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
+		" `title` VARCHAR(255) NOT NULL, `description` VARCHAR(1200) NOT NULL, `books` VARCHAR(1200) NOT NULL," +
+		" `cover` VARCHAR(255) NULL, `user_id` INTEGER NOT NULL)")
+	CheckError(err)
 
-    // Close sqlite3 database
-    db.Close()
+	_, err = stmt.Exec()
+	CheckError(err)
 
-    // Init Elasticsearch attachment
-    attachment := &AS{
-        Description: "Process documents",
-        Processors: []ASP{
-            ASP{
-                Attachment: ASPA{
-                    Field: "thedata",
-                    IndexedChars: -1,
-                },
-            },
-        },
-    }
+	// Close sqlite3 database
+	db.Close()
 
-    fmt.Println(attachment)
+	// Init Elasticsearch attachment
+	attachment := &AS{
+		Description: "Process documents",
+		Processors: []ASP{
+			ASP{
+				Attachment: ASPA{
+					Field:        "thedata",
+					IndexedChars: -1,
+				},
+			},
+		},
+	}
 
-    b, err :=  json.Marshal(attachment)
-    CheckError(err)
-    fmt.Println(b)
+	fmt.Println(attachment)
 
-    PutJSON("http://localhost:9200/_ingest/pipeline/attachment", b)
+	b, err := json.Marshal(attachment)
+	CheckError(err)
+	fmt.Println(b)
 
-    // Init Elasticsearch index
-    index := &IS{
-        ISS{
-            NumberOfShards: 4,
-            NumberOfReplicas: 0,
-        },
-    }
+	PutJSON("http://localhost:9200/_ingest/pipeline/attachment", b)
 
-    b, err =  json.Marshal(index)
-    CheckError(err)
-    fmt.Println(b)
+	// Init Elasticsearch index
+	index := &IS{
+		ISS{
+			NumberOfShards:   4,
+			NumberOfReplicas: 0,
+		},
+	}
 
-    PutJSON("http://localhost:9200/lr_index", b)
+	b, err = json.Marshal(index)
+	CheckError(err)
+	fmt.Println(b)
 
-    // Router
-    r.GET("/", GetHomePage)
-    r.GET("/signin", GetSignIn)
-    r.POST("/signin", PostSignIn)
-    r.GET("/signup", GetSignUp)
-    r.POST("/signup", PostSignUp)
-    r.GET("/confirm-email", ConfirmEmail)
-    r.GET("/new-token", SendNewToken)
-    r.GET("/signout", GetSignOut)
-    r.POST("/upload", UploadBook)
-    r.GET("/book/:bookname", SendBook)
-    r.GET("/cover/:covername", SendBookCover)
-    r.GET("/books/:pagination", GetPagination)
-    r.GET("/autocomplete", GetAutocomplete)
-    r.GET("/collections", GetCollections)
-    r.GET("/add-collection", GetAddCollection)
-    r.POST("/post-new-collection", PostNewCollection)
-    r.GET("/collection/:id", GetCollection)
+	PutJSON("http://localhost:9200/lr_index", b)
 
-    // Listen and serve on 0.0.0.0:8080
-    r.Run(":8080")
+	// Router
+	r.GET("/", GetHomePage)
+	r.GET("/signin", GetSignIn)
+	r.POST("/signin", PostSignIn)
+	r.GET("/signup", GetSignUp)
+	r.POST("/signup", PostSignUp)
+	r.GET("/confirm-email", ConfirmEmail)
+	r.GET("/new-token", SendNewToken)
+	r.GET("/signout", GetSignOut)
+	r.POST("/upload", UploadBook)
+	r.GET("/book/:bookname", SendBook)
+	r.GET("/cover/:covername", SendBookCover)
+	r.GET("/books/:pagination", GetPagination)
+	r.GET("/autocomplete", GetAutocomplete)
+	r.GET("/collections", GetCollections)
+	r.GET("/add-collection", GetAddCollection)
+	r.POST("/post-new-collection", PostNewCollection)
+	r.GET("/collection/:id", GetCollection)
+
+	// Listen and serve on 0.0.0.0:8080
+	r.Run(":8080")
 }
 
 func CheckError(err error) {
-    if err != nil {
-        log.Fatal(err)
-    }
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 var myClient = &http.Client{Timeout: 10 * time.Second}
+
 func GetJSON(url string, target interface{}) error {
-    r, _ := myClient.Get(url)
-    if r != nil {
-        defer r.Body.Close()
-        return json.NewDecoder(r.Body).Decode(target)
-    }
-    return nil
+	r, _ := myClient.Get(url)
+	if r != nil {
+		defer r.Body.Close()
+		return json.NewDecoder(r.Body).Decode(target)
+	}
+	return nil
 }
 
 func PutJSON(url string, message []byte) {
-    fmt.Println(url)
-    req, err := http.NewRequest("PUT", url, bytes.NewBuffer(message))
-    CheckError(err)
-    res, err := myClient.Do(req)
-    CheckError(err)
-    content, err := ioutil.ReadAll(res.Body)
-    CheckError(err)
-    fmt.Println(string(content))
+	fmt.Println(url)
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(message))
+	CheckError(err)
+	res, err := myClient.Do(req)
+	CheckError(err)
+	content, err := ioutil.ReadAll(res.Body)
+	CheckError(err)
+	fmt.Println(string(content))
 }
 
 type AS struct {
-    Description string `json:"description"`
-    Processors []ASP `json:"processors"`
+	Description string `json:"description"`
+	Processors  []ASP  `json:"processors"`
 }
 
 type ASP struct {
-    Attachment ASPA `json:"attachment"`
+	Attachment ASPA `json:"attachment"`
 }
 
 type ASPA struct {
-    Field string `json:"field"`
-    IndexedChars int64 `json:"indexed_chars"`
+	Field        string `json:"field"`
+	IndexedChars int64  `json:"indexed_chars"`
 }
 
 type IS struct {
-    Settings ISS `json:"settings"`
+	Settings ISS `json:"settings"`
 }
 
 type ISS struct {
-    NumberOfShards int64 `json:"number_of_shards"`
-    NumberOfReplicas int64 `json:"number_of_replicas"`
+	NumberOfShards   int64 `json:"number_of_shards"`
+	NumberOfReplicas int64 `json:"number_of_replicas"`
 }
 
 func SendBook(c *gin.Context) {
-    session := sessions.Default(c)
-    if session.Get("email") != nil {
-        fmt.Println(session.Get("email"))
+	session := sessions.Default(c)
+	if session.Get("email") != nil {
+		fmt.Println(session.Get("email"))
 
-        name := c.Param("bookname")
-        fmt.Println(name)
+		name := c.Param("bookname")
+		fmt.Println(name)
 
-        db, err := sql.Open("sqlite3", "./libreread.db")
-        CheckError(err)
+		db, err := sql.Open("sqlite3", "./libreread.db")
+		CheckError(err)
 
-        rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
-        CheckError(err)
+		rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
+		CheckError(err)
 
-        var userId int64
-        if rows.Next() {
-            err := rows.Scan(&userId)
-            CheckError(err)
-        }
-        fmt.Println(userId)
-        rows.Close()
+		var userId int64
+		if rows.Next() {
+			err := rows.Scan(&userId)
+			CheckError(err)
+		}
+		fmt.Println(userId)
+		rows.Close()
 
-        rows, err = db.Query("SELECT `id` FROM `book` WHERE `filename` = ?", name)
-        CheckError(err)
+		rows, err = db.Query("SELECT `id` FROM `book` WHERE `filename` = ?", name)
+		CheckError(err)
 
-        var bookId int64
-        if rows.Next() {
-            err := rows.Scan(&bookId)
-            CheckError(err)
-        }
-        fmt.Println(bookId)
-        rows.Close()
+		var bookId int64
+		if rows.Next() {
+			err := rows.Scan(&bookId)
+			CheckError(err)
+		}
+		fmt.Println(bookId)
+		rows.Close()
 
-        t := time.Now()
-    
-        dateRead := t.Format("20060102150405")
-        fmt.Println("Date read: " + dateRead)
+		t := time.Now()
 
-        rows, err = db.Query("SELECT `id` FROM `currently_reading` WHERE `book_id` = ?", bookId)
-        CheckError(err)
+		dateRead := t.Format("20060102150405")
+		fmt.Println("Date read: " + dateRead)
 
-        var currentlyReadingId int64
-        if rows.Next() {
-            err := rows.Scan(&currentlyReadingId)
-            CheckError(err)
-        }
-        fmt.Println(currentlyReadingId)
-        rows.Close()
+		rows, err = db.Query("SELECT `id` FROM `currently_reading` WHERE `book_id` = ?", bookId)
+		CheckError(err)
 
-        if currentlyReadingId == 0 {
-            stmt, err := db.Prepare("INSERT INTO `currently_reading` (book_id, user_id, date_read) VALUES (?, ?, ?)")
-            CheckError(err)
+		var currentlyReadingId int64
+		if rows.Next() {
+			err := rows.Scan(&currentlyReadingId)
+			CheckError(err)
+		}
+		fmt.Println(currentlyReadingId)
+		rows.Close()
 
-            res, err := stmt.Exec(bookId, userId, dateRead)
-            CheckError(err)
+		if currentlyReadingId == 0 {
+			stmt, err := db.Prepare("INSERT INTO `currently_reading` (book_id, user_id, date_read) VALUES (?, ?, ?)")
+			CheckError(err)
 
-            id, err := res.LastInsertId()
-            CheckError(err)
+			res, err := stmt.Exec(bookId, userId, dateRead)
+			CheckError(err)
 
-            fmt.Println(id)
-        } else {
-            stmt, err := db.Prepare("UPDATE `currently_reading` SET date_read=? WHERE id=?")
-            CheckError(err)
+			id, err := res.LastInsertId()
+			CheckError(err)
 
-            _, err = stmt.Exec(dateRead, currentlyReadingId)
-            CheckError(err)
-        }
-        
-        c.HTML(200, "viewer.html", "")
-    }
-    c.Redirect(302, "/signin")
+			fmt.Println(id)
+		} else {
+			stmt, err := db.Prepare("UPDATE `currently_reading` SET date_read=? WHERE id=?")
+			CheckError(err)
+
+			_, err = stmt.Exec(dateRead, currentlyReadingId)
+			CheckError(err)
+		}
+
+		c.HTML(200, "viewer.html", "")
+	}
+	c.Redirect(302, "/signin")
 }
 
 func SendBookCover(c *gin.Context) {
-    name := c.Param("covername")
-    filePath := "./uploads/img/" + name
+	name := c.Param("covername")
+	filePath := "./uploads/img/" + name
 
-    c.File(filePath)
+	c.File(filePath)
 }
 
 type QS struct {
-    Author string
-    AuthorURL string
-    FromBook string
-    FromBookURL string
-    Image string
-    Quote string
+	Author      string
+	AuthorURL   string
+	FromBook    string
+	FromBookURL string
+	Image       string
+	Quote       string
 }
 
 type BS struct {
-    Title string
-    URL string
-    Cover string
+	Title string
+	URL   string
+	Cover string
 }
 
 type BSList []BS
 
 func GetHomePage(c *gin.Context) {
-    // Get session from cookie. Check if email exists
-    // show Home page else redirect to signin page.
-    session := sessions.Default(c)
-    if session.Get("email") != nil {
-        fmt.Println(session.Get("email"))
+	// Get session from cookie. Check if email exists
+	// show Home page else redirect to signin page.
+	session := sessions.Default(c)
+	if session.Get("email") != nil {
+		fmt.Println(session.Get("email"))
 
-        q := new(QS)
-        GetJSON("http://localhost:3000/quote-of-the-day", q)
+		q := new(QS)
+		GetJSON("http://localhost:3000/quote-of-the-day", q)
 
-        if q.Quote == "" {
-            q.Quote = "So many things are possible just as long as you don't know they're impossible."
-            q.Author = "Norton Juster"
-            q.AuthorURL = "https://www.goodreads.com/author/show/214.Norton_Juster"
-            q.Image = "https://images.gr-assets.com/authors/1201117378p5/214.jpg"
-            q.FromBook = "The Phantom Tollbooth"
-            q.FromBookURL = "https://www.goodreads.com/work/1782584"
-        }
+		if q.Quote == "" {
+			q.Quote = "So many things are possible just as long as you don't know they're impossible."
+			q.Author = "Norton Juster"
+			q.AuthorURL = "https://www.goodreads.com/author/show/214.Norton_Juster"
+			q.Image = "https://images.gr-assets.com/authors/1201117378p5/214.jpg"
+			q.FromBook = "The Phantom Tollbooth"
+			q.FromBookURL = "https://www.goodreads.com/work/1782584"
+		}
 
-        db, err := sql.Open("sqlite3", "./libreread.db")
-        CheckError(err)
+		db, err := sql.Open("sqlite3", "./libreread.db")
+		CheckError(err)
 
-        rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
-        CheckError(err)
+		rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
+		CheckError(err)
 
-        var id int64
-        if rows.Next() {
-            err := rows.Scan(&id)
-            CheckError(err)
-        }
-        fmt.Println(id)
-        rows.Close()
+		var id int64
+		if rows.Next() {
+			err := rows.Scan(&id)
+			CheckError(err)
+		}
+		fmt.Println(id)
+		rows.Close()
 
-        // Get currently reading books.
-        rows, err = db.Query("SELECT `book_id` FROM `currently_reading` WHERE `user_id` = ? ORDER BY `date_read` DESC LIMIT ?, ?", id, 0, 12)
-        CheckError(err)
+		// Get currently reading books.
+		rows, err = db.Query("SELECT `book_id` FROM `currently_reading` WHERE `user_id` = ? ORDER BY `date_read` DESC LIMIT ?, ?", id, 0, 12)
+		CheckError(err)
 
-        var crBooks []int64
-        for rows.Next() {
-            var crBook int64
-            err = rows.Scan(&crBook)
-            CheckError(err)
+		var crBooks []int64
+		for rows.Next() {
+			var crBook int64
+			err = rows.Scan(&crBook)
+			CheckError(err)
 
-            crBooks = append(crBooks, crBook)
-        }
-        fmt.Println(crBooks)
-        rows.Close()
+			crBooks = append(crBooks, crBook)
+		}
+		fmt.Println(crBooks)
+		rows.Close()
 
-        // Get book title, url, cover for currently reading books.
-        crb := []BS{}
-        for _, num := range crBooks {
-            rows, err = db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `id` = ?", num)
-            CheckError(err)
-            
-            var (
-                title string
-                url string
-                cover string
-            )
-            if rows.Next() {
-                err = rows.Scan(
-                    &title,
-                    &url,
-                    &cover,
-                )
-                CheckError(err)
+		// Get book title, url, cover for currently reading books.
+		crb := []BS{}
+		for _, num := range crBooks {
+			rows, err = db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `id` = ?", num)
+			CheckError(err)
 
-                crb = append(crb, BS{ 
-                    title, 
-                    url, 
-                    cover,
-                })
-            }
-            rows.Close()
-        }
-        fmt.Println(crb)
+			var (
+				title string
+				url   string
+				cover string
+			)
+			if rows.Next() {
+				err = rows.Scan(
+					&title,
+					&url,
+					&cover,
+				)
+				CheckError(err)
 
-        // Check total number of rows in book table
-        rows, err = db.Query("SELECT COUNT(*) AS count FROM `book` WHERE `user_id` = ?", id)
-        CheckError(err)
+				crb = append(crb, BS{
+					title,
+					url,
+					cover,
+				})
+			}
+			rows.Close()
+		}
+		fmt.Println(crb)
 
-        var count int64
-        for rows.Next() {
-            err = rows.Scan(&count,)
-            CheckError(err)
-        }
-        fmt.Println(count)
+		// Check total number of rows in book table
+		rows, err = db.Query("SELECT COUNT(*) AS count FROM `book` WHERE `user_id` = ?", id)
+		CheckError(err)
 
-        var totalPages float64 = float64(float64(count) / 18.0)
-        totalPagesDecimal := fmt.Sprintf("%.1f", totalPages)
+		var count int64
+		for rows.Next() {
+			err = rows.Scan(&count)
+			CheckError(err)
+		}
+		fmt.Println(count)
 
-        var tp int64
-        if strings.Split(totalPagesDecimal, ".")[1] == "0" {
-            tp = int64(totalPages)
-        } else {
-            tp = int64(totalPages) + 1
-        }
-        fmt.Println(tp)
+		var totalPages float64 = float64(float64(count) / 18.0)
+		totalPagesDecimal := fmt.Sprintf("%.1f", totalPages)
 
-        // ------------------------------------------------------------------------------------------
-        // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
-        // ------------------------------------------------------------------------------------------
-        rows, err = db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ?, ?", id, 0, 18)
-        CheckError(err)
+		var tp int64
+		if strings.Split(totalPagesDecimal, ".")[1] == "0" {
+			tp = int64(totalPages)
+		} else {
+			tp = int64(totalPages) + 1
+		}
+		fmt.Println(tp)
 
-        b := []BS{}
-        
-        var (
-            title string
-            url string
-            cover string
-        )
-        for rows.Next() {
-            err = rows.Scan(
-                &title,
-                &url,
-                &cover,
-            )
-            CheckError(err)
+		// ------------------------------------------------------------------------------------------
+		// Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
+		// ------------------------------------------------------------------------------------------
+		rows, err = db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ?, ?", id, 0, 18)
+		CheckError(err)
 
-            b = append(b, BS{ 
-                title, 
-                url, 
-                cover,
-            })
-        }
+		b := []BS{}
 
-        rows.Close()
-        db.Close()
+		var (
+			title string
+			url   string
+			cover string
+		)
+		for rows.Next() {
+			err = rows.Scan(
+				&title,
+				&url,
+				&cover,
+			)
+			CheckError(err)
 
-        booksList := []BSList{}
-        for i := 0; i < len(b); i += 6 {
-            j := i + 6
-            for j > len(b) {
-                j -= 1
-            }
-            booksList = append(booksList, b[i:j])
-        }
+			b = append(b, BS{
+				title,
+				url,
+				cover,
+			})
+		}
 
-        booksListMedium := []BSList{}
-        for i := 0; i < len(b); i += 3 {
-            j := i + 3
-            for j > len(b) {
-                j -= 1
-            }
-            booksListMedium = append(booksListMedium, b[i:j])
-        }
+		rows.Close()
+		db.Close()
 
-        booksListSmall := []BSList{}
-        for i := 0; i < len(b); i += 2 {
-            j := i + 2
-            for j > len(b) {
-                j -= 1
-            }
-            booksListSmall = append(booksListSmall, b[i:j])
-        }
+		booksList := []BSList{}
+		for i := 0; i < len(b); i += 6 {
+			j := i + 6
+			for j > len(b) {
+				j -= 1
+			}
+			booksList = append(booksList, b[i:j])
+		}
 
-        booksListXtraSmall := b
+		booksListMedium := []BSList{}
+		for i := 0; i < len(b); i += 3 {
+			j := i + 3
+			for j > len(b) {
+				j -= 1
+			}
+			booksListMedium = append(booksListMedium, b[i:j])
+		}
 
-        c.HTML(302, "index.html", gin.H{
-            "q": q,
-            "crb": crb,
-            "booksList": booksList,
-            "booksListMedium": booksListMedium,
-            "booksListSmall": booksListSmall,
-            "booksListXtraSmall": booksListXtraSmall,
-            "tp": tp,
-        })
-    }
-    c.Redirect(302, "/signin")
+		booksListSmall := []BSList{}
+		for i := 0; i < len(b); i += 2 {
+			j := i + 2
+			for j > len(b) {
+				j -= 1
+			}
+			booksListSmall = append(booksListSmall, b[i:j])
+		}
+
+		booksListXtraSmall := b
+
+		c.HTML(302, "index.html", gin.H{
+			"q":                  q,
+			"crb":                crb,
+			"booksList":          booksList,
+			"booksListMedium":    booksListMedium,
+			"booksListSmall":     booksListSmall,
+			"booksListXtraSmall": booksListXtraSmall,
+			"tp":                 tp,
+		})
+	}
+	c.Redirect(302, "/signin")
 }
 
 func GetPagination(c *gin.Context) {
-    session := sessions.Default(c)
-    if session.Get("email") != nil {
-        fmt.Println(session.Get("email"))
-        pagination, err := strconv.Atoi(c.Param("pagination"))
-        CheckError(err)
+	session := sessions.Default(c)
+	if session.Get("email") != nil {
+		fmt.Println(session.Get("email"))
+		pagination, err := strconv.Atoi(c.Param("pagination"))
+		CheckError(err)
 
-        db, err := sql.Open("sqlite3", "./libreread.db")
-        CheckError(err)
+		db, err := sql.Open("sqlite3", "./libreread.db")
+		CheckError(err)
 
-        rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
-        CheckError(err)
+		rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
+		CheckError(err)
 
-        var id int64
-        if rows.Next() {
-            err := rows.Scan(&id)
-            CheckError(err)
-        }
-        fmt.Println(id)
-        rows.Close()
+		var id int64
+		if rows.Next() {
+			err := rows.Scan(&id)
+			CheckError(err)
+		}
+		fmt.Println(id)
+		rows.Close()
 
-        // Check total number of rows in book table
-        rows, err = db.Query("SELECT COUNT(*) AS count FROM `book`")
-        CheckError(err)
+		// Check total number of rows in book table
+		rows, err = db.Query("SELECT COUNT(*) AS count FROM `book`")
+		CheckError(err)
 
-        var count int64
-        for rows.Next() {
-            err = rows.Scan(&count,)
-            CheckError(err)
-        }
-        fmt.Println(count)
+		var count int64
+		for rows.Next() {
+			err = rows.Scan(&count)
+			CheckError(err)
+		}
+		fmt.Println(count)
 
-        var totalPages float64 = float64(float64(count) / 18.0)
-        totalPagesDecimal := fmt.Sprintf("%.1f", totalPages)
+		var totalPages float64 = float64(float64(count) / 18.0)
+		totalPagesDecimal := fmt.Sprintf("%.1f", totalPages)
 
-        var tp int64
-        if strings.Split(totalPagesDecimal, ".")[1] == "0" {
-            tp = int64(totalPages)
-        } else {
-            tp = int64(totalPages) + 1
-        }
-        fmt.Println(tp)
+		var tp int64
+		if strings.Split(totalPagesDecimal, ".")[1] == "0" {
+			tp = int64(totalPages)
+		} else {
+			tp = int64(totalPages) + 1
+		}
+		fmt.Println(tp)
 
-        // ------------------------------------------------------------------------------------------
-        // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
-        // ------------------------------------------------------------------------------------------
-        rows, err = db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ?, ?", id, ( pagination - 1 ) * 18, 18)
-        CheckError(err)
+		// ------------------------------------------------------------------------------------------
+		// Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
+		// ------------------------------------------------------------------------------------------
+		rows, err = db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ?, ?", id, (pagination-1)*18, 18)
+		CheckError(err)
 
-        b := []BS{}
-        
-        var (
-            title string
-            url string
-            cover string
-        )
-        for rows.Next() {
-            err = rows.Scan(
-                &title,
-                &url,
-                &cover,
-            )
-            CheckError(err)
+		b := []BS{}
 
-            b = append(b, BS{ 
-                title, 
-                url, 
-                cover,
-            })
-        }
-        rows.Close()
-        db.Close()
+		var (
+			title string
+			url   string
+			cover string
+		)
+		for rows.Next() {
+			err = rows.Scan(
+				&title,
+				&url,
+				&cover,
+			)
+			CheckError(err)
 
-        booksList := []BSList{}
-        for i := 0; i < len(b); i += 6 {
-            j := i + 6
-            for j > len(b) {
-                j -= 1
-            }
-            booksList = append(booksList, b[i:j])
-        }
+			b = append(b, BS{
+				title,
+				url,
+				cover,
+			})
+		}
+		rows.Close()
+		db.Close()
 
-        booksListMedium := []BSList{}
-        for i := 0; i < len(b); i += 3 {
-            j := i + 3
-            for j > len(b) {
-                j -= 1
-            }
-            booksListMedium = append(booksListMedium, b[i:j])
-        }
+		booksList := []BSList{}
+		for i := 0; i < len(b); i += 6 {
+			j := i + 6
+			for j > len(b) {
+				j -= 1
+			}
+			booksList = append(booksList, b[i:j])
+		}
 
-        booksListSmall := []BSList{}
-        for i := 0; i < len(b); i += 2 {
-            j := i + 2
-            for j > len(b) {
-                j -= 1
-            }
-            booksListSmall = append(booksListSmall, b[i:j])
-        }
+		booksListMedium := []BSList{}
+		for i := 0; i < len(b); i += 3 {
+			j := i + 3
+			for j > len(b) {
+				j -= 1
+			}
+			booksListMedium = append(booksListMedium, b[i:j])
+		}
 
-        booksListXtraSmall := b
+		booksListSmall := []BSList{}
+		for i := 0; i < len(b); i += 2 {
+			j := i + 2
+			for j > len(b) {
+				j -= 1
+			}
+			booksListSmall = append(booksListSmall, b[i:j])
+		}
 
-        c.HTML(302, "pagination.html", gin.H{
-            "pagination": pagination,
-            "booksList": booksList,
-            "booksListMedium": booksListMedium,
-            "booksListSmall": booksListSmall,
-            "booksListXtraSmall": booksListXtraSmall,
-            "tp": tp,
-        })
-    }
-    c.Redirect(302, "/signin")
+		booksListXtraSmall := b
+
+		c.HTML(302, "pagination.html", gin.H{
+			"pagination":         pagination,
+			"booksList":          booksList,
+			"booksListMedium":    booksListMedium,
+			"booksListSmall":     booksListSmall,
+			"booksListXtraSmall": booksListXtraSmall,
+			"tp":                 tp,
+		})
+	}
+	c.Redirect(302, "/signin")
 }
 
 func GetSignIn(c *gin.Context) {
-    // Get session from cookie. Check if email exists
-    // redirect to Home page else show signin page.
-    session := sessions.Default(c)
-    if session.Get("email") != nil {
-        fmt.Println(session.Get("email"))
-        c.Redirect(302, "/")
-    }
-    c.HTML(302, "signin.html", "")
+	// Get session from cookie. Check if email exists
+	// redirect to Home page else show signin page.
+	session := sessions.Default(c)
+	if session.Get("email") != nil {
+		fmt.Println(session.Get("email"))
+		c.Redirect(302, "/")
+	}
+	c.HTML(302, "signin.html", "")
 }
 
 func GetSignOut(c *gin.Context) {
-    session := sessions.Default(c)
-    session.Delete("email")
-    session.Save()
+	session := sessions.Default(c)
+	session.Delete("email")
+	session.Save()
 
-    c.Redirect(302, "/")
+	c.Redirect(302, "/")
 }
 
 func PostSignIn(c *gin.Context) {
-    email := c.PostForm("email")
-    password := []byte(c.PostForm("password"))
+	email := c.PostForm("email")
+	password := []byte(c.PostForm("password"))
 
-    fmt.Println(email)
-    fmt.Println(password)
+	fmt.Println(email)
+	fmt.Println(password)
 
-    db, err := sql.Open("sqlite3", "./libreread.db")
-    CheckError(err)
+	db, err := sql.Open("sqlite3", "./libreread.db")
+	CheckError(err)
 
-    rows, err := db.Query("select password_hash from user where email = ?", email)
-    CheckError(err)
+	rows, err := db.Query("select password_hash from user where email = ?", email)
+	CheckError(err)
 
-    db.Close()
+	db.Close()
 
-    var hashedPassword []byte
-    
-    defer rows.Close()
-    if rows.Next() {
-        err := rows.Scan(&hashedPassword)
-        CheckError(err)
-        fmt.Println(hashedPassword)
-    }
+	var hashedPassword []byte
 
-    // Comparing the password with the hash
-    err = bcrypt.CompareHashAndPassword(hashedPassword, password)
-    fmt.Println(err) // nil means it is a match
+	defer rows.Close()
+	if rows.Next() {
+		err := rows.Scan(&hashedPassword)
+		CheckError(err)
+		fmt.Println(hashedPassword)
+	}
 
-    if err == nil {
-        c.Redirect(302, "/")
+	// Comparing the password with the hash
+	err = bcrypt.CompareHashAndPassword(hashedPassword, password)
+	fmt.Println(err) // nil means it is a match
 
-        // Set cookie based session for signin
-        session := sessions.Default(c)
-        session.Set("email", email)
-        session.Save()
-    } else {
-        c.HTML(302, "signin.html", "")
-    }
+	if err == nil {
+		c.Redirect(302, "/")
+
+		// Set cookie based session for signin
+		session := sessions.Default(c)
+		session.Set("email", email)
+		session.Save()
+	} else {
+		c.HTML(302, "signin.html", "")
+	}
 }
 
 func GetSignUp(c *gin.Context) {
-    c.HTML(302, "signup.html", "")
+	c.HTML(302, "signup.html", "")
 }
 
 func PostSignUp(c *gin.Context) {
-    name := c.PostForm("name")
-    email := c.PostForm("email")
-    password := []byte(c.PostForm("password"))
+	name := c.PostForm("name")
+	email := c.PostForm("email")
+	password := []byte(c.PostForm("password"))
 
-    fmt.Println(name)
-    fmt.Println(email)
-    fmt.Println(password)
+	fmt.Println(name)
+	fmt.Println(email)
+	fmt.Println(password)
 
-    // Hashing the password with the default cost of 10
-    hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
-    CheckError(err)
-    fmt.Println(string(hashedPassword))
+	// Hashing the password with the default cost of 10
+	hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+	CheckError(err)
+	fmt.Println(string(hashedPassword))
 
-    db, err := sql.Open("sqlite3", "./libreread.db")
-    CheckError(err)
+	db, err := sql.Open("sqlite3", "./libreread.db")
+	CheckError(err)
 
-    stmt, err := db.Prepare("INSERT INTO user (name, email, password_hash) VALUES (?, ?, ?)")
-    CheckError(err)
+	stmt, err := db.Prepare("INSERT INTO user (name, email, password_hash) VALUES (?, ?, ?)")
+	CheckError(err)
 
-    res, err := stmt.Exec(name, email, hashedPassword)
-    CheckError(err)
+	res, err := stmt.Exec(name, email, hashedPassword)
+	CheckError(err)
 
-    id, err := res.LastInsertId()
-    CheckError(err)
+	id, err := res.LastInsertId()
+	CheckError(err)
 
-    fmt.Println(id)
+	fmt.Println(id)
 
-    db.Close()
+	db.Close()
 
-    go SendConfirmationEmail(int64(id), name, email)
+	go SendConfirmationEmail(int64(id), name, email)
 
-    c.HTML(302, "confirm_email.html", "")
+	c.HTML(302, "confirm_email.html", "")
 
 }
 
@@ -710,925 +711,924 @@ func PostSignUp(c *gin.Context) {
 var letters = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func randSeq(n int64) string {
-    b := make([]rune, n)
-    for i := range b {
-        b[i] = letters[rand.Intn(len(letters))]
-    }
-    return string(b)
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
 }
 
 func SendConfirmationEmail(id int64, name string, email string) {
 
-    // Set home many CPU cores this function wants to use.
-    runtime.GOMAXPROCS(runtime.NumCPU())
-    fmt.Println(runtime.NumCPU())
+	// Set home many CPU cores this function wants to use.
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	fmt.Println(runtime.NumCPU())
 
-    token := randSeq(40)
-    
-    t := time.Now()
-    
-    dateGenerated := t.Format("20060102150405")
-    fmt.Println("Token Date Generated: " + dateGenerated)
-    
-    dateExpires := t.AddDate(0,1,0).Format("20060102150405")
-    fmt.Println("Token Date Expires: " + dateExpires)
+	token := randSeq(40)
 
-    userId := id
+	t := time.Now()
 
-    db, err := sql.Open("sqlite3", "./libreread.db")
-    CheckError(err)
+	dateGenerated := t.Format("20060102150405")
+	fmt.Println("Token Date Generated: " + dateGenerated)
 
-    stmt, err := db.Prepare("INSERT INTO confirm (token, date_generated, date_expires, user_id) VALUES (?, ?, ?, ?)")
-    CheckError(err)
+	dateExpires := t.AddDate(0, 1, 0).Format("20060102150405")
+	fmt.Println("Token Date Expires: " + dateExpires)
 
-    _, err = stmt.Exec(token, dateGenerated, dateExpires, userId)
-    CheckError(err)
+	userId := id
 
-    db.Close()
+	db, err := sql.Open("sqlite3", "./libreread.db")
+	CheckError(err)
 
-    confirmEmailLink := "http://localhost:8080/confirm-email?token=" + token
+	stmt, err := db.Prepare("INSERT INTO confirm (token, date_generated, date_expires, user_id) VALUES (?, ?, ?, ?)")
+	CheckError(err)
 
-    m := gomail.NewMessage()
-    m.SetHeader("From", "no-reply@libreread.org")
-    m.SetHeader("To", email)
-    // m.SetAddressHeader("Cc", "hello@nirm.al", "Nirmal")
-    m.SetHeader("Subject", "LibreRead Email Confirmation")
-    m.SetBody("text/html", "Hi " + name + 
-        ",<br><br>Please confirm your email by clicking this link<br>" + 
-        confirmEmailLink )
-    // m.Attach("/home/Alex/lolcat.jpg")
+	_, err = stmt.Exec(token, dateGenerated, dateExpires, userId)
+	CheckError(err)
 
-    d := gomail.NewDialer("smtp.zoho.com", 587, "no-reply@libreread.org", "magicmode")
+	db.Close()
 
-    // Send the confirmation email
-    if err := d.DialAndSend(m); err != nil {
-        log.Fatal(err)
-    }
+	confirmEmailLink := "http://localhost:8080/confirm-email?token=" + token
+
+	m := gomail.NewMessage()
+	m.SetHeader("From", "no-reply@libreread.org")
+	m.SetHeader("To", email)
+	// m.SetAddressHeader("Cc", "hello@nirm.al", "Nirmal")
+	m.SetHeader("Subject", "LibreRead Email Confirmation")
+	m.SetBody("text/html", "Hi "+name+
+		",<br><br>Please confirm your email by clicking this link<br>"+
+		confirmEmailLink)
+	// m.Attach("/home/Alex/lolcat.jpg")
+
+	d := gomail.NewDialer("smtp.zoho.com", 587, "no-reply@libreread.org", "magicmode")
+
+	// Send the confirmation email
+	if err := d.DialAndSend(m); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func ConfirmEmail(c *gin.Context) {
-    token := c.Request.URL.Query()["token"][0]
-    fmt.Println(token)
+	token := c.Request.URL.Query()["token"][0]
+	fmt.Println(token)
 
-    db, err := sql.Open("sqlite3", "./libreread.db")
-    CheckError(err)
+	db, err := sql.Open("sqlite3", "./libreread.db")
+	CheckError(err)
 
-    defer db.Close()
+	defer db.Close()
 
-    // Get id from confirm table with the token got from url.
-    rows, err := db.Query("select id, date_expires, user_id from confirm where token = ?", token)
-    CheckError(err)
+	// Get id from confirm table with the token got from url.
+	rows, err := db.Query("select id, date_expires, user_id from confirm where token = ?", token)
+	CheckError(err)
 
-    var (
-        id int64
-        dateExpires string
-        userId int64
-    )
-    
-    if rows.Next() {
-        err := rows.Scan(&id, &dateExpires, &userId)
-        CheckError(err)
+	var (
+		id          int64
+		dateExpires string
+		userId      int64
+	)
 
-        fmt.Println(id)
-        fmt.Println(dateExpires)
-    } else {
-        c.HTML(404, "invalid_token.html", "")
-        return
-    }
-    rows.Close()
+	if rows.Next() {
+		err := rows.Scan(&id, &dateExpires, &userId)
+		CheckError(err)
 
-    t := time.Now()
-    if currentDateTime := t.Format("20060102150405"); currentDateTime < dateExpires {
-        stmt, err := db.Prepare("update confirm set date_used=?, used=? where id=?")
-        CheckError(err)
+		fmt.Println(id)
+		fmt.Println(dateExpires)
+	} else {
+		c.HTML(404, "invalid_token.html", "")
+		return
+	}
+	rows.Close()
 
-        _, err = stmt.Exec(currentDateTime, 1, id)
-        CheckError(err)
+	t := time.Now()
+	if currentDateTime := t.Format("20060102150405"); currentDateTime < dateExpires {
+		stmt, err := db.Prepare("update confirm set date_used=?, used=? where id=?")
+		CheckError(err)
 
-        stmt, err = db.Prepare("update user set confirmed=? where id=?")
-        CheckError(err)
+		_, err = stmt.Exec(currentDateTime, 1, id)
+		CheckError(err)
 
-        _, err = stmt.Exec(1, userId)
-        CheckError(err)
+		stmt, err = db.Prepare("update user set confirmed=? where id=?")
+		CheckError(err)
 
-        c.HTML(302, "confirmed.html", gin.H{
-            "id": userId,
-        })
-        return
-    } else {
-        c.HTML(302, "expired.html", gin.H{
-            "id": userId,
-        })
-        return
-    }
+		_, err = stmt.Exec(1, userId)
+		CheckError(err)
+
+		c.HTML(302, "confirmed.html", gin.H{
+			"id": userId,
+		})
+		return
+	} else {
+		c.HTML(302, "expired.html", gin.H{
+			"id": userId,
+		})
+		return
+	}
 }
 
 func SendNewToken(c *gin.Context) {
-    userId, err := strconv.Atoi(c.Request.URL.Query()["id"][0])
-    CheckError(err)
-    fmt.Println(userId)
+	userId, err := strconv.Atoi(c.Request.URL.Query()["id"][0])
+	CheckError(err)
+	fmt.Println(userId)
 
-    db, err := sql.Open("sqlite3", "./libreread.db")
-    CheckError(err)
+	db, err := sql.Open("sqlite3", "./libreread.db")
+	CheckError(err)
 
-    defer db.Close()
+	defer db.Close()
 
-    rows, err := db.Query("select name, email from user where id = ?", userId)
-    CheckError(err)
+	rows, err := db.Query("select name, email from user where id = ?", userId)
+	CheckError(err)
 
-    var (
-        name string
-        email string
-    )
-    
-    if rows.Next() {
-        err := rows.Scan(&name, &email)
-        CheckError(err)
+	var (
+		name  string
+		email string
+	)
 
-        fmt.Println(name)
-        fmt.Println(email)
-    }
-    rows.Close()
-    go SendConfirmationEmail(int64(userId), name, email)
+	if rows.Next() {
+		err := rows.Scan(&name, &email)
+		CheckError(err)
+
+		fmt.Println(name)
+		fmt.Println(email)
+	}
+	rows.Close()
+	go SendConfirmationEmail(int64(userId), name, email)
 }
 
 func UploadBook(c *gin.Context) {
-    session := sessions.Default(c)
-    if session.Get("email") != nil {
-        fmt.Println(session.Get("email"))
+	session := sessions.Default(c)
+	if session.Get("email") != nil {
+		fmt.Println(session.Get("email"))
 
-        db, err := sql.Open("sqlite3", "./libreread.db")
-        CheckError(err)
+		db, err := sql.Open("sqlite3", "./libreread.db")
+		CheckError(err)
 
-        rows, err := db.Query("select id from user where email = ?", session.Get("email"))
-        CheckError(err)
+		rows, err := db.Query("select id from user where email = ?", session.Get("email"))
+		CheckError(err)
 
-        var userId int64
+		var userId int64
 
-        if rows.Next() {
-            err := rows.Scan(&userId)
-            CheckError(err)
+		if rows.Next() {
+			err := rows.Scan(&userId)
+			CheckError(err)
 
-            userIdString := fmt.Sprintf("%v", userId)
-            fmt.Println("User id: " + userIdString)
-        }
-        rows.Close()
-        
-        multipart, err := c.Request.MultipartReader()
-        CheckError(err)
+			userIdString := fmt.Sprintf("%v", userId)
+			fmt.Println("User id: " + userIdString)
+		}
+		rows.Close()
 
-        for {
-            mimePart, err := multipart.NextPart()
+		multipart, err := c.Request.MultipartReader()
+		CheckError(err)
 
-            if err == io.EOF {
-                break
-            }
+		for {
+			mimePart, err := multipart.NextPart()
 
-            CheckError(err)
+			if err == io.EOF {
+				break
+			}
 
-            fmt.Println(mimePart)
+			CheckError(err)
 
-            disposition, params, err := mime.ParseMediaType(mimePart.Header.Get("Content-Disposition"))
-            CheckError(err)
-            fmt.Println(disposition)
-            fmt.Println(params["filename"])
+			fmt.Println(mimePart)
 
-            if contentType, _, _ := mime.ParseMediaType(mimePart.Header.Get("Content-Type")); contentType == "application/pdf" {
-                fileName := strings.Split(params["filename"], ".pdf")[0]
-                fileName = strings.Join(strings.Split(fileName, " "), "_") + ".pdf"
-                fmt.Println("filename: " + fileName)
+			disposition, params, err := mime.ParseMediaType(mimePart.Header.Get("Content-Disposition"))
+			CheckError(err)
+			fmt.Println(disposition)
+			fmt.Println(params["filename"])
 
-                rows, err = db.Query("select id from book where filename = ?", fileName)
-                CheckError(err)
+			if contentType, _, _ := mime.ParseMediaType(mimePart.Header.Get("Content-Type")); contentType == "application/pdf" {
+				fileName := strings.Split(params["filename"], ".pdf")[0]
+				fileName = strings.Join(strings.Split(fileName, " "), "_") + ".pdf"
+				fmt.Println("filename: " + fileName)
 
-                var bookId int64
+				rows, err = db.Query("select id from book where filename = ?", fileName)
+				CheckError(err)
 
-                if rows.Next() {
-                    err := rows.Scan(&bookId)
-                    CheckError(err)
+				var bookId int64
 
-                    bookIdString := fmt.Sprintf("%v", bookId)
-                    fmt.Println("Book id: " + bookIdString)
-                }
-                rows.Close()
+				if rows.Next() {
+					err := rows.Scan(&bookId)
+					CheckError(err)
 
-                if bookId != 0 {
-                    c.String(200, fileName + " already exists. ")
-                    continue
-                }
-            
-                filePath := "./uploads/" + fileName
-            
-                out, err := os.Create(filePath)
-                CheckError(err)
+					bookIdString := fmt.Sprintf("%v", bookId)
+					fmt.Println("Book id: " + bookIdString)
+				}
+				rows.Close()
 
-                _, err = io.Copy(out, mimePart)
-                CheckError(err)
+				if bookId != 0 {
+					c.String(200, fileName+" already exists. ")
+					continue
+				}
 
-                out.Close()
+				filePath := "./uploads/" + fileName
 
-                title, author, pages := GetPDFInfo(filePath)
+				out, err := os.Create(filePath)
+				CheckError(err)
 
-                if title == "" {
-                    title = fileName
-                }
+				_, err = io.Copy(out, mimePart)
+				CheckError(err)
 
-                if author == "" {
-                    author = "unknown"
-                }
+				out.Close()
 
-                pagesInt, err := strconv.ParseInt(pages, 10, 64)
-                CheckError(err)
+				title, author, pages := GetPDFInfo(filePath)
 
-                fmt.Println("Book title: " + title)
-                fmt.Println("Book author: " + author)
-                fmt.Println("Total pages: " + pages)
+				if title == "" {
+					title = fileName
+				}
 
-                url := "/book/" + fileName
-                fmt.Println("Book URL: " + url)
+				if author == "" {
+					author = "unknown"
+				}
 
-                coverPath := "./uploads/img/" + fileName
+				pagesInt, err := strconv.ParseInt(pages, 10, 64)
+				CheckError(err)
 
-                GeneratePDFCover(filePath, coverPath)
+				fmt.Println("Book title: " + title)
+				fmt.Println("Book author: " + author)
+				fmt.Println("Total pages: " + pages)
 
-                cover := ""
+				url := "/book/" + fileName
+				fmt.Println("Book URL: " + url)
 
-                if _, err := os.Stat(coverPath + "-001-000.png"); err == nil {
-                    cover = "/cover/" + fileName + "-001-000.png"
-                }
+				coverPath := "./uploads/img/" + fileName
 
-                fmt.Println("Book cover URL: " + cover)
+				GeneratePDFCover(filePath, coverPath)
 
-                t := time.Now()
-    
-                uploadedOn := t.Format("20060102150405")
-                fmt.Println("Uploaded on: " + uploadedOn)
+				cover := ""
 
-                // ------------------------------------------------------------------------------------------
-                // Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
-                // ------------------------------------------------------------------------------------------
-                stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, uploaded_on, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-                CheckError(err)
+				if _, err := os.Stat(coverPath + "-001-000.png"); err == nil {
+					cover = "/cover/" + fileName + "-001-000.png"
+				}
 
-                res, err := stmt.Exec(title, fileName, author, url, cover, pagesInt, uploadedOn, userId)
-                CheckError(err)
+				fmt.Println("Book cover URL: " + cover)
 
-                id, err := res.LastInsertId()
-                CheckError(err)
+				t := time.Now()
 
-                fmt.Println(id)
+				uploadedOn := t.Format("20060102150405")
+				fmt.Println("Uploaded on: " + uploadedOn)
 
-                // Feed book info to ES
-                bookInfo := BIS{
-                    Title: title,
-                    Author: author,
-                    URL: url,
-                    Cover: cover,
-                }
+				// ------------------------------------------------------------------------------------------
+				// Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
+				// ------------------------------------------------------------------------------------------
+				stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, uploaded_on, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+				CheckError(err)
 
-                fmt.Println(bookInfo)
+				res, err := stmt.Exec(title, fileName, author, url, cover, pagesInt, uploadedOn, userId)
+				CheckError(err)
 
-                indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(id))
-                fmt.Println(indexURL)
+				id, err := res.LastInsertId()
+				CheckError(err)
 
-                b, err :=  json.Marshal(bookInfo)
-                CheckError(err)
+				fmt.Println(id)
 
-                PutJSON(indexURL, b)
+				// Feed book info to ES
+				bookInfo := BIS{
+					Title:  title,
+					Author: author,
+					URL:    url,
+					Cover:  cover,
+				}
 
-                // Feed book content to ES
-                go FeedContent(filePath, userId, id, title, author, url, cover, pagesInt)
+				fmt.Println(bookInfo)
 
-                c.String(200, fileName + " uploaded successfully. ")
-            }
-        }
-        db.Close()
-    }
+				indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(id))
+				fmt.Println(indexURL)
+
+				b, err := json.Marshal(bookInfo)
+				CheckError(err)
+
+				PutJSON(indexURL, b)
+
+				// Feed book content to ES
+				go FeedContent(filePath, userId, id, title, author, url, cover, pagesInt)
+
+				c.String(200, fileName+" uploaded successfully. ")
+			}
+		}
+		db.Close()
+	}
 }
 
 type BIS struct {
-    Title string `json:"title"`
-    Author string `json:"author"`
-    URL string `json:"url"`
-    Cover string `json:"cover"`
+	Title  string `json:"title"`
+	Author string `json:"author"`
+	URL    string `json:"url"`
+	Cover  string `json:"cover"`
 }
 
 func FeedContent(filePath string, userId int64, bookId int64, title string, author string, url string, cover string, pagesInt int64) {
-    // Set home many CPU cores this function wants to use.
-    runtime.GOMAXPROCS(runtime.NumCPU())
-    fmt.Println(runtime.NumCPU())
+	// Set home many CPU cores this function wants to use.
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	fmt.Println(runtime.NumCPU())
 
-    t := time.Now()
-    timeNow := t.Format("20060102150405")
-    path := "./uploads/splitpdf_" + strconv.Itoa(int(userId)) + "_" + timeNow
-    if _, err := os.Stat(path); os.IsNotExist(err) {
-        os.Mkdir(path, 0700)
-    }
-    fmt.Println(path)
-    fmt.Println(filePath)
+	t := time.Now()
+	timeNow := t.Format("20060102150405")
+	path := "./uploads/splitpdf_" + strconv.Itoa(int(userId)) + "_" + timeNow
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.Mkdir(path, 0700)
+	}
+	fmt.Println(path)
+	fmt.Println(filePath)
 
-    fmt.Println("\n\n\n\n\n")
-    fmt.Println(title)
-    var wg sync.WaitGroup
-    wg.Add(1)
-    go PDFSeparate(path, filePath, &wg)
-    wg.Wait()
-    fmt.Println("wg done!")
+	fmt.Println("\n\n\n\n\n")
+	fmt.Println(title)
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go PDFSeparate(path, filePath, &wg)
+	wg.Wait()
+	fmt.Println("wg done!")
 
-    var i int64
-    for i = 1; i < (pagesInt + 1); i += 1 {
-        pagePath :=  path + "/" + strconv.Itoa(int(i)) + ".pdf"
-        if _, err := os.Stat(pagePath); os.IsNotExist(err) {
-            continue
-        }
-        data, err := ioutil.ReadFile(pagePath)
-        CheckError(err)
-        
-        sEnc := base64.StdEncoding.EncodeToString([]byte(string(data)))
+	var i int64
+	for i = 1; i < (pagesInt + 1); i += 1 {
+		pagePath := path + "/" + strconv.Itoa(int(i)) + ".pdf"
+		if _, err := os.Stat(pagePath); os.IsNotExist(err) {
+			continue
+		}
+		data, err := ioutil.ReadFile(pagePath)
+		CheckError(err)
 
-        bookDetail := BDS{
-            TheData: sEnc,
-            Title: title,
-            Author: author,
-            URL: url,
-            Cover: cover,
-            Page: i,
-        }
+		sEnc := base64.StdEncoding.EncodeToString([]byte(string(data)))
 
-        b, err :=  json.Marshal(bookDetail)
-        CheckError(err)
+		bookDetail := BDS{
+			TheData: sEnc,
+			Title:   title,
+			Author:  author,
+			URL:     url,
+			Cover:   cover,
+			Page:    i,
+		}
 
-        indexURL := "http://localhost:9200/lr_index/book_detail/" + 
-            strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) +
-            "_" + strconv.Itoa(int(i)) + "?pipeline=attachment"
-        fmt.Println("Index URL: " + indexURL)
-        PutJSON(indexURL , b)
-    }
+		b, err := json.Marshal(bookDetail)
+		CheckError(err)
 
-    // Remove the splitted files as it is not needed now.
-    defer os.RemoveAll(path)
+		indexURL := "http://localhost:9200/lr_index/book_detail/" +
+			strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) +
+			"_" + strconv.Itoa(int(i)) + "?pipeline=attachment"
+		fmt.Println("Index URL: " + indexURL)
+		PutJSON(indexURL, b)
+	}
+
+	// Remove the splitted files as it is not needed now.
+	defer os.RemoveAll(path)
 }
 
 type BDS struct {
-    TheData string `json:"thedata"`
-    Title string `json:"title"`
-    Author string `json:"author"`
-    URL string `json:"url"`
-    Cover string `json:"cover"`
-    Page int64 `json:"page"`
+	TheData string `json:"thedata"`
+	Title   string `json:"title"`
+	Author  string `json:"author"`
+	URL     string `json:"url"`
+	Cover   string `json:"cover"`
+	Page    int64  `json:"page"`
 }
 
 func PDFSeparate(path string, filePath string, wg *sync.WaitGroup) error {
-    runtime.GOMAXPROCS(runtime.NumCPU())
-    fmt.Println(runtime.NumCPU())
-    cmd := exec.Command("pdfseparate", filePath, path + "/%d.pdf")
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	fmt.Println(runtime.NumCPU())
+	cmd := exec.Command("pdfseparate", filePath, path+"/%d.pdf")
 
-    err := cmd.Start()
-    CheckError(err)
-    fmt.Println("Waiting for command to finish...")
-    err = cmd.Wait()
-    fmt.Printf("Command finished with error: %v", err)
-    wg.Done()
-    return nil
+	err := cmd.Start()
+	CheckError(err)
+	fmt.Println("Waiting for command to finish...")
+	err = cmd.Wait()
+	fmt.Printf("Command finished with error: %v", err)
+	wg.Done()
+	return nil
 }
 
 func GeneratePDFCover(filePath, coverPath string) {
-    cmd := exec.Command("pdfimages", "-p", "-png", "-f", "1", "-l", "2",  filePath, coverPath)
+	cmd := exec.Command("pdfimages", "-p", "-png", "-f", "1", "-l", "2", filePath, coverPath)
 
-    err := cmd.Run()
-    CheckError(err)
+	err := cmd.Run()
+	CheckError(err)
 }
 
 func GetPDFInfo(filePath string) (string, string, string) {
-    cmd := exec.Command("pdfinfo", filePath)
-    
-    var out bytes.Buffer
-    cmd.Stdout = &out
-    
-    err :=  cmd.Run()
-    CheckError(err)
-    
-    output := out.String()
-    opSplit := strings.Split(output, "\n")
-    
-    title := opSplit[0]
-    author := opSplit[1]
-    pages := ""
+	cmd := exec.Command("pdfinfo", filePath)
 
-    // Get number of pages.
-    for _, element := range opSplit {
-        if strings.HasPrefix(element, "Pages") {
-            pages = strings.Split(element, ":")[1]
-            pages = strings.Trim(pages, " ")
-            break
-        }
-    }
+	var out bytes.Buffer
+	cmd.Stdout = &out
 
-    // Get book title.
-    if strings.HasPrefix(title, "Title") {
-        title = strings.Split(title, ":")[1]
-        title = strings.Trim(title, " ")
-    } else {
-        title = ""
-    }
+	err := cmd.Run()
+	CheckError(err)
 
-    // Get author of the uploaded book.
-    if strings.HasPrefix(author, "Author") {
-        author = strings.Split(author, ":")[1]
-        author = strings.Trim(author, " ")
-    } else {
-        author = ""
-    }
+	output := out.String()
+	opSplit := strings.Split(output, "\n")
 
-    return title, author, pages
+	title := opSplit[0]
+	author := opSplit[1]
+	pages := ""
+
+	// Get number of pages.
+	for _, element := range opSplit {
+		if strings.HasPrefix(element, "Pages") {
+			pages = strings.Split(element, ":")[1]
+			pages = strings.Trim(pages, " ")
+			break
+		}
+	}
+
+	// Get book title.
+	if strings.HasPrefix(title, "Title") {
+		title = strings.Split(title, ":")[1]
+		title = strings.Trim(title, " ")
+	} else {
+		title = ""
+	}
+
+	// Get author of the uploaded book.
+	if strings.HasPrefix(author, "Author") {
+		author = strings.Split(author, ":")[1]
+		author = strings.Trim(author, " ")
+	} else {
+		author = ""
+	}
+
+	return title, author, pages
 }
 
 type BIP struct {
-    Source []string `json:"_source"`
-    Query BIPQ `json:"query"`
+	Source []string `json:"_source"`
+	Query  BIPQ     `json:"query"`
 }
 
 type BIPQ struct {
-    MultiMatch MMQ `json:"multi_match"`
+	MultiMatch MMQ `json:"multi_match"`
 }
 
 type MMQ struct {
-    Query string `json:"query"`
-    Fields []string `json:"fields"`
+	Query  string   `json:"query"`
+	Fields []string `json:"fields"`
 }
 
 type BDP struct {
-    Source []string `json:"_source"`
-    Query BDPQ `json:"query"`
-    Highlight BDPH `json:"highlight"`
+	Source    []string `json:"_source"`
+	Query     BDPQ     `json:"query"`
+	Highlight BDPH     `json:"highlight"`
 }
 
 type BDPQ struct {
-    MatchPhrase BDPQAC `json:"match_phrase"`
+	MatchPhrase BDPQAC `json:"match_phrase"`
 }
 
 type BDPQAC struct {
-    AttachmentContent string `json:"attachment.content"`
+	AttachmentContent string `json:"attachment.content"`
 }
 
 type BDPH struct {
-    Fields BDPHF `json:"fields"`
+	Fields BDPHF `json:"fields"`
 }
 
 type BDPHF struct {
-    AttachmentContent BDPHFAC `json:"attachment.content"`
+	AttachmentContent BDPHFAC `json:"attachment.content"`
 }
 
 type BDPHFAC struct {
-    FragmentSize int64 `json:"fragment_size"`
-    NumberOfFragments int64 `json:"number_of_fragments"`
-    NoMatchSize int64 `json:"no_match_size"`
+	FragmentSize      int64 `json:"fragment_size"`
+	NumberOfFragments int64 `json:"number_of_fragments"`
+	NoMatchSize       int64 `json:"no_match_size"`
 }
 
 func GetAutocomplete(c *gin.Context) {
-    q := c.Request.URL.Query()
-    term := q["term"][0]
-    fmt.Println(term)
+	q := c.Request.URL.Query()
+	term := q["term"][0]
+	fmt.Println(term)
 
-    payloadInfo := &BIP{
-        Source: []string{"title", "author", "url", "cover"},
-        Query: BIPQ{
-            MultiMatch: MMQ{
-                Query: term,
-                Fields: []string{"title", "author"},
-            },
-        },
-    }
+	payloadInfo := &BIP{
+		Source: []string{"title", "author", "url", "cover"},
+		Query: BIPQ{
+			MultiMatch: MMQ{
+				Query:  term,
+				Fields: []string{"title", "author"},
+			},
+		},
+	}
 
-    b, err :=  json.Marshal(payloadInfo)
-    CheckError(err)
+	b, err := json.Marshal(payloadInfo)
+	CheckError(err)
 
-    indexURL := "http://localhost:9200/lr_index/book_info/_search"
-    fmt.Println("Index URL: " + indexURL)
+	indexURL := "http://localhost:9200/lr_index/book_info/_search"
+	fmt.Println("Index URL: " + indexURL)
 
-    res := GetJSONPassPayload(indexURL , b)
-    target := BIRS{}
-    json.Unmarshal(res, &target)
+	res := GetJSONPassPayload(indexURL, b)
+	target := BIRS{}
+	json.Unmarshal(res, &target)
 
-    hits := target.Hits.Hits
-    hitsBIS := []BIS{}
-    for _, el := range hits {
-        hitsBIS = append(hitsBIS, BIS{
-            Title: el.Source.Title,
-            Author: el.Source.Author,
-            URL: el.Source.URL,
-            Cover: el.Source.Cover,
-        })        
-    }
+	hits := target.Hits.Hits
+	hitsBIS := []BIS{}
+	for _, el := range hits {
+		hitsBIS = append(hitsBIS, BIS{
+			Title:  el.Source.Title,
+			Author: el.Source.Author,
+			URL:    el.Source.URL,
+			Cover:  el.Source.Cover,
+		})
+	}
 
-    payloadDetail := &BDP{
-        Source: []string{"title", "author", "url", "cover", "page"},
-        Query: BDPQ{
-            MatchPhrase: BDPQAC{
-                AttachmentContent: term,
-            },
-        },
-        Highlight: BDPH{
-            Fields: BDPHF{
-                AttachmentContent: BDPHFAC{
-                    FragmentSize: 150,
-                    NumberOfFragments: 3,
-                    NoMatchSize: 150,
-                },
-            },
-        },
-    }
-    b, err =  json.Marshal(payloadDetail)
-    CheckError(err)
+	payloadDetail := &BDP{
+		Source: []string{"title", "author", "url", "cover", "page"},
+		Query: BDPQ{
+			MatchPhrase: BDPQAC{
+				AttachmentContent: term,
+			},
+		},
+		Highlight: BDPH{
+			Fields: BDPHF{
+				AttachmentContent: BDPHFAC{
+					FragmentSize:      150,
+					NumberOfFragments: 3,
+					NoMatchSize:       150,
+				},
+			},
+		},
+	}
+	b, err = json.Marshal(payloadDetail)
+	CheckError(err)
 
-    indexURL = "http://localhost:9200/lr_index/book_detail/_search"
-    fmt.Println("Index URL: " + indexURL)
+	indexURL = "http://localhost:9200/lr_index/book_detail/_search"
+	fmt.Println("Index URL: " + indexURL)
 
-    res = GetJSONPassPayload(indexURL , b)
-    target2 := BDRS{}
-    json.Unmarshal(res, &target2)
+	res = GetJSONPassPayload(indexURL, b)
+	target2 := BDRS{}
+	json.Unmarshal(res, &target2)
 
-    hits2 := target2.Hits.Hits
-    hitsBDRS := []BDRSHS{}
-    for _, el := range hits2 {
-        fmt.Println(el.Source)
-        fmt.Println(el.Highlight)
-        hitsBDRS = append(hitsBDRS, BDRSHS{
-            Source: el.Source,
-            Highlight: el.Highlight,
-        })
-    }
-    fmt.Println("\n\n\n\n\n\n")
-    fmt.Println(hitsBDRS)
+	hits2 := target2.Hits.Hits
+	hitsBDRS := []BDRSHS{}
+	for _, el := range hits2 {
+		fmt.Println(el.Source)
+		fmt.Println(el.Highlight)
+		hitsBDRS = append(hitsBDRS, BDRSHS{
+			Source:    el.Source,
+			Highlight: el.Highlight,
+		})
+	}
+	fmt.Println(hitsBDRS)
 
-    bsr := BSR{
-        BookInfo: hitsBIS,
-        BookDetail: hitsBDRS,
-    }
+	bsr := BSR{
+		BookInfo:   hitsBIS,
+		BookDetail: hitsBDRS,
+	}
 
-    c.JSON(200, bsr)
+	c.JSON(200, bsr)
 }
 
 type BSR struct {
-    BookInfo []BIS `json:"book_info"`
-    BookDetail []BDRSHS `json:"book_detail"`
+	BookInfo   []BIS    `json:"book_info"`
+	BookDetail []BDRSHS `json:"book_detail"`
 }
 
 type BDRS struct {
-    Hits BDRSH `json:"hits"`
+	Hits BDRSH `json:"hits"`
 }
 
 type BDRSH struct {
-    Hits []BDRSHS `json:"hits"`
+	Hits []BDRSHS `json:"hits"`
 }
 
 type BDRSHS struct {
-    Source BDS2 `json:"_source"`
-    Highlight BDH `json:"highlight"`
+	Source    BDS2 `json:"_source"`
+	Highlight BDH  `json:"highlight"`
 }
 
 type BDH struct {
-    AttachmentContent []string `json:"attachment.content"`
+	AttachmentContent []string `json:"attachment.content"`
 }
 
 type BDS2 struct {
-    Title string `json:"title"`
-    Author string `json:"author"`
-    URL string `json:"url"`
-    Cover string `json:"cover"`
-    Page int64 `json:"page"`
+	Title  string `json:"title"`
+	Author string `json:"author"`
+	URL    string `json:"url"`
+	Cover  string `json:"cover"`
+	Page   int64  `json:"page"`
 }
 
 type BIRS struct {
-    Hits BIRSH `json:"hits"`
+	Hits BIRSH `json:"hits"`
 }
 
 type BIRSH struct {
-    Hits []BIRSHH `json:"hits"`
+	Hits []BIRSHH `json:"hits"`
 }
 
 type BIRSHH struct {
-    Source BIS `json:"_source"`
+	Source BIS `json:"_source"`
 }
 
 func GetJSONPassPayload(url string, payload []byte) []byte {
-    req, err := http.NewRequest("GET", url, bytes.NewBuffer(payload))
-    CheckError(err)
-    res, err := myClient.Do(req)
-    CheckError(err)
-    content, err := ioutil.ReadAll(res.Body)
-    CheckError(err)
-    fmt.Println(string(content))
-    return content
+	req, err := http.NewRequest("GET", url, bytes.NewBuffer(payload))
+	CheckError(err)
+	res, err := myClient.Do(req)
+	CheckError(err)
+	content, err := ioutil.ReadAll(res.Body)
+	CheckError(err)
+	fmt.Println(string(content))
+	return content
 }
 
 func GetCollections(c *gin.Context) {
-    session := sessions.Default(c)
-    if session.Get("email") != nil {
-        fmt.Println(session.Get("email"))
-        
-        db, err := sql.Open("sqlite3", "./libreread.db")
-        CheckError(err)
+	session := sessions.Default(c)
+	if session.Get("email") != nil {
+		fmt.Println(session.Get("email"))
 
-        rows, err := db.Query("select id from user where email = ?", session.Get("email"))
-        CheckError(err)
+		db, err := sql.Open("sqlite3", "./libreread.db")
+		CheckError(err)
 
-        var userId int64
+		rows, err := db.Query("select id from user where email = ?", session.Get("email"))
+		CheckError(err)
 
-        if rows.Next() {
-            err := rows.Scan(&userId)
-            CheckError(err)
+		var userId int64
 
-            userIdString := fmt.Sprintf("%v", userId)
-            fmt.Println("User id: " + userIdString)
-        }
-        rows.Close()
+		if rows.Next() {
+			err := rows.Scan(&userId)
+			CheckError(err)
 
-        rows, err = db.Query("select id, title, description, books, cover from collection where user_id = ?", userId)
-        CheckError(err)
+			userIdString := fmt.Sprintf("%v", userId)
+			fmt.Println("User id: " + userIdString)
+		}
+		rows.Close()
 
-        cbks := []CBKS{}
-        for rows.Next() {
-            var (
-                id int64
-                title string
-                description string
-                books string
-                cover sql.NullString
-            )
-            err := rows.Scan(&id, &title, &description, &books, &cover)
-            CheckError(err)
-            
-            var c string
-            if (cover.Valid) {
-                c = cover.String
-            } else {
-                c = ""
-            }
-            
-            cbks = append(cbks, CBKS{
-                Id: id,
-                Title: title,
-                Description: description,
-                Books: books,
-                Cover: c,
-            })
-        }
-        fmt.Println(cbks)
+		rows, err = db.Query("select id, title, description, books, cover from collection where user_id = ?", userId)
+		CheckError(err)
 
-        db.Close()
-        c.HTML(302, "collections.html", gin.H{
-            "cbks": cbks,
-        })
-    }
-    c.Redirect(302, "/signin")
+		cbks := []CBKS{}
+		for rows.Next() {
+			var (
+				id          int64
+				title       string
+				description string
+				books       string
+				cover       sql.NullString
+			)
+			err := rows.Scan(&id, &title, &description, &books, &cover)
+			CheckError(err)
+
+			var c string
+			if cover.Valid {
+				c = cover.String
+			} else {
+				c = ""
+			}
+
+			cbks = append(cbks, CBKS{
+				Id:          id,
+				Title:       title,
+				Description: description,
+				Books:       books,
+				Cover:       c,
+			})
+		}
+		fmt.Println(cbks)
+
+		db.Close()
+		c.HTML(302, "collections.html", gin.H{
+			"cbks": cbks,
+		})
+	}
+	c.Redirect(302, "/signin")
 }
 
 type CBKS struct {
-    Id int64
-    Title string
-    Description string
-    Books string
-    Cover string
+	Id          int64
+	Title       string
+	Description string
+	Books       string
+	Cover       string
 }
 
 func GetAddCollection(c *gin.Context) {
-    session := sessions.Default(c)
-    if session.Get("email") != nil {
-        fmt.Println(session.Get("email"))
-        
-        db, err := sql.Open("sqlite3", "./libreread.db")
-        CheckError(err)
+	session := sessions.Default(c)
+	if session.Get("email") != nil {
+		fmt.Println(session.Get("email"))
 
-        rows, err := db.Query("select id from user where email = ?", session.Get("email"))
-        CheckError(err)
+		db, err := sql.Open("sqlite3", "./libreread.db")
+		CheckError(err)
 
-        var userId int64
+		rows, err := db.Query("select id from user where email = ?", session.Get("email"))
+		CheckError(err)
 
-        if rows.Next() {
-            err := rows.Scan(&userId)
-            CheckError(err)
+		var userId int64
 
-            userIdString := fmt.Sprintf("%v", userId)
-            fmt.Println("User id: " + userIdString)
-        }
-        rows.Close()
+		if rows.Next() {
+			err := rows.Scan(&userId)
+			CheckError(err)
 
-        rows, err = db.Query("select id, cover from book where user_id = ?", userId)
-        CheckError(err)
+			userIdString := fmt.Sprintf("%v", userId)
+			fmt.Println("User id: " + userIdString)
+		}
+		rows.Close()
 
-        books := []BCSL{}
+		rows, err = db.Query("select id, cover from book where user_id = ?", userId)
+		CheckError(err)
 
-        for rows.Next() {
-            var (
-                b int64
-                c string
-            )
-            err :=  rows.Scan(&b, &c)
-            CheckError(err)
+		books := []BCSL{}
 
-            books = append(books, BCSL{
-                BookId: b,
-                Cover: c,
-            })
-        }
-        fmt.Println(books)
+		for rows.Next() {
+			var (
+				b int64
+				c string
+			)
+			err := rows.Scan(&b, &c)
+			CheckError(err)
 
-        db.Close()
+			books = append(books, BCSL{
+				BookId: b,
+				Cover:  c,
+			})
+		}
+		fmt.Println(books)
 
-        c.HTML(302, "add_collection.html", gin.H{
-            "books": books,
-        })
-    }
+		db.Close()
 
-    c.Redirect(302, "/signin")
+		c.HTML(302, "add_collection.html", gin.H{
+			"books": books,
+		})
+	}
+
+	c.Redirect(302, "/signin")
 }
 
 type BCSL struct {
-    BookId int64
-    Cover string
+	BookId int64
+	Cover  string
 }
 
 type PCS struct {
-    Title string `json:"title"`
-    Description string `json:"description"`
-    Books []int64 `json:"id"`
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Books       []int64 `json:"id"`
 }
 
 func PostNewCollection(c *gin.Context) {
-    session := sessions.Default(c)
-    if session.Get("email") != nil {
-        fmt.Println(session.Get("email"))
-        
-        db, err := sql.Open("sqlite3", "./libreread.db")
-        CheckError(err)
+	session := sessions.Default(c)
+	if session.Get("email") != nil {
+		fmt.Println(session.Get("email"))
 
-        rows, err := db.Query("select id from user where email = ?", session.Get("email"))
-        CheckError(err)
+		db, err := sql.Open("sqlite3", "./libreread.db")
+		CheckError(err)
 
-        var userId int64
+		rows, err := db.Query("select id from user where email = ?", session.Get("email"))
+		CheckError(err)
 
-        if rows.Next() {
-            err := rows.Scan(&userId)
-            CheckError(err)
+		var userId int64
 
-            userIdString := fmt.Sprintf("%v", userId)
-            fmt.Println("User id: " + userIdString)
-        }
-        rows.Close()
-    
-        pc := PCS{}
-        err = c.BindJSON(&pc)
-        CheckError(err)
+		if rows.Next() {
+			err := rows.Scan(&userId)
+			CheckError(err)
 
-        rows, err = db.Query("select cover from book where id = ?", pc.Books[len(pc.Books) -1 ])
-        CheckError(err)
+			userIdString := fmt.Sprintf("%v", userId)
+			fmt.Println("User id: " + userIdString)
+		}
+		rows.Close()
 
-        var cover string
-        if rows.Next() {
-            err := rows.Scan(&cover)
-            CheckError(err)
-        }
-        fmt.Println(cover)
-        rows.Close()
+		pc := PCS{}
+		err = c.BindJSON(&pc)
+		CheckError(err)
 
-        var books string
-        for i, num := range pc.Books {
-            if i == (len(pc.Books) - 1) {
-                books += strconv.Itoa(int(num))
-                break
-            }
-            books += strconv.Itoa(int(num)) + ","
-        }
-        fmt.Println(books)   
+		rows, err = db.Query("select cover from book where id = ?", pc.Books[len(pc.Books)-1])
+		CheckError(err)
 
-        // ----------------------------------------------
-        // Fields: id, title, description, books, user_id
-        // ----------------------------------------------
-        stmt, err := db.Prepare("INSERT INTO `collection` (title, description, books, cover, user_id) VALUES (?, ?, ?, ?, ?)")
-        CheckError(err)
+		var cover string
+		if rows.Next() {
+			err := rows.Scan(&cover)
+			CheckError(err)
+		}
+		fmt.Println(cover)
+		rows.Close()
 
-        res, err := stmt.Exec(pc.Title, pc.Description, books, cover, userId)
-        CheckError(err)
+		var books string
+		for i, num := range pc.Books {
+			if i == (len(pc.Books) - 1) {
+				books += strconv.Itoa(int(num))
+				break
+			}
+			books += strconv.Itoa(int(num)) + ","
+		}
+		fmt.Println(books)
 
-        id, err := res.LastInsertId()
-        CheckError(err)
+		// ----------------------------------------------
+		// Fields: id, title, description, books, user_id
+		// ----------------------------------------------
+		stmt, err := db.Prepare("INSERT INTO `collection` (title, description, books, cover, user_id) VALUES (?, ?, ?, ?, ?)")
+		CheckError(err)
 
-        fmt.Println(id)
+		res, err := stmt.Exec(pc.Title, pc.Description, books, cover, userId)
+		CheckError(err)
 
-        db.Close()
+		id, err := res.LastInsertId()
+		CheckError(err)
 
-        c.String(200, strconv.Itoa(int(id)))
-    }
-    c.Redirect(302, "/signin")
+		fmt.Println(id)
+
+		db.Close()
+
+		c.String(200, strconv.Itoa(int(id)))
+	}
+	c.Redirect(302, "/signin")
 }
 
 func GetCollection(c *gin.Context) {
-    session := sessions.Default(c)
-    if session.Get("email") != nil {
-        fmt.Println(session.Get("email"))
+	session := sessions.Default(c)
+	if session.Get("email") != nil {
+		fmt.Println(session.Get("email"))
 
-        id := c.Param("id")
-        fmt.Println(id)
+		id := c.Param("id")
+		fmt.Println(id)
 
-        db, err := sql.Open("sqlite3", "./libreread.db")
-        CheckError(err)
+		db, err := sql.Open("sqlite3", "./libreread.db")
+		CheckError(err)
 
-        rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
-        CheckError(err)
+		rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
+		CheckError(err)
 
-        var userId int64
-        if rows.Next() {
-            err := rows.Scan(&userId)
-            CheckError(err)
-        }
-        fmt.Println(userId)
-        rows.Close()
+		var userId int64
+		if rows.Next() {
+			err := rows.Scan(&userId)
+			CheckError(err)
+		}
+		fmt.Println(userId)
+		rows.Close()
 
-        rows, err = db.Query("select title, description, books from collection where id = ?", id)
-        CheckError(err)
+		rows, err = db.Query("select title, description, books from collection where id = ?", id)
+		CheckError(err)
 
-        var (
-            title string
-            description string
-            books string
-        )
-        if rows.Next() {
-            err := rows.Scan(&title, &description, &books)
-            CheckError(err)
-        }
-        fmt.Println(books)
-        rows.Close()
+		var (
+			title       string
+			description string
+			books       string
+		)
+		if rows.Next() {
+			err := rows.Scan(&title, &description, &books)
+			CheckError(err)
+		}
+		fmt.Println(books)
+		rows.Close()
 
-        bookSplit := strings.Split(books, ",")
-        fmt.Println(bookSplit)
+		bookSplit := strings.Split(books, ",")
+		fmt.Println(bookSplit)
 
-        b := []BS{}
-        for i := len(bookSplit)-1; i >= 0; i-- {
-            fmt.Println(bookSplit[i])
-            bookInt, err := strconv.Atoi(bookSplit[i])
-            CheckError(err)
-            
-            rows, err := db.Query("select title, url, cover from book where id = ?", bookInt)
-            CheckError(err)
+		b := []BS{}
+		for i := len(bookSplit) - 1; i >= 0; i-- {
+			fmt.Println(bookSplit[i])
+			bookInt, err := strconv.Atoi(bookSplit[i])
+			CheckError(err)
 
-            if rows.Next() {
-                var (
-                    title string
-                    url string
-                    cover string
-                )
-                err := rows.Scan(&title, &url, &cover)
-                CheckError(err)
+			rows, err := db.Query("select title, url, cover from book where id = ?", bookInt)
+			CheckError(err)
 
-                b = append(b, BS{
-                    Title: title,
-                    URL: url,
-                    Cover: cover,
-                })
-            }
-            rows.Close()
-        }
-        fmt.Println(b)
-        db.Close()
+			if rows.Next() {
+				var (
+					title string
+					url   string
+					cover string
+				)
+				err := rows.Scan(&title, &url, &cover)
+				CheckError(err)
 
-        booksList := []BSList{}
-        for i := 0; i < len(b); i += 6 {
-            j := i + 6
-            for j > len(b) {
-                j -= 1
-            }
-            booksList = append(booksList, b[i:j])
-        }
+				b = append(b, BS{
+					Title: title,
+					URL:   url,
+					Cover: cover,
+				})
+			}
+			rows.Close()
+		}
+		fmt.Println(b)
+		db.Close()
 
-        booksListMedium := []BSList{}
-        for i := 0; i < len(b); i += 3 {
-            j := i + 3
-            for j > len(b) {
-                j -= 1
-            }
-            booksListMedium = append(booksListMedium, b[i:j])
-        }
+		booksList := []BSList{}
+		for i := 0; i < len(b); i += 6 {
+			j := i + 6
+			for j > len(b) {
+				j -= 1
+			}
+			booksList = append(booksList, b[i:j])
+		}
 
-        booksListSmall := []BSList{}
-        for i := 0; i < len(b); i += 2 {
-            j := i + 2
-            for j > len(b) {
-                j -= 1
-            }
-            booksListSmall = append(booksListSmall, b[i:j])
-        }
+		booksListMedium := []BSList{}
+		for i := 0; i < len(b); i += 3 {
+			j := i + 3
+			for j > len(b) {
+				j -= 1
+			}
+			booksListMedium = append(booksListMedium, b[i:j])
+		}
 
-        booksListXtraSmall := b
+		booksListSmall := []BSList{}
+		for i := 0; i < len(b); i += 2 {
+			j := i + 2
+			for j > len(b) {
+				j -= 1
+			}
+			booksListSmall = append(booksListSmall, b[i:j])
+		}
 
-        c.HTML(302, "collection_item.html", gin.H{
-            "title": title,
-            "description": description,
-            "booksList": booksList,
-            "booksListMedium": booksListMedium,
-            "booksListSmall": booksListSmall,
-            "booksListXtraSmall": booksListXtraSmall,
-        })
-    }
-    c.Redirect(302, "/signin")
+		booksListXtraSmall := b
+
+		c.HTML(302, "collection_item.html", gin.H{
+			"title":              title,
+			"description":        description,
+			"booksList":          booksList,
+			"booksListMedium":    booksListMedium,
+			"booksListSmall":     booksListSmall,
+			"booksListXtraSmall": booksListXtraSmall,
+		})
+	}
+	c.Redirect(302, "/signin")
 }

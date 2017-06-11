@@ -209,13 +209,14 @@ $(function() {
 	})
 
 	$('.search-box').on('keyup', function(e) {
-		if ($(this).val().length >= 3) {
+		var term = $(this).val()
+		if (term.length >= 3) {
 			$('.search-dropdown').show()
 			$.ajax({
 				url: '/autocomplete',
 				dataType: 'json',
 				data: {
-					term: $(this).val()
+					term: term
 				},
 				success: function(data) {
 					var html = ''
@@ -231,7 +232,7 @@ $(function() {
 					html = ''
 					console.log(data['book_detail'])
 					for (i in data['book_detail']) {
-						html += '<a href="' + data['book_detail'][i]['_source'].url + '#page=' + data['book_detail'][i]['_source'].page + '">' +
+						html += '<a href="' + data['book_detail'][i]['_source'].url + '#page=' + data['book_detail'][i]['_source'].page + '&term=' + term + '">' +
 						    '<img src="' + data['book_detail'][i]['_source'].cover + '">' +
 						    '<div class="sdtl-title">' + data['book_detail'][i]['_source'].title + ' <span>(Page ' + data['book_detail'][i]['_source'].page + ')</span></div>' +
 						    '<div class="sdtl-author">' + data['book_detail'][i]['_source'].author + '</div>'
