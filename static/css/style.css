@@ -59,6 +59,16 @@ header .header-container {
 	cursor: pointer;
 }
 
+.logo svg {
+  float: left;
+  margin-top: -7px;
+  margin-right: 3px;
+}
+
+.logo:hover svg .cls-1 {
+  fill: #FF4848;
+}
+
 .logo span {
   font-size: 11px;
 }
