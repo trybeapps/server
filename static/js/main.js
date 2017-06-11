@@ -175,7 +175,7 @@ $(function() {
 		// alert(ext)
 		var files = $(this).get(0).files
 		for (var i = 0; i < files.length; i++) {
-			if (files[i].type == 'application/pdf') {
+			if (files[i].type == 'application/pdf' || files[i].type == 'application/epub+zip') {
 				console.log(files[i])
 			}
 			else {
