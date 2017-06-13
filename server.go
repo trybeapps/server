@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -1020,11 +1021,33 @@ func UploadBook(c *gin.Context) {
 
 				out.Close()
 
+				fileName = strings.Split(fileName, ".epub")[0]
 				go EPUBUnzip(filePath, fileName)
+
+				fileUnzipPath := "./uploads/" + fileName + "/META-INF/container.xml"
+				XMLContent, err := ioutil.ReadFile(fileUnzipPath)
+				CheckError(err)
+
+				v := XMLCS{}
+				err = xml.Unmarshal(XMLContent, &v)
+				CheckError(err)
+				fmt.Println(v)
 			}
 		}
 		db.Close()
 	}
+}
+
+type XMLCS struct {
+	RootFiles XMLRFS `xml:"rootfiles"`
+}
+
+type XMLRFS struct {
+	RootFile XMLRF `xml:"rootfile"`
+}
+
+type XMLRF struct {
+	FullPath string `xml:"full-path,attr"`
 }
 
 type BIS struct {
@@ -1116,7 +1139,6 @@ func PDFSeparate(path string, filePath string, wg *sync.WaitGroup) error {
 func EPUBUnzip(filePath string, fileName string) error {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	fmt.Println(runtime.NumCPU())
-	fileName = strings.Split(fileName, ".epub")[0]
 	cmd := exec.Command("unzip", filePath, "-d", "uploads/"+fileName+"/")
 
 	err := cmd.Start()
