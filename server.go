@@ -1019,6 +1019,8 @@ func UploadBook(c *gin.Context) {
 				CheckError(err)
 
 				out.Close()
+
+				go EPUBUnzip(filePath, fileName)
 			}
 		}
 		db.Close()
@@ -1108,6 +1110,20 @@ func PDFSeparate(path string, filePath string, wg *sync.WaitGroup) error {
 	err = cmd.Wait()
 	fmt.Printf("Command finished with error: %v", err)
 	wg.Done()
+	return nil
+}
+
+func EPUBUnzip(filePath string, fileName string) error {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	fmt.Println(runtime.NumCPU())
+	fileName = strings.Split(fileName, ".epub")[0]
+	cmd := exec.Command("unzip", filePath, "-d", "uploads/"+fileName+"/")
+
+	err := cmd.Start()
+	CheckError(err)
+	fmt.Println("Waiting for command to finish...")
+	err = cmd.Wait()
+	fmt.Printf("Command finished with error: %v", err)
 	return nil
 }
 
