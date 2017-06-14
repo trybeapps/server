@@ -1028,14 +1028,49 @@ func UploadBook(c *gin.Context) {
 				XMLContent, err := ioutil.ReadFile(fileUnzipPath)
 				CheckError(err)
 
+				var xxx = `
+                <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
+    <head>
+        <title>Chapter 1. Introduction</title>
+        <link rel="stylesheet" type="text/css" href="css/epub.css" />
+    </head>
+    <body>
+        <section class="chapter" title="Chapter 1. Introduction" epub:type="chapter" id="introduction">
+            <h2 class="title">Chapter 1. Introduction</h2>
+            <p>If you’re expecting a run-of-the-mill best practices manual, be aware that there’s an
+                ulterior message that will be running through this one. While the primary goal is
+                certainly to give you the information you need to create accessible EPUB 3
+                publications, it also seeks to address the question of why you need to pay attention
+                to the quality of your data, and how accessible data and general good data practices
+                are more tightly entwined than you might think.</p>
+        </section>
+    </body>
+</html>
+`
+
 				v := XMLCS{}
 				err = xml.Unmarshal(XMLContent, &v)
 				CheckError(err)
 				fmt.Println(v)
+
+				vv := CXMLS{}
+				err = xml.Unmarshal([]byte(xxx), &vv)
+				CheckError(err)
+				fmt.Println(vv)
 			}
 		}
 		db.Close()
 	}
+}
+
+type CXMLS struct {
+	Body CBXMLS `xml:"body"`
+}
+
+type CBXMLS struct {
+	Content string `xml:",innerxml"`
 }
 
 type XMLCS struct {
