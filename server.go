@@ -1033,6 +1033,15 @@ func UploadBook(c *gin.Context) {
 				CheckError(err)
 				fmt.Println(v.RootFiles.RootFile.FullPath)
 
+				packageSplit := strings.Split(v.RootFiles.RootFile.FullPath, "/")
+
+				packagePath := ""
+				if len(packageSplit) > 1 {
+					packagePath = packageSplit[0]
+				}
+
+				fmt.Println(strings.Split(v.RootFiles.RootFile.FullPath, "/"))
+
 				OPFPath := "./uploads/" + fileName + "/" + v.RootFiles.RootFile.FullPath
 				fmt.Println(OPFPath)
 
@@ -1054,51 +1063,78 @@ func UploadBook(c *gin.Context) {
 				m := OPFMetadata{}
 				err = xml.Unmarshal(XMLContent, &m)
 				CheckError(err)
-				fmt.Println(m)
 
-				// 								var xxx = `
-				//                 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-				// <!DOCTYPE html>
-				// <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
-				//     <head>
-				//         <title>Chapter 1. Introduction</title>
-				//         <link rel="stylesheet" type="text/css" href="css/epub.css" />
-				//     </head>
-				//     <body>
-				//         <section class="chapter" title="Chapter 1. Introduction" epub:type="chapter" id="introduction">
-				//             <h2 class="title">Chapter 1. Introduction</h2>
-				//             <p>If you’re expecting a run-of-the-mill best practices manual, be aware that there’s an
-				//                 ulterior message that will be running through this one. While the primary goal is
-				//                 certainly to give you the information you need to create accessible EPUB 3
-				//                 publications, it also seeks to address the question of why you need to pay attention
-				//                 to the quality of your data, and how accessible data and general good data practices
-				//                 are more tightly entwined than you might think.</p>
-				//         </section>
-				//     </body>
-				// </html>
-				// `
+				coverIdRef := m.Spine.ItemRef.IdRef[0]
 
-				// 				vv := CXMLS{}
-				// 				err = xml.Unmarshal([]byte(xxx), &vv)
-				// 				CheckError(err)
-				// 				fmt.Println(vv)
+				fmt.Println(coverIdRef)
+
+				var coverPath string
+				coverFile := CPSRCS{}
+				if strings.Contains(coverIdRef, "cover") {
+					for i, e := range m.Manifest.Item.Id {
+						if e == coverIdRef {
+							coverPath = m.Manifest.Item.Href[i]
+							break
+						}
+					}
+
+					if packagePath == "" {
+						coverPath = "./uploads/" + fileName + "/" + coverPath
+					} else {
+						coverPath = "./uploads/" + fileName + "/" + packagePath + "/" + coverPath
+					}
+
+					fmt.Println(coverPath)
+
+					XMLContent, err = ioutil.ReadFile(coverPath)
+					CheckError(err)
+
+					//Parse the XMLContent to grab just the img element
+					strContent := string(XMLContent)
+					imgLoc := strings.Index(strContent, "<img")
+					prefixRem := strContent[imgLoc:]
+					endImgLoc := strings.Index(prefixRem, "/>")
+					//Move over by 2 to recover the '/>'
+					trimmed := prefixRem[:endImgLoc+2]
+
+					err = xml.Unmarshal([]byte(trimmed), &coverFile)
+					CheckError(err)
+					fmt.Println(coverFile)
+
+					if packagePath == "" {
+						coverPath = "./uploads/" + fileName + "/" + coverFile.Src
+					} else {
+						coverPath = "./uploads/" + fileName + "/" + packagePath + "/" + coverFile.Src
+					}
+				} else {
+					for i, e := range m.Manifest.Item.Id {
+						if e == "cover" {
+							coverPath = m.Manifest.Item.Href[i]
+							break
+						}
+					}
+
+					if packagePath == "" {
+						coverPath = "./uploads/" + fileName + "/" + coverPath
+					} else {
+						coverPath = "./uploads/" + fileName + "/" + packagePath + "/" + coverPath
+					}
+				}
+				fmt.Println(coverPath)
 			}
 		}
 		db.Close()
 	}
 }
 
-type CXMLS struct {
-	Body CBXMLS `xml:"body"`
-}
-
-type CBXMLS struct {
-	Content string `xml:",innerxml"`
+type CPSRCS struct {
+	Src string `xml:"src,attr"`
 }
 
 type OPFMetadata struct {
 	Metadata OPFTAS `xml:"metadata"`
 	Spine    OPFCS  `xml:"spine"`
+	Manifest OPFMAS `xml:"manifest"`
 }
 
 type OPFTAS struct {
@@ -1112,6 +1148,16 @@ type OPFCS struct {
 
 type OPFCIRS struct {
 	IdRef []string `xml:"idref,attr"`
+}
+
+type OPFMAS struct {
+	Item OPFITS `xml:"item"`
+}
+
+type OPFITS struct {
+	Id        []string `xml:"id,attr"`
+	Href      []string `xml:"href,attr"`
+	MediaType []string `xml:"media-type,attr"`
 }
 
 type XMLCS struct {
