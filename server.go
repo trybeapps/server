@@ -1022,43 +1022,66 @@ func UploadBook(c *gin.Context) {
 				out.Close()
 
 				fileName = strings.Split(fileName, ".epub")[0]
-				go EPUBUnzip(filePath, fileName)
+				EPUBUnzip(filePath, fileName)
 
 				fileUnzipPath := "./uploads/" + fileName + "/META-INF/container.xml"
 				XMLContent, err := ioutil.ReadFile(fileUnzipPath)
 				CheckError(err)
 
-				var xxx = `
-                <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
-    <head>
-        <title>Chapter 1. Introduction</title>
-        <link rel="stylesheet" type="text/css" href="css/epub.css" />
-    </head>
-    <body>
-        <section class="chapter" title="Chapter 1. Introduction" epub:type="chapter" id="introduction">
-            <h2 class="title">Chapter 1. Introduction</h2>
-            <p>If you’re expecting a run-of-the-mill best practices manual, be aware that there’s an
-                ulterior message that will be running through this one. While the primary goal is
-                certainly to give you the information you need to create accessible EPUB 3
-                publications, it also seeks to address the question of why you need to pay attention
-                to the quality of your data, and how accessible data and general good data practices
-                are more tightly entwined than you might think.</p>
-        </section>
-    </body>
-</html>
-`
-
 				v := XMLCS{}
 				err = xml.Unmarshal(XMLContent, &v)
 				CheckError(err)
-				fmt.Println(v)
+				fmt.Println(v.RootFiles.RootFile.FullPath)
 
-				vv := CXMLS{}
-				err = xml.Unmarshal([]byte(xxx), &vv)
+				OPFPath := "./uploads/" + fileName + "/" + v.RootFiles.RootFile.FullPath
+				fmt.Println(OPFPath)
+
+				XHTMLPath := strings.Split(v.RootFiles.RootFile.FullPath, ".opf")[0] + ".xhtml"
+				XHTMLPath = "./uploads/" + fileName + "/" + XHTMLPath
+				fmt.Println(XHTMLPath)
+
+				cmd := exec.Command("cp", OPFPath, XHTMLPath)
+
+				err = cmd.Start()
 				CheckError(err)
-				fmt.Println(vv)
+				fmt.Println("Waiting for command to finish...")
+				err = cmd.Wait()
+				fmt.Printf("Command finished with error: %v", err)
+
+				XMLContent, err = ioutil.ReadFile(XHTMLPath)
+				CheckError(err)
+
+				m := OPFMetadata{}
+				err = xml.Unmarshal(XMLContent, &m)
+				CheckError(err)
+				fmt.Println(m)
+
+				// 								var xxx = `
+				//                 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+				// <!DOCTYPE html>
+				// <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="en" lang="en">
+				//     <head>
+				//         <title>Chapter 1. Introduction</title>
+				//         <link rel="stylesheet" type="text/css" href="css/epub.css" />
+				//     </head>
+				//     <body>
+				//         <section class="chapter" title="Chapter 1. Introduction" epub:type="chapter" id="introduction">
+				//             <h2 class="title">Chapter 1. Introduction</h2>
+				//             <p>If you’re expecting a run-of-the-mill best practices manual, be aware that there’s an
+				//                 ulterior message that will be running through this one. While the primary goal is
+				//                 certainly to give you the information you need to create accessible EPUB 3
+				//                 publications, it also seeks to address the question of why you need to pay attention
+				//                 to the quality of your data, and how accessible data and general good data practices
+				//                 are more tightly entwined than you might think.</p>
+				//         </section>
+				//     </body>
+				// </html>
+				// `
+
+				// 				vv := CXMLS{}
+				// 				err = xml.Unmarshal([]byte(xxx), &vv)
+				// 				CheckError(err)
+				// 				fmt.Println(vv)
 			}
 		}
 		db.Close()
@@ -1071,6 +1094,24 @@ type CXMLS struct {
 
 type CBXMLS struct {
 	Content string `xml:",innerxml"`
+}
+
+type OPFMetadata struct {
+	Metadata OPFTAS `xml:"metadata"`
+	Spine    OPFCS  `xml:"spine"`
+}
+
+type OPFTAS struct {
+	Title  string `xml:"title"`
+	Author string `xml:"creator"`
+}
+
+type OPFCS struct {
+	ItemRef OPFCIRS `xml:"itemref"`
+}
+
+type OPFCIRS struct {
+	IdRef []string `xml:"idref,attr"`
 }
 
 type XMLCS struct {
@@ -1172,8 +1213,6 @@ func PDFSeparate(path string, filePath string, wg *sync.WaitGroup) error {
 }
 
 func EPUBUnzip(filePath string, fileName string) error {
-	runtime.GOMAXPROCS(runtime.NumCPU())
-	fmt.Println(runtime.NumCPU())
 	cmd := exec.Command("unzip", filePath, "-d", "uploads/"+fileName+"/")
 
 	err := cmd.Start()
