@@ -1122,10 +1122,46 @@ func UploadBook(c *gin.Context) {
 				}
 				fmt.Println(coverPath)
 
+				// var HTMLContent string
+				var HTMLPath string
+				idRef := m.Spine.ItemRef.IdRef
+				for _, e := range idRef {
+					fmt.Println(e)
+					id := m.Manifest.Item.Id
+					for j, f := range id {
+						if f == e {
+							if packagePath == "" {
+								HTMLPath = "./uploads/" + fileName + "/" + m.Manifest.Item.Href[j]
+							} else {
+								HTMLPath = "./uploads/" + fileName + "/" + packagePath + "/" + m.Manifest.Item.Href[j]
+							}
+							fmt.Println(HTMLPath)
+
+							currentHTML, err := ioutil.ReadFile(HTMLPath)
+							CheckError(err)
+
+							xmlBody := XMLBody{}
+							err = xml.Unmarshal(currentHTML, &xmlBody)
+							CheckError(err)
+
+							fmt.Println(xmlBody)
+
+							break
+						}
+					}
+				}
 			}
 		}
 		db.Close()
 	}
+}
+
+type XMLBody struct {
+	Body XMLBodyContent `xml:"body"`
+}
+
+type XMLBodyContent struct {
+	Content string `xml:",innerxml"`
 }
 
 type CPSRCS struct {
