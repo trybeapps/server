@@ -1140,7 +1140,7 @@ func UploadBook(c *gin.Context) {
 							err = xml.Unmarshal(currentHTML, &xmlBody)
 							CheckError(err)
 
-							HTMLContent += xmlBody.Body.Content
+							HTMLContent += xmlBody.Body.Content + "<br><br><br>"
 
 							break
 						}
