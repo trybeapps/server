@@ -76,14 +76,14 @@ func main() {
 
 	// Create book table
 	// Table: book
-	// ------------------------------------------------------------------------------------------
-	// Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
-	// ------------------------------------------------------------------------------------------
+	// --------------------------------------------------------------------------------------------------
+	// Fields: id, title, filename, author, url, cover, pages, current_page, format, uploaded_on, user_id
+	// --------------------------------------------------------------------------------------------------
 	stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `book` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
 		" `title` VARCHAR(255) NOT NULL, `filename` VARCHAR(255) NOT NULL," +
 		" `author` VARCHAR(255) NOT NULL, `url` VARCHAR(255) NOT NULL," +
 		" `cover` VARCHAR(255) NOT NULL, `pages` INTEGER NOT NULL, `current_page` INTEGER DEFAULT 0," +
-		" `uploaded_on` VARCHAR(255) NOT NULL, `user_id` INTEGER NOT NULL)")
+		" `format` VARCHAR(255) NOT NULL, `uploaded_on` VARCHAR(255) NOT NULL, `user_id` INTEGER NOT NULL)")
 	CheckError(err)
 
 	_, err = stmt.Exec()
@@ -926,16 +926,22 @@ func UploadBook(c *gin.Context) {
 				continue
 			}
 
+			t := time.Now()
+
+			uploadedOn := t.Format("20060102150405")
+			fmt.Println("Uploaded on: " + uploadedOn)
+
+			filePath := "./uploads/" + fileName
+
+			out, err := os.Create(filePath)
+			CheckError(err)
+
+			_, err = io.Copy(out, mimePart)
+			CheckError(err)
+
+			out.Close()
+
 			if contentType == "application/pdf" {
-				filePath := "./uploads/" + fileName
-
-				out, err := os.Create(filePath)
-				CheckError(err)
-
-				_, err = io.Copy(out, mimePart)
-				CheckError(err)
-
-				out.Close()
 
 				title, author, pages := GetPDFInfo(filePath)
 
@@ -969,18 +975,13 @@ func UploadBook(c *gin.Context) {
 
 				fmt.Println("Book cover URL: " + cover)
 
-				t := time.Now()
-
-				uploadedOn := t.Format("20060102150405")
-				fmt.Println("Uploaded on: " + uploadedOn)
-
-				// ------------------------------------------------------------------------------------------
-				// Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
-				// ------------------------------------------------------------------------------------------
-				stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, uploaded_on, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+				// --------------------------------------------------------------------------------------------------
+				// Fields: id, title, filename, author, url, cover, pages, current_page, format, uploaded_on, user_id
+				// --------------------------------------------------------------------------------------------------
+				stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, format, uploaded_on, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
 				CheckError(err)
 
-				res, err := stmt.Exec(title, fileName, author, url, cover, pagesInt, uploadedOn, userId)
+				res, err := stmt.Exec(title, fileName, author, url, cover, pagesInt, "pdf", uploadedOn, userId)
 				CheckError(err)
 
 				id, err := res.LastInsertId()
@@ -1011,20 +1012,11 @@ func UploadBook(c *gin.Context) {
 
 				c.String(200, fileName+" uploaded successfully. ")
 			} else if contentType == "application/epub+zip" {
-				filePath := "./uploads/" + fileName
 
-				out, err := os.Create(filePath)
-				CheckError(err)
+				unzipPath := strings.Split(fileName, ".epub")[0]
+				EPUBUnzip(filePath, unzipPath)
 
-				_, err = io.Copy(out, mimePart)
-				CheckError(err)
-
-				out.Close()
-
-				fileName = strings.Split(fileName, ".epub")[0]
-				EPUBUnzip(filePath, fileName)
-
-				fileUnzipPath := "./uploads/" + fileName + "/META-INF/container.xml"
+				fileUnzipPath := "./uploads/" + unzipPath + "/META-INF/container.xml"
 				XMLContent, err := ioutil.ReadFile(fileUnzipPath)
 				CheckError(err)
 
@@ -1042,11 +1034,11 @@ func UploadBook(c *gin.Context) {
 
 				fmt.Println(strings.Split(v.RootFiles.RootFile.FullPath, "/"))
 
-				OPFPath := "./uploads/" + fileName + "/" + v.RootFiles.RootFile.FullPath
+				OPFPath := "./uploads/" + unzipPath + "/" + v.RootFiles.RootFile.FullPath
 				fmt.Println(OPFPath)
 
 				XHTMLPath := strings.Split(v.RootFiles.RootFile.FullPath, ".opf")[0] + ".xhtml"
-				XHTMLPath = "./uploads/" + fileName + "/" + XHTMLPath
+				XHTMLPath = "./uploads/" + unzipPath + "/" + XHTMLPath
 				fmt.Println(XHTMLPath)
 
 				cmd := exec.Command("cp", OPFPath, XHTMLPath)
@@ -1079,9 +1071,9 @@ func UploadBook(c *gin.Context) {
 					}
 
 					if packagePath == "" {
-						coverPath = "./uploads/" + fileName + "/" + coverPath
+						coverPath = "./uploads/" + unzipPath + "/" + coverPath
 					} else {
-						coverPath = "./uploads/" + fileName + "/" + packagePath + "/" + coverPath
+						coverPath = "./uploads/" + unzipPath + "/" + packagePath + "/" + coverPath
 					}
 
 					fmt.Println(coverPath)
@@ -1102,22 +1094,22 @@ func UploadBook(c *gin.Context) {
 					fmt.Println(coverFile)
 
 					if packagePath == "" {
-						coverPath = "./uploads/" + fileName + "/" + coverFile.Src
+						coverPath = "./uploads/" + unzipPath + "/" + coverFile.Src
 					} else {
-						coverPath = "./uploads/" + fileName + "/" + packagePath + "/" + coverFile.Src
+						coverPath = "./uploads/" + unzipPath + "/" + packagePath + "/" + coverFile.Src
 					}
 				} else {
 					for i, e := range m.Manifest.Item.Id {
-						if e == "cover" {
+						if strings.Contains(e, "cover") {
 							coverPath = m.Manifest.Item.Href[i]
 							break
 						}
 					}
 
 					if packagePath == "" {
-						coverPath = "./uploads/" + fileName + "/" + coverPath
+						coverPath = "./uploads/" + unzipPath + "/" + coverPath
 					} else {
-						coverPath = "./uploads/" + fileName + "/" + packagePath + "/" + coverPath
+						coverPath = "./uploads/" + unzipPath + "/" + packagePath + "/" + coverPath
 					}
 				}
 				fmt.Println(coverPath)
@@ -1135,9 +1127,9 @@ func UploadBook(c *gin.Context) {
 								hrefPath = hrefSplit[0]
 							}
 							if packagePath == "" {
-								HTMLPath = "./uploads/" + fileName + "/" + m.Manifest.Item.Href[j]
+								HTMLPath = "./uploads/" + unzipPath + "/" + m.Manifest.Item.Href[j]
 							} else {
-								HTMLPath = "./uploads/" + fileName + "/" + packagePath + "/" + m.Manifest.Item.Href[j]
+								HTMLPath = "./uploads/" + unzipPath + "/" + packagePath + "/" + m.Manifest.Item.Href[j]
 							}
 							fmt.Println(HTMLPath)
 
@@ -1157,11 +1149,25 @@ func UploadBook(c *gin.Context) {
 				HTMLContent += "</html>"
 				var writeHTMLPath string
 				if packagePath == "" {
-					writeHTMLPath = "./uploads/" + fileName + "/" + hrefPath + "/" + fileName + "_epub_content.html"
+					writeHTMLPath = "./uploads/" + unzipPath + "/" + hrefPath + "/" + unzipPath + "_epub_content.html"
 				} else {
-					writeHTMLPath = "./uploads/" + fileName + "/" + packagePath + "/" + hrefPath + "/" + fileName + "_epub_content.html"
+					writeHTMLPath = "./uploads/" + unzipPath + "/" + packagePath + "/" + hrefPath + "/" + unzipPath + "_epub_content.html"
 				}
 				err = ioutil.WriteFile(writeHTMLPath, []byte(HTMLContent), 0700)
+
+				// --------------------------------------------------------------------------------------------------
+				// Fields: id, title, filename, author, url, cover, pages, current_page, format, uploaded_on, user_id
+				// --------------------------------------------------------------------------------------------------
+				stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, format, uploaded_on, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+				CheckError(err)
+
+				res, err := stmt.Exec(m.Metadata.Title, fileName, m.Metadata.Author, writeHTMLPath, coverPath, 0, "pdf", uploadedOn, userId)
+				CheckError(err)
+
+				id, err := res.LastInsertId()
+				CheckError(err)
+
+				fmt.Println(id)
 
 			}
 		}
