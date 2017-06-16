@@ -1121,6 +1121,7 @@ func UploadBook(c *gin.Context) {
 					}
 				}
 				fmt.Println(coverPath)
+
 			}
 		}
 		db.Close()
