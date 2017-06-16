@@ -1122,14 +1122,18 @@ func UploadBook(c *gin.Context) {
 				}
 				fmt.Println(coverPath)
 
-				var HTMLContent string
-				var HTMLPath string
+				HTMLContent := "<html><head><title>" + m.Metadata.Title + "</title></head>"
+				var HTMLPath, hrefPath string
 				idRef := m.Spine.ItemRef.IdRef
 				for _, e := range idRef {
 					fmt.Println(e)
 					id := m.Manifest.Item.Id
 					for j, f := range id {
 						if f == e {
+							hrefSplit := strings.Split(m.Manifest.Item.Href[j], "/")
+							if len(hrefSplit) > 1 {
+								hrefPath = hrefSplit[0]
+							}
 							if packagePath == "" {
 								HTMLPath = "./uploads/" + fileName + "/" + m.Manifest.Item.Href[j]
 							} else {
@@ -1150,11 +1154,12 @@ func UploadBook(c *gin.Context) {
 						}
 					}
 				}
+				HTMLContent += "</html>"
 				var writeHTMLPath string
 				if packagePath == "" {
-					writeHTMLPath = "./uploads/" + fileName + "/" + fileName + "_epub_content.html"
+					writeHTMLPath = "./uploads/" + fileName + "/" + hrefPath + "/" + fileName + "_epub_content.html"
 				} else {
-					writeHTMLPath = "./uploads/" + fileName + "/" + packagePath + "/" + fileName + "_epub_content.html"
+					writeHTMLPath = "./uploads/" + fileName + "/" + packagePath + "/" + hrefPath + "/" + fileName + "_epub_content.html"
 				}
 				err = ioutil.WriteFile(writeHTMLPath, []byte(HTMLContent), 0700)
 
