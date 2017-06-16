@@ -1122,7 +1122,7 @@ func UploadBook(c *gin.Context) {
 				}
 				fmt.Println(coverPath)
 
-				// var HTMLContent string
+				var HTMLContent string
 				var HTMLPath string
 				idRef := m.Spine.ItemRef.IdRef
 				for _, e := range idRef {
@@ -1144,12 +1144,20 @@ func UploadBook(c *gin.Context) {
 							err = xml.Unmarshal(currentHTML, &xmlBody)
 							CheckError(err)
 
-							fmt.Println(xmlBody)
+							HTMLContent += xmlBody.Body.Content
 
 							break
 						}
 					}
 				}
+				var writeHTMLPath string
+				if packagePath == "" {
+					writeHTMLPath = "./uploads/" + fileName + "/" + fileName + "_epub_content.html"
+				} else {
+					writeHTMLPath = "./uploads/" + fileName + "/" + packagePath + "/" + fileName + "_epub_content.html"
+				}
+				err = ioutil.WriteFile(writeHTMLPath, []byte(HTMLContent), 0700)
+
 			}
 		}
 		db.Close()
