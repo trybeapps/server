@@ -193,7 +193,7 @@ func main() {
 	r.POST("/upload", UploadBook)
 	r.GET("/book/:bookname", env.SendBook)
 	r.GET("/cover/:covername", SendBookCover)
-	r.GET("/books/:pagination", GetPagination)
+	r.GET("/books/:pagination", env.GetPagination)
 	r.GET("/autocomplete", GetAutocomplete)
 	r.GET("/collections", GetCollections)
 	r.GET("/add-collection", GetAddCollection)
@@ -457,7 +457,7 @@ func (e *Env) _GetPaginatedBooks(userId int64, startIndex int64, endIndex int64)
 	return &books
 }
 
-func _ConstructBooksForPagination(books *BookStructList, length int64) []BookStructList {
+func _ConstructBooksWithCount(books *BookStructList, length int64) []BookStructList {
 	booksList := []BookStructList{}
 	var i, j int64
 	for i = 0; i < int64(len(*books)); i += length {
@@ -469,6 +469,28 @@ func _ConstructBooksForPagination(books *BookStructList, length int64) []BookStr
 	}
 
 	return booksList
+}
+
+func (e *Env) _ConstructBooksForPagination(userId int64) (int64, *BookStructList, []BookStructList, []BookStructList, []BookStructList) {
+	// Check total number of rows in book table
+	booksCount := e._GetTotalBooksCount(userId)
+
+	// With Total Books count, Get Total pages required
+	totalPages := _GetTotalPages(booksCount)
+
+	// Get first 18 books for the home page
+	books := e._GetPaginatedBooks(userId, 0, 18)
+
+	// Construct books of length 6 for large screen size
+	booksList := _ConstructBooksWithCount(books, 6)
+
+	// Construct books of length 3 for medium screen size
+	booksListMedium := _ConstructBooksWithCount(books, 3)
+
+	// Construct books of length 2 for small screen size
+	booksListSmall := _ConstructBooksWithCount(books, 2)
+
+	return totalPages, books, booksList, booksListMedium, booksListSmall
 }
 
 func (e *Env) GetHomePage(c *gin.Context) {
@@ -504,24 +526,7 @@ func (e *Env) GetHomePage(c *gin.Context) {
 			})
 		}
 
-		// Check total number of rows in book table
-		booksCount := e._GetTotalBooksCount(userId)
-
-		// With Total Books count, Get Total pages required
-		totalPages := _GetTotalPages(booksCount)
-		fmt.Println(totalPages)
-
-		// Get first 18 books for the home page
-		books := e._GetPaginatedBooks(userId, 0, 18)
-
-		// Construct books of length 6 for large screen size
-		booksList := _ConstructBooksForPagination(books, 6)
-
-		// Construct books of length 3 for medium screen size
-		booksListMedium := _ConstructBooksForPagination(books, 3)
-
-		// Construct books of length 2 for small screen size
-		booksListSmall := _ConstructBooksForPagination(books, 2)
+		totalPages, books, booksList, booksListMedium, booksListSmall := e._ConstructBooksForPagination(userId)
 
 		c.HTML(302, "index.html", gin.H{
 			"q": q,
@@ -536,115 +541,23 @@ func (e *Env) GetHomePage(c *gin.Context) {
 	c.Redirect(302, "/signin")
 }
 
-func GetPagination(c *gin.Context) {
-	session := sessions.Default(c)
-	if session.Get("email") != nil {
-		fmt.Println(session.Get("email"))
+func (e *Env) GetPagination(c *gin.Context) {
+	email := _GetEmailFromSession(c)
+	if email != nil {
 		pagination, err := strconv.Atoi(c.Param("pagination"))
 		CheckError(err)
 
-		db, err := sql.Open("sqlite3", "./libreread.db")
-		CheckError(err)
+		userId := e._GetUserId(email.(string))
 
-		rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
-		CheckError(err)
-
-		var id int64
-		if rows.Next() {
-			err := rows.Scan(&id)
-			CheckError(err)
-		}
-		fmt.Println(id)
-		rows.Close()
-
-		// Check total number of rows in book table
-		rows, err = db.Query("SELECT COUNT(*) AS count FROM `book`")
-		CheckError(err)
-
-		var count int64
-		for rows.Next() {
-			err = rows.Scan(&count)
-			CheckError(err)
-		}
-		fmt.Println(count)
-
-		var totalPages float64 = float64(float64(count) / 18.0)
-		totalPagesDecimal := fmt.Sprintf("%.1f", totalPages)
-
-		var tp int64
-		if strings.Split(totalPagesDecimal, ".")[1] == "0" {
-			tp = int64(totalPages)
-		} else {
-			tp = int64(totalPages) + 1
-		}
-		fmt.Println(tp)
-
-		// ------------------------------------------------------------------------------------------
-		// Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
-		// ------------------------------------------------------------------------------------------
-		rows, err = db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ?, ?", id, (pagination-1)*18, 18)
-		CheckError(err)
-
-		b := BookStructList{}
-
-		var (
-			title string
-			url   string
-			cover string
-		)
-		for rows.Next() {
-			err = rows.Scan(
-				&title,
-				&url,
-				&cover,
-			)
-			CheckError(err)
-
-			b = append(b, BookStruct{
-				title,
-				url,
-				cover,
-			})
-		}
-		rows.Close()
-		db.Close()
-
-		booksList := []BookStructList{}
-		for i := 0; i < len(b); i += 6 {
-			j := i + 6
-			for j > len(b) {
-				j -= 1
-			}
-			booksList = append(booksList, b[i:j])
-		}
-
-		booksListMedium := []BookStructList{}
-		for i := 0; i < len(b); i += 3 {
-			j := i + 3
-			for j > len(b) {
-				j -= 1
-			}
-			booksListMedium = append(booksListMedium, b[i:j])
-		}
-
-		booksListSmall := []BookStructList{}
-		for i := 0; i < len(b); i += 2 {
-			j := i + 2
-			for j > len(b) {
-				j -= 1
-			}
-			booksListSmall = append(booksListSmall, b[i:j])
-		}
-
-		booksListXtraSmall := b
+		totalPages, books, booksList, booksListMedium, booksListSmall := e._ConstructBooksForPagination(userId)
 
 		c.HTML(302, "pagination.html", gin.H{
 			"pagination":         pagination,
 			"booksList":          booksList,
 			"booksListMedium":    booksListMedium,
 			"booksListSmall":     booksListSmall,
-			"booksListXtraSmall": booksListXtraSmall,
-			"tp":                 tp,
+			"booksListXtraSmall": books,
+			"totalPages":         totalPages,
 		})
 	}
 	c.Redirect(302, "/signin")
