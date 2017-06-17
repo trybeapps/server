@@ -811,6 +811,15 @@ func _ConstructFileNameForBook(fileName string, contentType string) string {
 	return fileName
 }
 
+func _HasPrefix(opSplit []string, content string) string {
+	for _, element := range opSplit {
+		if strings.HasPrefix(element, content) {
+			return strings.Trim(strings.Split(element, ":")[1], " ")
+		}
+	}
+	return ""
+}
+
 func _GetPDFInfo(filePath string) (string, string, string) {
 	cmd := exec.Command("pdfinfo", filePath)
 
@@ -823,36 +832,140 @@ func _GetPDFInfo(filePath string) (string, string, string) {
 	output := out.String()
 	opSplit := strings.Split(output, "\n")
 
-	title := opSplit[0]
-	author := opSplit[1]
-	pages := ""
-
-	// Get number of pages.
-	for _, element := range opSplit {
-		if strings.HasPrefix(element, "Pages") {
-			pages = strings.Split(element, ":")[1]
-			pages = strings.Trim(pages, " ")
-			break
-		}
-	}
-
 	// Get book title.
-	if strings.HasPrefix(title, "Title") {
-		title = strings.Split(title, ":")[1]
-		title = strings.Trim(title, " ")
-	} else {
-		title = ""
-	}
+	title := _HasPrefix(opSplit, "Title")
 
 	// Get author of the uploaded book.
-	if strings.HasPrefix(author, "Author") {
-		author = strings.Split(author, ":")[1]
-		author = strings.Trim(author, " ")
-	} else {
-		author = ""
-	}
+	author := _HasPrefix(opSplit, "Author")
+
+	// Get total number of pages.
+	pages := _HasPrefix(opSplit, "Pages")
 
 	return title, author, pages
+}
+
+func _GeneratePDFCover(fileName, filePath, coverPath string) string {
+	cmd := exec.Command("pdfimages", "-p", "-png", "-f", "1", "-l", "2", filePath, coverPath)
+
+	err := cmd.Run()
+	CheckError(err)
+
+	if _, err := os.Stat(coverPath + "-001-000.png"); err == nil {
+		cover := "/cover/" + fileName + "-001-000.png"
+		return cover
+	}
+	return ""
+}
+
+func (e *Env) _InsertBookRecord(
+	title string,
+	fileName string,
+	author string,
+	url string,
+	cover string,
+	pagesInt int64,
+	format string,
+	uploadedOn string,
+	userId int64,
+) int64 {
+	stmt, err := e.db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, format, uploaded_on, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	CheckError(err)
+
+	res, err := stmt.Exec(title, fileName, author, url, cover, pagesInt, "pdf", uploadedOn, userId)
+	CheckError(err)
+
+	id, err := res.LastInsertId()
+	CheckError(err)
+
+	return id
+}
+
+type BookInfoStruct struct {
+	Title  string `json:"title"`
+	Author string `json:"author"`
+	URL    string `json:"url"`
+	Cover  string `json:"cover"`
+}
+
+func _PDFSeparate(path string, filePath string, wg *sync.WaitGroup) error {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	fmt.Println(runtime.NumCPU())
+	cmd := exec.Command("pdfseparate", filePath, path+"/%d.pdf")
+
+	err := cmd.Start()
+	CheckError(err)
+	fmt.Println("Waiting for command to finish...")
+	err = cmd.Wait()
+	fmt.Printf("Command finished with error: %v", err)
+	wg.Done()
+	return nil
+}
+
+func _ConstructPDFIndexURL(userId int64, bookId int64, i int64, pageJSON []byte) {
+	indexURL := "http://localhost:9200/lr_index/book_detail/" +
+		strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) +
+		"_" + strconv.Itoa(int(i)) + "?pipeline=attachment"
+	fmt.Println("Index URL: " + indexURL)
+	PutJSON(indexURL, pageJSON)
+}
+
+type BookDataStruct struct {
+	TheData string `json:"thedata"`
+	Title   string `json:"title"`
+	Author  string `json:"author"`
+	URL     string `json:"url"`
+	Cover   string `json:"cover"`
+	Page    int64  `json:"page"`
+}
+
+func _LoopThroughSplittedPages(userId int64, bookId int64, pagesInt int64, splitPDFPath string, title string, author string, url string, cover string) {
+	var i int64
+	for i = 1; i < (pagesInt + 1); i += 1 {
+		pagePath := splitPDFPath + "/" + strconv.Itoa(int(i)) + ".pdf"
+		if _, err := os.Stat(pagePath); os.IsNotExist(err) {
+			continue
+		}
+		data, err := ioutil.ReadFile(pagePath)
+		CheckError(err)
+
+		sEnc := base64.StdEncoding.EncodeToString([]byte(string(data)))
+
+		bookDetail := BookDataStruct{
+			TheData: sEnc,
+			Title:   title,
+			Author:  author,
+			URL:     url,
+			Cover:   cover,
+			Page:    i,
+		}
+
+		pageJSON, err := json.Marshal(bookDetail)
+		CheckError(err)
+
+		_ConstructPDFIndexURL(userId, bookId, i, pageJSON)
+	}
+}
+
+func FeedPDFContent(filePath string, userId int64, bookId int64, title string, author string, url string, cover string, pagesInt int64) {
+	// Set home many CPU cores this function wants to use.
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	fmt.Println(runtime.NumCPU())
+
+	timeNow := _GetCurrentTime()
+	splitPDFPath := "./uploads/splitpdf_" + strconv.Itoa(int(userId)) + "_" + timeNow
+	if _, err := os.Stat(splitPDFPath); os.IsNotExist(err) {
+		os.Mkdir(splitPDFPath, 0700)
+	}
+
+	defer os.RemoveAll(splitPDFPath)
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go _PDFSeparate(splitPDFPath, filePath, &wg)
+	wg.Wait()
+	fmt.Println("wg done!")
+
+	_LoopThroughSplittedPages(userId, bookId, pagesInt, splitPDFPath, title, author, url, cover)
 }
 
 func (e *Env) UploadBook(c *gin.Context) {
@@ -871,7 +984,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 			}
 
 			// Get dispostion and content type
-			disposition, params, err := mime.ParseMediaType(mimePart.Header.Get("Content-Disposition"))
+			_, params, err := mime.ParseMediaType(mimePart.Header.Get("Content-Disposition"))
 			CheckError(err)
 			contentType, _, err := mime.ParseMediaType(mimePart.Header.Get("Content-Type"))
 			CheckError(err)
@@ -910,44 +1023,27 @@ func (e *Env) UploadBook(c *gin.Context) {
 					author = "unknown"
 				}
 
-				pagesInt, err := strconv.ParseInt(pages, 10, 64)
-				CheckError(err)
-
 				fmt.Println("Book title: " + title)
 				fmt.Println("Book author: " + author)
 				fmt.Println("Total pages: " + pages)
+
+				pagesInt, err := strconv.ParseInt(pages, 10, 64)
+				CheckError(err)
 
 				url := "/book/" + fileName
 				fmt.Println("Book URL: " + url)
 
 				coverPath := "./uploads/img/" + fileName
 
-				GeneratePDFCover(filePath, coverPath)
+				cover := _GeneratePDFCover(fileName, filePath, coverPath)
 
-				cover := ""
+				fmt.Println("Book cover: " + cover)
 
-				if _, err := os.Stat(coverPath + "-001-000.png"); err == nil {
-					cover = "/cover/" + fileName + "-001-000.png"
-				}
-
-				fmt.Println("Book cover URL: " + cover)
-
-				// --------------------------------------------------------------------------------------------------
-				// Fields: id, title, filename, author, url, cover, pages, current_page, format, uploaded_on, user_id
-				// --------------------------------------------------------------------------------------------------
-				stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, format, uploaded_on, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-				CheckError(err)
-
-				res, err := stmt.Exec(title, fileName, author, url, cover, pagesInt, "pdf", uploadedOn, userId)
-				CheckError(err)
-
-				id, err := res.LastInsertId()
-				CheckError(err)
-
-				fmt.Println(id)
+				// Insert new book in `book` table
+				bookId := e._InsertBookRecord(title, fileName, author, url, cover, pagesInt, "pdf", uploadedOn, userId)
 
 				// Feed book info to ES
-				bookInfo := BIS{
+				bookInfo := BookInfoStruct{
 					Title:  title,
 					Author: author,
 					URL:    url,
@@ -956,7 +1052,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 
 				fmt.Println(bookInfo)
 
-				indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(id))
+				indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(bookId))
 				fmt.Println(indexURL)
 
 				b, err := json.Marshal(bookInfo)
@@ -965,7 +1061,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 				PutJSON(indexURL, b)
 
 				// Feed book content to ES
-				go FeedContent(filePath, userId, id, title, author, url, cover, pagesInt)
+				go FeedPDFContent(filePath, userId, bookId, title, author, url, cover, pagesInt)
 
 				c.String(200, fileName+" uploaded successfully. ")
 			} else if contentType == "application/epub+zip" {
@@ -1115,7 +1211,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 				// --------------------------------------------------------------------------------------------------
 				// Fields: id, title, filename, author, url, cover, pages, current_page, format, uploaded_on, user_id
 				// --------------------------------------------------------------------------------------------------
-				stmt, err := db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, format, uploaded_on, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+				stmt, err := e.db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, format, uploaded_on, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
 				CheckError(err)
 
 				res, err := stmt.Exec(m.Metadata.Title, fileName, m.Metadata.Author, writeHTMLPath, coverPath, 0, "pdf", uploadedOn, userId)
@@ -1128,7 +1224,6 @@ func (e *Env) UploadBook(c *gin.Context) {
 
 			}
 		}
-		db.Close()
 	}
 }
 
@@ -1185,92 +1280,6 @@ type XMLRF struct {
 	FullPath string `xml:"full-path,attr"`
 }
 
-type BIS struct {
-	Title  string `json:"title"`
-	Author string `json:"author"`
-	URL    string `json:"url"`
-	Cover  string `json:"cover"`
-}
-
-func FeedContent(filePath string, userId int64, bookId int64, title string, author string, url string, cover string, pagesInt int64) {
-	// Set home many CPU cores this function wants to use.
-	runtime.GOMAXPROCS(runtime.NumCPU())
-	fmt.Println(runtime.NumCPU())
-
-	t := time.Now()
-	timeNow := t.Format("20060102150405")
-	path := "./uploads/splitpdf_" + strconv.Itoa(int(userId)) + "_" + timeNow
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		os.Mkdir(path, 0700)
-	}
-	fmt.Println(path)
-	fmt.Println(filePath)
-
-	fmt.Println("\n\n\n\n\n")
-	fmt.Println(title)
-	var wg sync.WaitGroup
-	wg.Add(1)
-	go PDFSeparate(path, filePath, &wg)
-	wg.Wait()
-	fmt.Println("wg done!")
-
-	var i int64
-	for i = 1; i < (pagesInt + 1); i += 1 {
-		pagePath := path + "/" + strconv.Itoa(int(i)) + ".pdf"
-		if _, err := os.Stat(pagePath); os.IsNotExist(err) {
-			continue
-		}
-		data, err := ioutil.ReadFile(pagePath)
-		CheckError(err)
-
-		sEnc := base64.StdEncoding.EncodeToString([]byte(string(data)))
-
-		bookDetail := BDS{
-			TheData: sEnc,
-			Title:   title,
-			Author:  author,
-			URL:     url,
-			Cover:   cover,
-			Page:    i,
-		}
-
-		b, err := json.Marshal(bookDetail)
-		CheckError(err)
-
-		indexURL := "http://localhost:9200/lr_index/book_detail/" +
-			strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) +
-			"_" + strconv.Itoa(int(i)) + "?pipeline=attachment"
-		fmt.Println("Index URL: " + indexURL)
-		PutJSON(indexURL, b)
-	}
-
-	// Remove the splitted files as it is not needed now.
-	defer os.RemoveAll(path)
-}
-
-type BDS struct {
-	TheData string `json:"thedata"`
-	Title   string `json:"title"`
-	Author  string `json:"author"`
-	URL     string `json:"url"`
-	Cover   string `json:"cover"`
-	Page    int64  `json:"page"`
-}
-
-func PDFSeparate(path string, filePath string, wg *sync.WaitGroup) error {
-	runtime.GOMAXPROCS(runtime.NumCPU())
-	fmt.Println(runtime.NumCPU())
-	cmd := exec.Command("pdfseparate", filePath, path+"/%d.pdf")
-
-	err := cmd.Start()
-	CheckError(err)
-	fmt.Println("Waiting for command to finish...")
-	err = cmd.Wait()
-	fmt.Printf("Command finished with error: %v", err)
-	wg.Done()
-	return nil
-}
-
 func EPUBUnzip(filePath string, fileName string) error {
 	cmd := exec.Command("unzip", filePath, "-d", "uploads/"+fileName+"/")
 
@@ -1280,13 +1289,6 @@ func EPUBUnzip(filePath string, fileName string) error {
 	err = cmd.Wait()
 	fmt.Printf("Command finished with error: %v", err)
 	return nil
-}
-
-func GeneratePDFCover(filePath, coverPath string) {
-	cmd := exec.Command("pdfimages", "-p", "-png", "-f", "1", "-l", "2", filePath, coverPath)
-
-	err := cmd.Run()
-	CheckError(err)
 }
 
 type BIP struct {
@@ -1357,9 +1359,9 @@ func GetAutocomplete(c *gin.Context) {
 	json.Unmarshal(res, &target)
 
 	hits := target.Hits.Hits
-	hitsBIS := []BIS{}
+	hitsBIS := []BookInfoStruct{}
 	for _, el := range hits {
-		hitsBIS = append(hitsBIS, BIS{
+		hitsBIS = append(hitsBIS, BookInfoStruct{
 			Title:  el.Source.Title,
 			Author: el.Source.Author,
 			URL:    el.Source.URL,
@@ -1415,8 +1417,8 @@ func GetAutocomplete(c *gin.Context) {
 }
 
 type BSR struct {
-	BookInfo   []BIS    `json:"book_info"`
-	BookDetail []BDRSHS `json:"book_detail"`
+	BookInfo   []BookInfoStruct `json:"book_info"`
+	BookDetail []BDRSHS         `json:"book_detail"`
 }
 
 type BDRS struct {
@@ -1453,7 +1455,7 @@ type BIRSH struct {
 }
 
 type BIRSHH struct {
-	Source BIS `json:"_source"`
+	Source BookInfoStruct `json:"_source"`
 }
 
 func GetJSONPassPayload(url string, payload []byte) []byte {
