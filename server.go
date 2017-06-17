@@ -184,7 +184,7 @@ func main() {
 	// Router
 	r.GET("/", env.GetHomePage)
 	r.GET("/signin", GetSignIn)
-	r.POST("/signin", PostSignIn)
+	r.POST("/signin", env.PostSignIn)
 	r.GET("/signup", GetSignUp)
 	r.POST("/signup", PostSignUp)
 	r.GET("/confirm-email", ConfirmEmail)
@@ -579,20 +579,9 @@ func GetSignOut(c *gin.Context) {
 	c.Redirect(302, "/")
 }
 
-func PostSignIn(c *gin.Context) {
-	email := c.PostForm("email")
-	password := []byte(c.PostForm("password"))
-
-	fmt.Println(email)
-	fmt.Println(password)
-
-	db, err := sql.Open("sqlite3", "./libreread.db")
+func (e *Env) _GetHashedPassword(email string) []byte {
+	rows, err := e.db.Query("select password_hash from user where email = ?", email)
 	CheckError(err)
-
-	rows, err := db.Query("select password_hash from user where email = ?", email)
-	CheckError(err)
-
-	db.Close()
 
 	var hashedPassword []byte
 
@@ -600,13 +589,26 @@ func PostSignIn(c *gin.Context) {
 	if rows.Next() {
 		err := rows.Scan(&hashedPassword)
 		CheckError(err)
-		fmt.Println(hashedPassword)
 	}
 
-	// Comparing the password with the hash
-	err = bcrypt.CompareHashAndPassword(hashedPassword, password)
-	fmt.Println(err) // nil means it is a match
+	return hashedPassword
+}
 
+func _CompareHashAndPassword(hashedPassword []byte, password []byte) error {
+	// Comparing the password with the hash
+	err := bcrypt.CompareHashAndPassword(hashedPassword, password)
+	return err
+}
+
+func (e *Env) PostSignIn(c *gin.Context) {
+	email := c.PostForm("email")
+	password := []byte(c.PostForm("password"))
+
+	hashedPassword := e._GetHashedPassword(email)
+
+	err := _CompareHashAndPassword(hashedPassword, password)
+
+	// err nil means it is a match
 	if err == nil {
 		c.Redirect(302, "/")
 
