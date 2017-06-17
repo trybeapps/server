@@ -121,26 +121,26 @@ func main() {
 	_, err = stmt.Exec()
 	CheckError(err)
 
-	type ASPA struct {
+	type Attachment struct {
 		Field        string `json:"field"`
 		IndexedChars int64  `json:"indexed_chars"`
 	}
 
-	type ASP struct {
-		Attachment ASPA `json:"attachment"`
+	type Processors struct {
+		Attachment Attachment `json:"attachment"`
 	}
 
-	type AS struct {
-		Description string `json:"description"`
-		Processors  []ASP  `json:"processors"`
+	type AttachmentStruct struct {
+		Description string       `json:"description"`
+		Processors  []Processors `json:"processors"`
 	}
 
 	// Init Elasticsearch attachment
-	attachment := &AS{
+	attachment := &AttachmentStruct{
 		Description: "Process documents",
-		Processors: []ASP{
-			ASP{
-				Attachment: ASPA{
+		Processors: []Processors{
+			Processors{
+				Attachment: Attachment{
 					Field:        "thedata",
 					IndexedChars: -1,
 				},
@@ -156,18 +156,18 @@ func main() {
 
 	PutJSON("http://localhost:9200/_ingest/pipeline/attachment", b)
 
-	type ISS struct {
+	type Settings struct {
 		NumberOfShards   int64 `json:"number_of_shards"`
 		NumberOfReplicas int64 `json:"number_of_replicas"`
 	}
 
-	type IS struct {
-		Settings ISS `json:"settings"`
+	type IndexStruct struct {
+		Settings Settings `json:"settings"`
 	}
 
 	// Init Elasticsearch index
-	index := &IS{
-		ISS{
+	index := &IndexStruct{
+		Settings{
 			NumberOfShards:   4,
 			NumberOfReplicas: 0,
 		},
