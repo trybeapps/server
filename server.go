@@ -190,7 +190,7 @@ func main() {
 	r.GET("/confirm-email", env.ConfirmEmail)
 	r.GET("/new-token", env.SendNewToken)
 	r.GET("/signout", GetSignOut)
-	r.POST("/upload", UploadBook)
+	r.POST("/upload", env.UploadBook)
 	r.GET("/book/:bookname", env.SendBook)
 	r.GET("/cover/:covername", SendBookCover)
 	r.GET("/books/:pagination", env.GetPagination)
@@ -799,27 +799,66 @@ func (e *Env) SendNewToken(c *gin.Context) {
 	go e._SendConfirmationEmail(int64(userId), name, email)
 }
 
-func UploadBook(c *gin.Context) {
-	session := sessions.Default(c)
-	if session.Get("email") != nil {
-		fmt.Println(session.Get("email"))
+func _ConstructFileNameForBook(fileName string, contentType string) string {
+	if contentType == "application/pdf" {
+		fileName = strings.Split(fileName, ".pdf")[0]
+		fileName = strings.Join(strings.Split(fileName, " "), "_") + ".pdf"
+	} else if contentType == "application/epub+zip" {
+		fileName = strings.Split(fileName, ".epub")[0]
+		fileName = strings.Join(strings.Split(fileName, " "), "_") + ".epub"
+	}
 
-		db, err := sql.Open("sqlite3", "./libreread.db")
-		CheckError(err)
+	return fileName
+}
 
-		rows, err := db.Query("select id from user where email = ?", session.Get("email"))
-		CheckError(err)
+func _GetPDFInfo(filePath string) (string, string, string) {
+	cmd := exec.Command("pdfinfo", filePath)
 
-		var userId int64
+	var out bytes.Buffer
+	cmd.Stdout = &out
 
-		if rows.Next() {
-			err := rows.Scan(&userId)
-			CheckError(err)
+	err := cmd.Run()
+	CheckError(err)
 
-			userIdString := fmt.Sprintf("%v", userId)
-			fmt.Println("User id: " + userIdString)
+	output := out.String()
+	opSplit := strings.Split(output, "\n")
+
+	title := opSplit[0]
+	author := opSplit[1]
+	pages := ""
+
+	// Get number of pages.
+	for _, element := range opSplit {
+		if strings.HasPrefix(element, "Pages") {
+			pages = strings.Split(element, ":")[1]
+			pages = strings.Trim(pages, " ")
+			break
 		}
-		rows.Close()
+	}
+
+	// Get book title.
+	if strings.HasPrefix(title, "Title") {
+		title = strings.Split(title, ":")[1]
+		title = strings.Trim(title, " ")
+	} else {
+		title = ""
+	}
+
+	// Get author of the uploaded book.
+	if strings.HasPrefix(author, "Author") {
+		author = strings.Split(author, ":")[1]
+		author = strings.Trim(author, " ")
+	} else {
+		author = ""
+	}
+
+	return title, author, pages
+}
+
+func (e *Env) UploadBook(c *gin.Context) {
+	email := _GetEmailFromSession(c)
+	if email != nil {
+		userId := e._GetUserId(email.(string))
 
 		multipart, err := c.Request.MultipartReader()
 		CheckError(err)
@@ -831,50 +870,23 @@ func UploadBook(c *gin.Context) {
 				break
 			}
 
-			CheckError(err)
-
-			fmt.Println(mimePart)
-
+			// Get dispostion and content type
 			disposition, params, err := mime.ParseMediaType(mimePart.Header.Get("Content-Disposition"))
 			CheckError(err)
-			fmt.Println(disposition)
-			fmt.Println(params["filename"])
-			contentType, _, _ := mime.ParseMediaType(mimePart.Header.Get("Content-Type"))
-
-			// Store file in /uploads/ dir
-			var fileName string
-			if contentType == "application/pdf" {
-				fileName = strings.Split(params["filename"], ".pdf")[0]
-				fileName = strings.Join(strings.Split(fileName, " "), "_") + ".pdf"
-			} else if contentType == "application/epub+zip" {
-				fileName = strings.Split(params["filename"], ".epub")[0]
-				fileName = strings.Join(strings.Split(fileName, " "), "_") + ".epub"
-			}
-			fmt.Println("filename: " + fileName)
-
-			rows, err = db.Query("select id from book where filename = ?", fileName)
+			contentType, _, err := mime.ParseMediaType(mimePart.Header.Get("Content-Type"))
 			CheckError(err)
 
-			var bookId int64
+			// Construct filename for the book uploaded
+			fileName := _ConstructFileNameForBook(params["filename"], contentType)
 
-			if rows.Next() {
-				err := rows.Scan(&bookId)
-				CheckError(err)
-
-				bookIdString := fmt.Sprintf("%v", bookId)
-				fmt.Println("Book id: " + bookIdString)
-			}
-			rows.Close()
+			bookId := e._GetBookId(fileName)
 
 			if bookId != 0 {
 				c.String(200, fileName+" already exists. ")
 				continue
 			}
 
-			t := time.Now()
-
-			uploadedOn := t.Format("20060102150405")
-			fmt.Println("Uploaded on: " + uploadedOn)
+			uploadedOn := _GetCurrentTime()
 
 			filePath := "./uploads/" + fileName
 
@@ -888,7 +900,7 @@ func UploadBook(c *gin.Context) {
 
 			if contentType == "application/pdf" {
 
-				title, author, pages := GetPDFInfo(filePath)
+				title, author, pages := _GetPDFInfo(filePath)
 
 				if title == "" {
 					title = fileName
@@ -1275,50 +1287,6 @@ func GeneratePDFCover(filePath, coverPath string) {
 
 	err := cmd.Run()
 	CheckError(err)
-}
-
-func GetPDFInfo(filePath string) (string, string, string) {
-	cmd := exec.Command("pdfinfo", filePath)
-
-	var out bytes.Buffer
-	cmd.Stdout = &out
-
-	err := cmd.Run()
-	CheckError(err)
-
-	output := out.String()
-	opSplit := strings.Split(output, "\n")
-
-	title := opSplit[0]
-	author := opSplit[1]
-	pages := ""
-
-	// Get number of pages.
-	for _, element := range opSplit {
-		if strings.HasPrefix(element, "Pages") {
-			pages = strings.Split(element, ":")[1]
-			pages = strings.Trim(pages, " ")
-			break
-		}
-	}
-
-	// Get book title.
-	if strings.HasPrefix(title, "Title") {
-		title = strings.Split(title, ":")[1]
-		title = strings.Trim(title, " ")
-	} else {
-		title = ""
-	}
-
-	// Get author of the uploaded book.
-	if strings.HasPrefix(author, "Author") {
-		author = strings.Split(author, ":")[1]
-		author = strings.Trim(author, " ")
-	} else {
-		author = ""
-	}
-
-	return title, author, pages
 }
 
 type BIP struct {
