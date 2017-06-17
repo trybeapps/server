@@ -28,6 +28,10 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
+type Env struct {
+	db *sql.DB
+}
+
 func main() {
 	r := gin.Default()
 
@@ -45,6 +49,9 @@ func main() {
 	// Open sqlite3 database
 	db, err := sql.Open("sqlite3", "./libreread.db")
 	CheckError(err)
+
+	// Close sqlite3 database when all the functions are done
+	defer db.Close()
 
 	// Create user table
 	// Table: user
@@ -114,8 +121,19 @@ func main() {
 	_, err = stmt.Exec()
 	CheckError(err)
 
-	// Close sqlite3 database
-	db.Close()
+	type ASPA struct {
+		Field        string `json:"field"`
+		IndexedChars int64  `json:"indexed_chars"`
+	}
+
+	type ASP struct {
+		Attachment ASPA `json:"attachment"`
+	}
+
+	type AS struct {
+		Description string `json:"description"`
+		Processors  []ASP  `json:"processors"`
+	}
 
 	// Init Elasticsearch attachment
 	attachment := &AS{
@@ -138,6 +156,15 @@ func main() {
 
 	PutJSON("http://localhost:9200/_ingest/pipeline/attachment", b)
 
+	type ISS struct {
+		NumberOfShards   int64 `json:"number_of_shards"`
+		NumberOfReplicas int64 `json:"number_of_replicas"`
+	}
+
+	type IS struct {
+		Settings ISS `json:"settings"`
+	}
+
 	// Init Elasticsearch index
 	index := &IS{
 		ISS{
@@ -152,6 +179,8 @@ func main() {
 
 	PutJSON("http://localhost:9200/lr_index", b)
 
+	// Set database environment
+	env := &Env{db: db}
 	// Router
 	r.GET("/", GetHomePage)
 	r.GET("/signin", GetSignIn)
@@ -162,7 +191,7 @@ func main() {
 	r.GET("/new-token", SendNewToken)
 	r.GET("/signout", GetSignOut)
 	r.POST("/upload", UploadBook)
-	r.GET("/book/:bookname", SendBook)
+	r.GET("/book/:bookname", env.SendBook)
 	r.GET("/cover/:covername", SendBookCover)
 	r.GET("/books/:pagination", GetPagination)
 	r.GET("/autocomplete", GetAutocomplete)
@@ -203,99 +232,103 @@ func PutJSON(url string, message []byte) {
 	fmt.Println(string(content))
 }
 
-type AS struct {
-	Description string `json:"description"`
-	Processors  []ASP  `json:"processors"`
+func (e *Env) _GetUserId(email string) int64 {
+	rows, err := e.db.Query("SELECT `id` FROM `user` WHERE `email` = ?", email)
+	CheckError(err)
+
+	var userId int64
+	if rows.Next() {
+		err := rows.Scan(&userId)
+		CheckError(err)
+	}
+	rows.Close()
+
+	return userId
 }
 
-type ASP struct {
-	Attachment ASPA `json:"attachment"`
+func (e *Env) _GetBookId(fileName string) int64 {
+	rows, err := e.db.Query("SELECT `id` FROM `book` WHERE `filename` = ?", fileName)
+	CheckError(err)
+
+	var bookId int64
+	if rows.Next() {
+		err := rows.Scan(&bookId)
+		CheckError(err)
+	}
+	rows.Close()
+
+	return bookId
 }
 
-type ASPA struct {
-	Field        string `json:"field"`
-	IndexedChars int64  `json:"indexed_chars"`
+func (e *Env) _CheckCurrentlyReading(bookId int64) int64 {
+	rows, err := e.db.Query("SELECT `id` FROM `currently_reading` WHERE `book_id` = ?", bookId)
+	CheckError(err)
+
+	var currentlyReadingId int64
+	if rows.Next() {
+		err := rows.Scan(&currentlyReadingId)
+		CheckError(err)
+	}
+	rows.Close()
+
+	return currentlyReadingId
 }
 
-type IS struct {
-	Settings ISS `json:"settings"`
+func (e *Env) _UpdateCurrentlyReading(currentlyReadingId int64, bookId int64, userId int64, dateRead string) {
+	if currentlyReadingId == 0 {
+		// Insert a new record
+		stmt, err := e.db.Prepare("INSERT INTO `currently_reading` (book_id, user_id, date_read) VALUES (?, ?, ?)")
+		CheckError(err)
+
+		res, err := stmt.Exec(bookId, userId, dateRead)
+		CheckError(err)
+
+		id, err := res.LastInsertId()
+		CheckError(err)
+
+		fmt.Println(id)
+	} else {
+		// Update dateRead for the given currentlyReadingId
+		stmt, err := e.db.Prepare("UPDATE `currently_reading` SET date_read=? WHERE id=?")
+		CheckError(err)
+
+		_, err = stmt.Exec(dateRead, currentlyReadingId)
+		CheckError(err)
+	}
 }
 
-type ISS struct {
-	NumberOfShards   int64 `json:"number_of_shards"`
-	NumberOfReplicas int64 `json:"number_of_replicas"`
+func _GetCurrentTime() string {
+	t := time.Now()
+	return t.Format("20060102150405")
 }
 
-func SendBook(c *gin.Context) {
+func (e *Env) SendBook(c *gin.Context) {
 	session := sessions.Default(c)
-	if session.Get("email") != nil {
-		fmt.Println(session.Get("email"))
+	email := session.Get("email")
 
+	if email != nil {
 		name := c.Param("bookname")
-		fmt.Println(name)
 
-		db, err := sql.Open("sqlite3", "./libreread.db")
-		CheckError(err)
+		// Get user id
+		userId := e._GetUserId(email.(string))
 
-		rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
-		CheckError(err)
+		// Get book id
+		bookId := e._GetBookId(name)
 
-		var userId int64
-		if rows.Next() {
-			err := rows.Scan(&userId)
-			CheckError(err)
-		}
-		fmt.Println(userId)
-		rows.Close()
+		// Get current time for date read to be used for currently reading feature
+		dateRead := _GetCurrentTime()
 
-		rows, err = db.Query("SELECT `id` FROM `book` WHERE `filename` = ?", name)
-		CheckError(err)
+		// Check if book already exists in currently_reading table
+		currentlyReadingId := e._CheckCurrentlyReading(bookId)
 
-		var bookId int64
-		if rows.Next() {
-			err := rows.Scan(&bookId)
-			CheckError(err)
-		}
-		fmt.Println(bookId)
-		rows.Close()
+		// Update currently_reading table
+		e._UpdateCurrentlyReading(currentlyReadingId, bookId, userId, dateRead)
 
-		t := time.Now()
-
-		dateRead := t.Format("20060102150405")
-		fmt.Println("Date read: " + dateRead)
-
-		rows, err = db.Query("SELECT `id` FROM `currently_reading` WHERE `book_id` = ?", bookId)
-		CheckError(err)
-
-		var currentlyReadingId int64
-		if rows.Next() {
-			err := rows.Scan(&currentlyReadingId)
-			CheckError(err)
-		}
-		fmt.Println(currentlyReadingId)
-		rows.Close()
-
-		if currentlyReadingId == 0 {
-			stmt, err := db.Prepare("INSERT INTO `currently_reading` (book_id, user_id, date_read) VALUES (?, ?, ?)")
-			CheckError(err)
-
-			res, err := stmt.Exec(bookId, userId, dateRead)
-			CheckError(err)
-
-			id, err := res.LastInsertId()
-			CheckError(err)
-
-			fmt.Println(id)
-		} else {
-			stmt, err := db.Prepare("UPDATE `currently_reading` SET date_read=? WHERE id=?")
-			CheckError(err)
-
-			_, err = stmt.Exec(dateRead, currentlyReadingId)
-			CheckError(err)
-		}
-
+		// Return viewer.html for PDF viewer
 		c.HTML(200, "viewer.html", "")
 	}
+
+	// if not signed in, redirect to sign in page
 	c.Redirect(302, "/signin")
 }
 
