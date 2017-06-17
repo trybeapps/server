@@ -186,9 +186,9 @@ func main() {
 	r.GET("/signin", GetSignIn)
 	r.POST("/signin", env.PostSignIn)
 	r.GET("/signup", GetSignUp)
-	r.POST("/signup", PostSignUp)
-	r.GET("/confirm-email", ConfirmEmail)
-	r.GET("/new-token", SendNewToken)
+	r.POST("/signup", env.PostSignUp)
+	r.GET("/confirm-email", env.ConfirmEmail)
+	r.GET("/new-token", env.SendNewToken)
 	r.GET("/signout", GetSignOut)
 	r.POST("/upload", UploadBook)
 	r.GET("/book/:bookname", env.SendBook)
@@ -625,24 +625,16 @@ func GetSignUp(c *gin.Context) {
 	c.HTML(302, "signup.html", "")
 }
 
-func PostSignUp(c *gin.Context) {
+func (e *Env) PostSignUp(c *gin.Context) {
 	name := c.PostForm("name")
 	email := c.PostForm("email")
 	password := []byte(c.PostForm("password"))
 
-	fmt.Println(name)
-	fmt.Println(email)
-	fmt.Println(password)
-
 	// Hashing the password with the default cost of 10
 	hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
 	CheckError(err)
-	fmt.Println(string(hashedPassword))
 
-	db, err := sql.Open("sqlite3", "./libreread.db")
-	CheckError(err)
-
-	stmt, err := db.Prepare("INSERT INTO user (name, email, password_hash) VALUES (?, ?, ?)")
+	stmt, err := e.db.Prepare("INSERT INTO user (name, email, password_hash) VALUES (?, ?, ?)")
 	CheckError(err)
 
 	res, err := stmt.Exec(name, email, hashedPassword)
@@ -651,11 +643,7 @@ func PostSignUp(c *gin.Context) {
 	id, err := res.LastInsertId()
 	CheckError(err)
 
-	fmt.Println(id)
-
-	db.Close()
-
-	go SendConfirmationEmail(int64(id), name, email)
+	go e._SendConfirmationEmail(int64(id), name, email)
 
 	c.HTML(302, "confirm_email.html", "")
 
@@ -664,7 +652,7 @@ func PostSignUp(c *gin.Context) {
 // For confirm email token
 var letters = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-func randSeq(n int64) string {
+func RandSeq(n int64) string {
 	b := make([]rune, n)
 	for i := range b {
 		b[i] = letters[rand.Intn(len(letters))]
@@ -672,35 +660,15 @@ func randSeq(n int64) string {
 	return string(b)
 }
 
-func SendConfirmationEmail(id int64, name string, email string) {
-
-	// Set home many CPU cores this function wants to use.
-	runtime.GOMAXPROCS(runtime.NumCPU())
-	fmt.Println(runtime.NumCPU())
-
-	token := randSeq(40)
-
-	t := time.Now()
-
-	dateGenerated := t.Format("20060102150405")
-	fmt.Println("Token Date Generated: " + dateGenerated)
-
-	dateExpires := t.AddDate(0, 1, 0).Format("20060102150405")
-	fmt.Println("Token Date Expires: " + dateExpires)
-
-	userId := id
-
-	db, err := sql.Open("sqlite3", "./libreread.db")
-	CheckError(err)
-
-	stmt, err := db.Prepare("INSERT INTO confirm (token, date_generated, date_expires, user_id) VALUES (?, ?, ?, ?)")
+func (e *Env) _FillConfirmTable(token string, dateGenerated string, dateExpires string, userId int64) {
+	stmt, err := e.db.Prepare("INSERT INTO confirm (token, date_generated, date_expires, user_id) VALUES (?, ?, ?, ?)")
 	CheckError(err)
 
 	_, err = stmt.Exec(token, dateGenerated, dateExpires, userId)
 	CheckError(err)
+}
 
-	db.Close()
-
+func _SendEmail(token string, email string, name string) {
 	confirmEmailLink := "http://localhost:8080/confirm-email?token=" + token
 
 	m := gomail.NewMessage()
@@ -721,17 +689,28 @@ func SendConfirmationEmail(id int64, name string, email string) {
 	}
 }
 
-func ConfirmEmail(c *gin.Context) {
-	token := c.Request.URL.Query()["token"][0]
-	fmt.Println(token)
+func (e *Env) _SendConfirmationEmail(userId int64, name string, email string) {
 
-	db, err := sql.Open("sqlite3", "./libreread.db")
-	CheckError(err)
+	// Set home many CPU cores this function wants to use
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	fmt.Println(runtime.NumCPU())
 
-	defer db.Close()
+	token := RandSeq(40)
 
+	dateGenerated := _GetCurrentTime()
+
+	// Apply one month time for token expiry
+	t := time.Now()
+	dateExpires := t.AddDate(0, 1, 0).Format("20060102150405")
+
+	e._FillConfirmTable(token, dateGenerated, dateExpires, userId)
+
+	_SendEmail(token, email, name)
+}
+
+func (e *Env) _GetConfirmTableRecord(token string, c *gin.Context) (int64, string, int64) {
 	// Get id from confirm table with the token got from url.
-	rows, err := db.Query("select id, date_expires, user_id from confirm where token = ?", token)
+	rows, err := e.db.Query("select id, date_expires, user_id from confirm where token = ?", token)
 	CheckError(err)
 
 	var (
@@ -748,23 +727,38 @@ func ConfirmEmail(c *gin.Context) {
 		fmt.Println(dateExpires)
 	} else {
 		c.HTML(404, "invalid_token.html", "")
-		return
+		return 0, "", 0
 	}
 	rows.Close()
 
-	t := time.Now()
-	if currentDateTime := t.Format("20060102150405"); currentDateTime < dateExpires {
-		stmt, err := db.Prepare("update confirm set date_used=?, used=? where id=?")
-		CheckError(err)
+	return id, dateExpires, userId
+}
 
-		_, err = stmt.Exec(currentDateTime, 1, id)
-		CheckError(err)
+func (e *Env) _UpdateConfirmTable(currentDateTime string, used int64, id int64) {
+	stmt, err := e.db.Prepare("update confirm set date_used=?, used=? where id=?")
+	CheckError(err)
 
-		stmt, err = db.Prepare("update user set confirmed=? where id=?")
-		CheckError(err)
+	_, err = stmt.Exec(currentDateTime, 1, id)
+	CheckError(err)
+}
 
-		_, err = stmt.Exec(1, userId)
-		CheckError(err)
+func (e *Env) _SetUserConfirmed(confirmed int64, userId int64) {
+	stmt, err := e.db.Prepare("update user set confirmed=? where id=?")
+	CheckError(err)
+
+	_, err = stmt.Exec(confirmed, userId)
+	CheckError(err)
+}
+
+func (e *Env) ConfirmEmail(c *gin.Context) {
+	token := c.Request.URL.Query()["token"][0]
+
+	id, dateExpires, userId := e._GetConfirmTableRecord(token, c)
+
+	if currentDateTime := _GetCurrentTime(); currentDateTime < dateExpires {
+		e._UpdateConfirmTable(currentDateTime, 1, id)
+
+		e._SetUserConfirmed(1, userId)
 
 		c.HTML(302, "confirmed.html", gin.H{
 			"id": userId,
@@ -778,17 +772,8 @@ func ConfirmEmail(c *gin.Context) {
 	}
 }
 
-func SendNewToken(c *gin.Context) {
-	userId, err := strconv.Atoi(c.Request.URL.Query()["id"][0])
-	CheckError(err)
-	fmt.Println(userId)
-
-	db, err := sql.Open("sqlite3", "./libreread.db")
-	CheckError(err)
-
-	defer db.Close()
-
-	rows, err := db.Query("select name, email from user where id = ?", userId)
+func (e *Env) _GetNameEmailFromUser(userId int64) (string, string) {
+	rows, err := e.db.Query("select name, email from user where id = ?", userId)
 	CheckError(err)
 
 	var (
@@ -799,12 +784,19 @@ func SendNewToken(c *gin.Context) {
 	if rows.Next() {
 		err := rows.Scan(&name, &email)
 		CheckError(err)
-
-		fmt.Println(name)
-		fmt.Println(email)
 	}
 	rows.Close()
-	go SendConfirmationEmail(int64(userId), name, email)
+
+	return name, email
+}
+
+func (e *Env) SendNewToken(c *gin.Context) {
+	userId, err := strconv.Atoi(c.Request.URL.Query()["id"][0])
+	CheckError(err)
+
+	name, email := e._GetNameEmailFromUser(int64(userId))
+
+	go e._SendConfirmationEmail(int64(userId), name, email)
 }
 
 func UploadBook(c *gin.Context) {
