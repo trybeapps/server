@@ -354,9 +354,7 @@ See https://github.com/adobe-type-tools/cmap-resources
     </div> <!-- outerContainer -->
     <div id="printContainer"></div>
     <script type="text/javascript">
-
-    var location = window.location.href
-    var term = location.href.split("&").pop().split('term=').pop()
+    var term = window.location.href.split("&").pop().split('term=').pop()
     document.addEventListener('textlayerrendered', function (e) {
       if (e.detail.pageNumber === PDFViewerApplication.page) {
         window.find(term)
