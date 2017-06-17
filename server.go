@@ -564,11 +564,8 @@ func (e *Env) GetPagination(c *gin.Context) {
 }
 
 func GetSignIn(c *gin.Context) {
-	// Get session from cookie. Check if email exists
-	// redirect to Home page else show signin page.
-	session := sessions.Default(c)
-	if session.Get("email") != nil {
-		fmt.Println(session.Get("email"))
+	email := _GetEmailFromSession(c)
+	if email != nil {
 		c.Redirect(302, "/")
 	}
 	c.HTML(302, "signin.html", "")
