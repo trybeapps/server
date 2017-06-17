@@ -1064,6 +1064,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 				go FeedPDFContent(filePath, userId, bookId, title, author, url, cover, pagesInt)
 
 				c.String(200, fileName+" uploaded successfully. ")
+
 			} else if contentType == "application/epub+zip" {
 
 				unzipPath := strings.Split(fileName, ".epub")[0]
