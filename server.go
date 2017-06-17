@@ -182,7 +182,7 @@ func main() {
 	// Set database environment
 	env := &Env{db: db}
 	// Router
-	r.GET("/", GetHomePage)
+	r.GET("/", env.GetHomePage)
 	r.GET("/signin", GetSignIn)
 	r.POST("/signin", PostSignIn)
 	r.GET("/signup", GetSignUp)
@@ -230,6 +230,11 @@ func PutJSON(url string, message []byte) {
 	content, err := ioutil.ReadAll(res.Body)
 	CheckError(err)
 	fmt.Println(string(content))
+}
+
+func _GetEmailFromSession(c *gin.Context) interface{} {
+	session := sessions.Default(c)
+	return session.Get("email")
 }
 
 func (e *Env) _GetUserId(email string) int64 {
@@ -303,9 +308,7 @@ func _GetCurrentTime() string {
 }
 
 func (e *Env) SendBook(c *gin.Context) {
-	session := sessions.Default(c)
-	email := session.Get("email")
-
+	email := _GetEmailFromSession(c)
 	if email != nil {
 		name := c.Param("bookname")
 
@@ -339,7 +342,7 @@ func SendBookCover(c *gin.Context) {
 	c.File(filePath)
 }
 
-type QS struct {
+type QuoteStruct struct {
 	Author      string
 	AuthorURL   string
 	FromBook    string
@@ -348,22 +351,132 @@ type QS struct {
 	Quote       string
 }
 
-type BS struct {
+type BookStruct struct {
 	Title string
 	URL   string
 	Cover string
 }
 
-type BSList []BS
+type BookStructList []BookStruct
 
-func GetHomePage(c *gin.Context) {
+func (e *Env) _GetCurrentlyReadingBooks(userId int64) []int64 {
+	rows, err := e.db.Query("SELECT `book_id` FROM `currently_reading` WHERE `user_id` = ? ORDER BY `date_read` DESC LIMIT ?, ?", userId, 0, 12)
+	CheckError(err)
+
+	var crBooks []int64
+	for rows.Next() {
+		var crBook int64
+		err = rows.Scan(&crBook)
+		CheckError(err)
+
+		crBooks = append(crBooks, crBook)
+	}
+	rows.Close()
+
+	return crBooks
+}
+
+func (e *Env) _GetBook(bookId int64) (string, string, string) {
+	rows, err := e.db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `id` = ?", bookId)
+	CheckError(err)
+
+	var (
+		title string
+		url   string
+		cover string
+	)
+
+	if rows.Next() {
+		err = rows.Scan(
+			&title,
+			&url,
+			&cover,
+		)
+		CheckError(err)
+	}
+	rows.Close()
+
+	return title, url, cover
+}
+
+func (e *Env) _GetTotalBooksCount(userId int64) int64 {
+	rows, err := e.db.Query("SELECT COUNT(*) AS count FROM `book` WHERE `user_id` = ?", userId)
+	CheckError(err)
+
+	var count int64
+	for rows.Next() {
+		err = rows.Scan(&count)
+		CheckError(err)
+	}
+	rows.Close()
+
+	return count
+}
+
+func _GetTotalPages(booksCount int64) int64 {
+	totalPagesFloat := float64(float64(booksCount) / 18.0)
+	totalPagesDecimal := fmt.Sprintf("%.1f", totalPagesFloat)
+
+	var totalPages int64
+	if strings.Split(totalPagesDecimal, ".")[1] == "0" {
+		totalPages = int64(totalPages)
+	} else {
+		totalPages = int64(totalPages) + 1
+	}
+
+	return totalPages
+}
+
+func (e *Env) _GetPaginatedBooks(userId int64, startIndex int64, endIndex int64) *BookStructList {
+	rows, err := e.db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ?, ?", userId, startIndex, endIndex)
+	CheckError(err)
+
+	books := BookStructList{}
+
+	var (
+		title string
+		url   string
+		cover string
+	)
+	for rows.Next() {
+		err = rows.Scan(
+			&title,
+			&url,
+			&cover,
+		)
+		CheckError(err)
+
+		books = append(books, BookStruct{
+			title,
+			url,
+			cover,
+		})
+	}
+	rows.Close()
+
+	return &books
+}
+
+func _ConstructBooksForPagination(books *BookStructList, length int64) []BookStructList {
+	booksList := []BookStructList{}
+	var i, j int64
+	for i = 0; i < int64(len(*books)); i += length {
+		j = i + length
+		for j > int64(len(*books)) {
+			j -= 1
+		}
+		booksList = append(booksList, (*books)[i:j])
+	}
+
+	return booksList
+}
+
+func (e *Env) GetHomePage(c *gin.Context) {
 	// Get session from cookie. Check if email exists
 	// show Home page else redirect to signin page.
-	session := sessions.Default(c)
-	if session.Get("email") != nil {
-		fmt.Println(session.Get("email"))
-
-		q := new(QS)
+	email := _GetEmailFromSession(c)
+	if email != nil {
+		q := QuoteStruct{}
 		GetJSON("http://localhost:3000/quote-of-the-day", q)
 
 		if q.Quote == "" {
@@ -375,154 +488,49 @@ func GetHomePage(c *gin.Context) {
 			q.FromBookURL = "https://www.goodreads.com/work/1782584"
 		}
 
-		db, err := sql.Open("sqlite3", "./libreread.db")
-		CheckError(err)
-
-		rows, err := db.Query("SELECT `id` FROM `user` WHERE `email` = ?", session.Get("email"))
-		CheckError(err)
-
-		var id int64
-		if rows.Next() {
-			err := rows.Scan(&id)
-			CheckError(err)
-		}
-		fmt.Println(id)
-		rows.Close()
+		userId := e._GetUserId(email.(string))
 
 		// Get currently reading books.
-		rows, err = db.Query("SELECT `book_id` FROM `currently_reading` WHERE `user_id` = ? ORDER BY `date_read` DESC LIMIT ?, ?", id, 0, 12)
-		CheckError(err)
-
-		var crBooks []int64
-		for rows.Next() {
-			var crBook int64
-			err = rows.Scan(&crBook)
-			CheckError(err)
-
-			crBooks = append(crBooks, crBook)
-		}
-		fmt.Println(crBooks)
-		rows.Close()
+		crBooks := e._GetCurrentlyReadingBooks(userId)
 
 		// Get book title, url, cover for currently reading books.
-		crb := []BS{}
-		for _, num := range crBooks {
-			rows, err = db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `id` = ?", num)
-			CheckError(err)
-
-			var (
-				title string
-				url   string
-				cover string
-			)
-			if rows.Next() {
-				err = rows.Scan(
-					&title,
-					&url,
-					&cover,
-				)
-				CheckError(err)
-
-				crb = append(crb, BS{
-					title,
-					url,
-					cover,
-				})
-			}
-			rows.Close()
-		}
-		fmt.Println(crb)
-
-		// Check total number of rows in book table
-		rows, err = db.Query("SELECT COUNT(*) AS count FROM `book` WHERE `user_id` = ?", id)
-		CheckError(err)
-
-		var count int64
-		for rows.Next() {
-			err = rows.Scan(&count)
-			CheckError(err)
-		}
-		fmt.Println(count)
-
-		var totalPages float64 = float64(float64(count) / 18.0)
-		totalPagesDecimal := fmt.Sprintf("%.1f", totalPages)
-
-		var tp int64
-		if strings.Split(totalPagesDecimal, ".")[1] == "0" {
-			tp = int64(totalPages)
-		} else {
-			tp = int64(totalPages) + 1
-		}
-		fmt.Println(tp)
-
-		// ------------------------------------------------------------------------------------------
-		// Fields: id, title, filename, author, url, cover, pages, current_page, uploaded_on, user_id
-		// ------------------------------------------------------------------------------------------
-		rows, err = db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ?, ?", id, 0, 18)
-		CheckError(err)
-
-		b := []BS{}
-
-		var (
-			title string
-			url   string
-			cover string
-		)
-		for rows.Next() {
-			err = rows.Scan(
-				&title,
-				&url,
-				&cover,
-			)
-			CheckError(err)
-
-			b = append(b, BS{
+		currentlyReadingBooks := BookStructList{}
+		for _, bookId := range crBooks {
+			title, url, cover := e._GetBook(bookId)
+			currentlyReadingBooks = append(currentlyReadingBooks, BookStruct{
 				title,
 				url,
 				cover,
 			})
 		}
 
-		rows.Close()
-		db.Close()
+		// Check total number of rows in book table
+		booksCount := e._GetTotalBooksCount(userId)
 
-		booksList := []BSList{}
-		for i := 0; i < len(b); i += 6 {
-			j := i + 6
-			for j > len(b) {
-				j -= 1
-			}
-			booksList = append(booksList, b[i:j])
-		}
+		// With Total Books count, Get Total pages required
+		totalPages := _GetTotalPages(booksCount)
+		fmt.Println(totalPages)
 
-		booksListMedium := []BSList{}
-		for i := 0; i < len(b); i += 3 {
-			j := i + 3
-			for j > len(b) {
-				j -= 1
-			}
-			booksListMedium = append(booksListMedium, b[i:j])
-		}
+		// Get first 18 books for the home page
+		books := e._GetPaginatedBooks(userId, 0, 18)
 
-		booksListSmall := []BSList{}
-		for i := 0; i < len(b); i += 2 {
-			j := i + 2
-			for j > len(b) {
-				j -= 1
-			}
-			booksListSmall = append(booksListSmall, b[i:j])
-		}
+		// Construct books of length 6 for large screen size
+		booksList := _ConstructBooksForPagination(books, 6)
 
-		booksListXtraSmall := b
+		// Construct books of length 3 for medium screen size
+		booksListMedium := _ConstructBooksForPagination(books, 3)
+
+		// Construct books of length 2 for small screen size
+		booksListSmall := _ConstructBooksForPagination(books, 2)
 
 		c.HTML(302, "index.html", gin.H{
-			"q":                  q,
-			"crb":                crb,
-			"booksList":          booksList,
-			"booksListMedium":    booksListMedium,
-			"booksListSmall":     booksListSmall,
-			"booksListXtraSmall": booksListXtraSmall,
-			"tp":                 tp,
+			"q": q,
+			"currentlyReadingBooks": currentlyReadingBooks,
+			"booksList":             booksList,
+			"booksListMedium":       booksListMedium,
+			"booksListSmall":        booksListSmall,
+			"booksListXtraSmall":    *books,
+			"totalPages":            totalPages,
 		})
 	}
 	c.Redirect(302, "/signin")
@@ -577,7 +585,7 @@ func GetPagination(c *gin.Context) {
 		rows, err = db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ?, ?", id, (pagination-1)*18, 18)
 		CheckError(err)
 
-		b := []BS{}
+		b := BookStructList{}
 
 		var (
 			title string
@@ -592,7 +600,7 @@ func GetPagination(c *gin.Context) {
 			)
 			CheckError(err)
 
-			b = append(b, BS{
+			b = append(b, BookStruct{
 				title,
 				url,
 				cover,
@@ -601,7 +609,7 @@ func GetPagination(c *gin.Context) {
 		rows.Close()
 		db.Close()
 
-		booksList := []BSList{}
+		booksList := []BookStructList{}
 		for i := 0; i < len(b); i += 6 {
 			j := i + 6
 			for j > len(b) {
@@ -610,7 +618,7 @@ func GetPagination(c *gin.Context) {
 			booksList = append(booksList, b[i:j])
 		}
 
-		booksListMedium := []BSList{}
+		booksListMedium := []BookStructList{}
 		for i := 0; i < len(b); i += 3 {
 			j := i + 3
 			for j > len(b) {
@@ -619,7 +627,7 @@ func GetPagination(c *gin.Context) {
 			booksListMedium = append(booksListMedium, b[i:j])
 		}
 
-		booksListSmall := []BSList{}
+		booksListSmall := []BookStructList{}
 		for i := 0; i < len(b); i += 2 {
 			j := i + 2
 			for j > len(b) {
@@ -1828,7 +1836,7 @@ func GetCollection(c *gin.Context) {
 		bookSplit := strings.Split(books, ",")
 		fmt.Println(bookSplit)
 
-		b := []BS{}
+		b := BookStructList{}
 		for i := len(bookSplit) - 1; i >= 0; i-- {
 			fmt.Println(bookSplit[i])
 			bookInt, err := strconv.Atoi(bookSplit[i])
@@ -1846,7 +1854,7 @@ func GetCollection(c *gin.Context) {
 				err := rows.Scan(&title, &url, &cover)
 				CheckError(err)
 
-				b = append(b, BS{
+				b = append(b, BookStruct{
 					Title: title,
 					URL:   url,
 					Cover: cover,
@@ -1857,7 +1865,7 @@ func GetCollection(c *gin.Context) {
 		fmt.Println(b)
 		db.Close()
 
-		booksList := []BSList{}
+		booksList := []BookStructList{}
 		for i := 0; i < len(b); i += 6 {
 			j := i + 6
 			for j > len(b) {
@@ -1866,7 +1874,7 @@ func GetCollection(c *gin.Context) {
 			booksList = append(booksList, b[i:j])
 		}
 
-		booksListMedium := []BSList{}
+		booksListMedium := []BookStructList{}
 		for i := 0; i < len(b); i += 3 {
 			j := i + 3
 			for j > len(b) {
@@ -1875,7 +1883,7 @@ func GetCollection(c *gin.Context) {
 			booksListMedium = append(booksListMedium, b[i:j])
 		}
 
-		booksListSmall := []BSList{}
+		booksListSmall := []BookStructList{}
 		for i := 0; i < len(b); i += 2 {
 			j := i + 2
 			for j > len(b) {
