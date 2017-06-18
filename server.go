@@ -987,6 +987,17 @@ func FeedPDFContent(filePath string, userId int64, bookId int64, title string, a
 	_LoopThroughSplittedPages(userId, bookId, pagesInt, splitPDFPath, title, author, url, cover)
 }
 
+func _EPUBUnzip(filePath string, fileName string) error {
+	cmd := exec.Command("unzip", filePath, "-d", "uploads/"+fileName+"/")
+
+	err := cmd.Start()
+	CheckError(err)
+	fmt.Println("Waiting for command to finish...")
+	err = cmd.Wait()
+	fmt.Printf("Command finished with error: %v", err)
+	return nil
+}
+
 func (e *Env) UploadBook(c *gin.Context) {
 	email := _GetEmailFromSession(c)
 	if email != nil {
@@ -1002,7 +1013,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 				break
 			}
 
-			// Get dispostion and content type
+			// Get filename and content type
 			_, params, err := mime.ParseMediaType(mimePart.Header.Get("Content-Disposition"))
 			CheckError(err)
 			contentType, _, err := mime.ParseMediaType(mimePart.Header.Get("Content-Type"))
@@ -1087,7 +1098,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 			} else if contentType == "application/epub+zip" {
 
 				unzipPath := strings.Split(fileName, ".epub")[0]
-				EPUBUnzip(filePath, unzipPath)
+				_EPUBUnzip(filePath, unzipPath)
 
 				fileUnzipPath := "./uploads/" + unzipPath + "/META-INF/container.xml"
 				XMLContent, err := ioutil.ReadFile(fileUnzipPath)
@@ -1298,17 +1309,6 @@ type XMLRFS struct {
 
 type XMLRF struct {
 	FullPath string `xml:"full-path,attr"`
-}
-
-func EPUBUnzip(filePath string, fileName string) error {
-	cmd := exec.Command("unzip", filePath, "-d", "uploads/"+fileName+"/")
-
-	err := cmd.Start()
-	CheckError(err)
-	fmt.Println("Waiting for command to finish...")
-	err = cmd.Wait()
-	fmt.Printf("Command finished with error: %v", err)
-	return nil
 }
 
 type BIP struct {
