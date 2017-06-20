@@ -1,5 +1,6 @@
 libreread.db
 uploads
 *.DS_Store
+*.js.map
 server
 quote
