@@ -24,6 +24,7 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -912,9 +913,7 @@ func _PDFSeparate(path string, filePath string, wg *sync.WaitGroup) error {
 
 	err := cmd.Start()
 	CheckError(err)
-	fmt.Println("Waiting for command to finish...")
 	err = cmd.Wait()
-	fmt.Printf("Command finished with error: %v", err)
 	wg.Done()
 	return nil
 }
@@ -986,15 +985,18 @@ func FeedPDFContent(filePath string, userId int64, bookId int64, title string, a
 	_LoopThroughSplittedPages(userId, bookId, pagesInt, splitPDFPath, title, author, url, cover)
 }
 
-func _EPUBUnzip(filePath string, fileName string) error {
-	cmd := exec.Command("unzip", filePath, "-d", "uploads/"+fileName+"/")
+func _EPUBUnzip(filePath string, fileName string) string {
+	fileNameWithoutExtension := strings.Split(fileName, ".epub")[0]
+
+	cmd := exec.Command("unzip", filePath, "-d", "uploads/"+fileNameWithoutExtension+"/")
 
 	err := cmd.Start()
 	CheckError(err)
-	fmt.Println("Waiting for command to finish...")
 	err = cmd.Wait()
-	fmt.Printf("Command finished with error: %v", err)
-	return nil
+
+	epubUnzipPath := "./uploads/" + fileNameWithoutExtension
+
+	return epubUnzipPath
 }
 
 // struct for META-INF/container.xml
@@ -1009,6 +1011,33 @@ type XMLRootFiles struct {
 
 type XMLRootFile struct {
 	FullPath string `xml:"full-path,attr"`
+}
+
+func _FetchOPFFilePath(epubUnzipPath string, containerXMLPath string) (string, string) {
+	// Following code is for fetching OPF file path
+	containerXMLContent, err := ioutil.ReadFile(containerXMLPath)
+	CheckError(err)
+
+	containerXMLUnmarshalled := XMLContainerStruct{}
+	err = xml.Unmarshal(containerXMLContent, &containerXMLUnmarshalled)
+	CheckError(err)
+
+	rootFilePath := containerXMLUnmarshalled.RootFiles.RootFile.FullPath
+	opfFilePath := epubUnzipPath + "/" + rootFilePath
+
+	return rootFilePath, opfFilePath
+}
+
+func _ConvertOpfToXml(opfFilePath string) string {
+	// Convert OPF file to XML and return the converted XML's file path
+	opfXMLPath := strings.Split(opfFilePath, ".opf")[0] + ".xhtml"
+
+	cmd := exec.Command("cp", opfFilePath, opfXMLPath)
+	err := cmd.Start()
+	CheckError(err)
+	err = cmd.Wait()
+
+	return opfXMLPath
 }
 
 // struct for package.xhtml derived from package.opf
@@ -1040,6 +1069,14 @@ type OPFItem struct {
 	Id        []string `xml:"id,attr"`
 	Href      []string `xml:"href,attr"`
 	MediaType []string `xml:"media-type,attr"`
+}
+
+func (opfMetadata *OPFMetadataStruct) _FetchEPUBMetadata(opfXMLPath string) {
+	opfXMLContent, err := ioutil.ReadFile(opfXMLPath)
+	CheckError(err)
+
+	err = xml.Unmarshal(opfXMLContent, &opfMetadata)
+	CheckError(err)
 }
 
 func (e *Env) UploadBook(c *gin.Context) {
@@ -1140,10 +1177,124 @@ func (e *Env) UploadBook(c *gin.Context) {
 				c.String(200, fileName+" uploaded successfully. ")
 
 			} else if contentType == "application/epub+zip" {
+				// Unzip epub in the /uploads directory
+				epubUnzipPath := _EPUBUnzip(filePath, fileName)
+				containerXMLPath := epubUnzipPath + "/META-INF/container.xml"
 
+				// Fetch rootfile and OPF file path
+				rootFilePath, opfFilePath := _FetchOPFFilePath(epubUnzipPath, containerXMLPath)
+
+				packagePath := epubUnzipPath
+				rootFilePathSplit := strings.Split(rootFilePath, "/")
+				if len(rootFilePathSplit) > 1 {
+					packagePath = epubUnzipPath + "/" + rootFilePathSplit[0]
+				}
+
+				// Convert opf file to xml
+				opfXMLPath := _ConvertOpfToXml(opfFilePath)
+
+				// type OPFMetadataStruct struct {
+				// 	Metadata OPFMetadata `xml:"metadata"`
+				// 	Spine    OPFSpine    `xml:"spine"`
+				// 	Manifest OPFManifest `xml:"manifest"`
+				// }
+
+				// type OPFMetadata struct {
+				// 	Title  string `xml:"title"`
+				// 	Author string `xml:"creator"`
+				// }
+
+				// type OPFSpine struct {
+				// 	ItemRef OPFItemRef `xml:"itemref"`
+				// }
+
+				// type OPFItemRef struct {
+				// 	IdRef []string `xml:"idref,attr"`
+				// }
+
+				// type OPFManifest struct {
+				// 	Item OPFItem `xml:"item"`
+				// }
+
+				// type OPFItem struct {
+				// 	Id        []string `xml:"id,attr"`
+				// 	Href      []string `xml:"href,attr"`
+				// 	MediaType []string `xml:"media-type,attr"`
+				// }
+
+				opfMetadata := OPFMetadataStruct{}
+				opfMetadata._FetchEPUBMetadata(opfXMLPath)
+
+				// title := opfMetadata.Metadata.Title
+				// author := opfMetadata.Metadata.Author
+
+				cover := opfMetadata._FetchEPUBCover(packagePath, opfFilePath)
+				fmt.Println(cover)
 			}
 		}
 	}
+}
+
+func (opfMetadata *OPFMetadataStruct) _FetchEPUBCover(packagePath, opfFilePath string) string {
+	coverIdRef := opfMetadata.Spine.ItemRef.IdRef[0]
+
+	var coverPath string
+	if strings.Contains(coverIdRef, "cover") {
+		for i, e := range opfMetadata.Manifest.Item.Id {
+			if e == coverIdRef {
+				coverPath = opfMetadata.Manifest.Item.Href[i]
+				break
+			}
+		}
+		coverFilePath := packagePath + "/" + coverPath
+
+		if strings.Contains(coverFilePath, "html") || strings.Contains(coverFilePath, "xhtml") || strings.Contains(coverFilePath, "xml") {
+			coverPath = _FetchEpubCoverPath(packagePath, coverFilePath)
+		} else {
+			coverPath = coverFilePath
+		}
+	} else {
+		var coverHref string
+		for i, e := range opfMetadata.Manifest.Item.Id {
+			if strings.Contains(e, "cover") {
+				coverHref = opfMetadata.Manifest.Item.Href[i]
+				break
+			}
+		}
+
+		coverFilePath := packagePath + "/" + coverHref
+		if strings.Contains(coverFilePath, "html") || strings.Contains(coverFilePath, "xhtml") || strings.Contains(coverFilePath, "xml") {
+			coverPath = _FetchEpubCoverPath(packagePath, coverFilePath)
+		} else {
+			coverPath = coverFilePath
+		}
+	}
+
+	return coverPath
+}
+
+func _FetchEpubCoverPath(packagePath, coverFilePath string) string {
+	coverXMLContent, err := ioutil.ReadFile(coverFilePath)
+	CheckError(err)
+
+	//Parse the XMLContent to grab just the img element
+	strContent := string(coverXMLContent)
+	imgLoc := strings.Index(strContent, "<img")
+	prefixRem := strContent[imgLoc:]
+	endImgLoc := strings.Index(prefixRem, "/>")
+	//Move over by 2 to recover the '/>'
+	trimmed := prefixRem[:endImgLoc+2]
+
+	type ImgSrcStruct struct {
+		Src string `xml:"src,attr"`
+	}
+
+	imgSrc := ImgSrcStruct{}
+	err = xml.Unmarshal([]byte(trimmed), &imgSrc)
+
+	coverPath := packagePath + "/" + imgSrc.Src
+
+	return coverPath
 }
 
 // struct for marshalling book info
