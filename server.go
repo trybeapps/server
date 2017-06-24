@@ -1255,42 +1255,15 @@ func (e *Env) UploadBook(c *gin.Context) {
 				// Convert opf file to xml
 				opfXMLPath := _ConvertOpfToXml(opfFilePath)
 
-				// type OPFMetadataStruct struct {
-				// 	Metadata OPFMetadata `xml:"metadata"`
-				// 	Spine    OPFSpine    `xml:"spine"`
-				// 	Manifest OPFManifest `xml:"manifest"`
-				// }
-
-				// type OPFMetadata struct {
-				// 	Title  string `xml:"title"`
-				// 	Author string `xml:"creator"`
-				// }
-
-				// type OPFSpine struct {
-				// 	ItemRef OPFItemRef `xml:"itemref"`
-				// }
-
-				// type OPFItemRef struct {
-				// 	IdRef []string `xml:"idref,attr"`
-				// }
-
-				// type OPFManifest struct {
-				// 	Item OPFItem `xml:"item"`
-				// }
-
-				// type OPFItem struct {
-				// 	Id        []string `xml:"id,attr"`
-				// 	Href      []string `xml:"href,attr"`
-				// 	MediaType []string `xml:"media-type,attr"`
-				// }
-
 				opfMetadata := OPFMetadataStruct{}
 				opfMetadata._FetchEPUBMetadata(opfXMLPath)
 
-				// title := opfMetadata.Metadata.Title
-				// author := opfMetadata.Metadata.Author
-
+				title := opfMetadata.Metadata.Title
+				author := opfMetadata.Metadata.Author
 				cover := opfMetadata._FetchEPUBCover(packagePath, opfFilePath)
+
+				fmt.Println(title)
+				fmt.Println(author)
 				fmt.Println(cover)
 			}
 		}
