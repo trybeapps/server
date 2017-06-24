@@ -24,7 +24,6 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -998,6 +997,51 @@ func _EPUBUnzip(filePath string, fileName string) error {
 	return nil
 }
 
+// struct for META-INF/container.xml
+
+type XMLContainerStruct struct {
+	RootFiles XMLRootFiles `xml:"rootfiles"`
+}
+
+type XMLRootFiles struct {
+	RootFile XMLRootFile `xml:"rootfile"`
+}
+
+type XMLRootFile struct {
+	FullPath string `xml:"full-path,attr"`
+}
+
+// struct for package.xhtml derived from package.opf
+
+type OPFMetadataStruct struct {
+	Metadata OPFMetadata `xml:"metadata"`
+	Spine    OPFSpine    `xml:"spine"`
+	Manifest OPFManifest `xml:"manifest"`
+}
+
+type OPFMetadata struct {
+	Title  string `xml:"title"`
+	Author string `xml:"creator"`
+}
+
+type OPFSpine struct {
+	ItemRef OPFItemRef `xml:"itemref"`
+}
+
+type OPFItemRef struct {
+	IdRef []string `xml:"idref,attr"`
+}
+
+type OPFManifest struct {
+	Item OPFItem `xml:"item"`
+}
+
+type OPFItem struct {
+	Id        []string `xml:"id,attr"`
+	Href      []string `xml:"href,attr"`
+	MediaType []string `xml:"media-type,attr"`
+}
+
 func (e *Env) UploadBook(c *gin.Context) {
 	email := _GetEmailFromSession(c)
 	if email != nil {
@@ -1097,218 +1141,9 @@ func (e *Env) UploadBook(c *gin.Context) {
 
 			} else if contentType == "application/epub+zip" {
 
-				unzipPath := strings.Split(fileName, ".epub")[0]
-				_EPUBUnzip(filePath, unzipPath)
-
-				fileUnzipPath := "./uploads/" + unzipPath + "/META-INF/container.xml"
-				XMLContent, err := ioutil.ReadFile(fileUnzipPath)
-				CheckError(err)
-
-				v := XMLCS{}
-				err = xml.Unmarshal(XMLContent, &v)
-				CheckError(err)
-				fmt.Println(v.RootFiles.RootFile.FullPath)
-
-				packageSplit := strings.Split(v.RootFiles.RootFile.FullPath, "/")
-
-				packagePath := ""
-				if len(packageSplit) > 1 {
-					packagePath = packageSplit[0]
-				}
-
-				fmt.Println(strings.Split(v.RootFiles.RootFile.FullPath, "/"))
-
-				OPFPath := "./uploads/" + unzipPath + "/" + v.RootFiles.RootFile.FullPath
-				fmt.Println(OPFPath)
-
-				XHTMLPath := strings.Split(v.RootFiles.RootFile.FullPath, ".opf")[0] + ".xhtml"
-				XHTMLPath = "./uploads/" + unzipPath + "/" + XHTMLPath
-				fmt.Println(XHTMLPath)
-
-				cmd := exec.Command("cp", OPFPath, XHTMLPath)
-
-				err = cmd.Start()
-				CheckError(err)
-				fmt.Println("Waiting for command to finish...")
-				err = cmd.Wait()
-				fmt.Printf("Command finished with error: %v", err)
-
-				XMLContent, err = ioutil.ReadFile(XHTMLPath)
-				CheckError(err)
-
-				m := OPFMetadata{}
-				err = xml.Unmarshal(XMLContent, &m)
-				CheckError(err)
-
-				coverIdRef := m.Spine.ItemRef.IdRef[0]
-
-				fmt.Println(coverIdRef)
-
-				var coverPath string
-				coverFile := CPSRCS{}
-				if strings.Contains(coverIdRef, "cover") {
-					for i, e := range m.Manifest.Item.Id {
-						if e == coverIdRef {
-							coverPath = m.Manifest.Item.Href[i]
-							break
-						}
-					}
-
-					if packagePath == "" {
-						coverPath = "./uploads/" + unzipPath + "/" + coverPath
-					} else {
-						coverPath = "./uploads/" + unzipPath + "/" + packagePath + "/" + coverPath
-					}
-
-					fmt.Println(coverPath)
-
-					XMLContent, err = ioutil.ReadFile(coverPath)
-					CheckError(err)
-
-					//Parse the XMLContent to grab just the img element
-					strContent := string(XMLContent)
-					imgLoc := strings.Index(strContent, "<img")
-					prefixRem := strContent[imgLoc:]
-					endImgLoc := strings.Index(prefixRem, "/>")
-					//Move over by 2 to recover the '/>'
-					trimmed := prefixRem[:endImgLoc+2]
-
-					err = xml.Unmarshal([]byte(trimmed), &coverFile)
-					CheckError(err)
-					fmt.Println(coverFile)
-
-					if packagePath == "" {
-						coverPath = "./uploads/" + unzipPath + "/" + coverFile.Src
-					} else {
-						coverPath = "./uploads/" + unzipPath + "/" + packagePath + "/" + coverFile.Src
-					}
-				} else {
-					for i, e := range m.Manifest.Item.Id {
-						if strings.Contains(e, "cover") {
-							coverPath = m.Manifest.Item.Href[i]
-							break
-						}
-					}
-
-					if packagePath == "" {
-						coverPath = "./uploads/" + unzipPath + "/" + coverPath
-					} else {
-						coverPath = "./uploads/" + unzipPath + "/" + packagePath + "/" + coverPath
-					}
-				}
-				fmt.Println(coverPath)
-
-				HTMLContent := "<html><head><title>" + m.Metadata.Title + "</title></head>"
-				var HTMLPath, hrefPath string
-				idRef := m.Spine.ItemRef.IdRef
-				for _, e := range idRef {
-					fmt.Println(e)
-					id := m.Manifest.Item.Id
-					for j, f := range id {
-						if f == e {
-							hrefSplit := strings.Split(m.Manifest.Item.Href[j], "/")
-							if len(hrefSplit) > 1 {
-								hrefPath = hrefSplit[0]
-							}
-							if packagePath == "" {
-								HTMLPath = "./uploads/" + unzipPath + "/" + m.Manifest.Item.Href[j]
-							} else {
-								HTMLPath = "./uploads/" + unzipPath + "/" + packagePath + "/" + m.Manifest.Item.Href[j]
-							}
-							fmt.Println(HTMLPath)
-
-							currentHTML, err := ioutil.ReadFile(HTMLPath)
-							CheckError(err)
-
-							xmlBody := XMLBody{}
-							err = xml.Unmarshal(currentHTML, &xmlBody)
-							CheckError(err)
-
-							HTMLContent += xmlBody.Body.Content + "<br><br><br>"
-
-							break
-						}
-					}
-				}
-				HTMLContent += "</html>"
-				var writeHTMLPath string
-				if packagePath == "" {
-					writeHTMLPath = "./uploads/" + unzipPath + "/" + hrefPath + "/" + unzipPath + "_epub_content.html"
-				} else {
-					writeHTMLPath = "./uploads/" + unzipPath + "/" + packagePath + "/" + hrefPath + "/" + unzipPath + "_epub_content.html"
-				}
-				err = ioutil.WriteFile(writeHTMLPath, []byte(HTMLContent), 0700)
-
-				// --------------------------------------------------------------------------------------------------
-				// Fields: id, title, filename, author, url, cover, pages, current_page, format, uploaded_on, user_id
-				// --------------------------------------------------------------------------------------------------
-				stmt, err := e.db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, format, uploaded_on, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-				CheckError(err)
-
-				res, err := stmt.Exec(m.Metadata.Title, fileName, m.Metadata.Author, writeHTMLPath, coverPath, 0, "pdf", uploadedOn, userId)
-				CheckError(err)
-
-				id, err := res.LastInsertId()
-				CheckError(err)
-
-				fmt.Println(id)
-
 			}
 		}
 	}
-}
-
-type XMLBody struct {
-	Body XMLBodyContent `xml:"body"`
-}
-
-type XMLBodyContent struct {
-	Content string `xml:",innerxml"`
-}
-
-type CPSRCS struct {
-	Src string `xml:"src,attr"`
-}
-
-type OPFMetadata struct {
-	Metadata OPFTAS `xml:"metadata"`
-	Spine    OPFCS  `xml:"spine"`
-	Manifest OPFMAS `xml:"manifest"`
-}
-
-type OPFTAS struct {
-	Title  string `xml:"title"`
-	Author string `xml:"creator"`
-}
-
-type OPFCS struct {
-	ItemRef OPFCIRS `xml:"itemref"`
-}
-
-type OPFCIRS struct {
-	IdRef []string `xml:"idref,attr"`
-}
-
-type OPFMAS struct {
-	Item OPFITS `xml:"item"`
-}
-
-type OPFITS struct {
-	Id        []string `xml:"id,attr"`
-	Href      []string `xml:"href,attr"`
-	MediaType []string `xml:"media-type,attr"`
-}
-
-type XMLCS struct {
-	RootFiles XMLRFS `xml:"rootfiles"`
-}
-
-type XMLRFS struct {
-	RootFile XMLRF `xml:"rootfile"`
-}
-
-type XMLRF struct {
-	FullPath string `xml:"full-path,attr"`
 }
 
 type BIP struct {
