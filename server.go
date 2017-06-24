@@ -1146,46 +1146,108 @@ func (e *Env) UploadBook(c *gin.Context) {
 	}
 }
 
-type BIP struct {
-	Source []string `json:"_source"`
-	Query  BIPQ     `json:"query"`
+// struct for marshalling book info
+
+type BookInfoPayloadStruct struct {
+	Source []string      `json:"_source"`
+	Query  BookInfoQuery `json:"query"`
 }
 
-type BIPQ struct {
-	MultiMatch MMQ `json:"multi_match"`
+type BookInfoQuery struct {
+	MultiMatch MultiMatchQuery `json:"multi_match"`
 }
 
-type MMQ struct {
+type MultiMatchQuery struct {
 	Query  string   `json:"query"`
 	Fields []string `json:"fields"`
 }
 
-type BDP struct {
-	Source    []string `json:"_source"`
-	Query     BDPQ     `json:"query"`
-	Highlight BDPH     `json:"highlight"`
+// struct for marshalling book detail
+
+type BookDetailPayloadStruct struct {
+	Source    []string            `json:"_source"`
+	Query     BookDetailQuery     `json:"query"`
+	Highlight BookDetailHighlight `json:"highlight"`
 }
 
-type BDPQ struct {
-	MatchPhrase BDPQAC `json:"match_phrase"`
+type BookDetailQuery struct {
+	MatchPhrase BookDetailMatchPhrase `json:"match_phrase"`
 }
 
-type BDPQAC struct {
+type BookDetailMatchPhrase struct {
 	AttachmentContent string `json:"attachment.content"`
 }
 
-type BDPH struct {
-	Fields BDPHF `json:"fields"`
+type BookDetailHighlight struct {
+	Fields BookDetailHighlightFields `json:"fields"`
 }
 
-type BDPHF struct {
-	AttachmentContent BDPHFAC `json:"attachment.content"`
+type BookDetailHighlightFields struct {
+	AttachmentContent BookDetailHighlightAttachmentContent `json:"attachment.content"`
 }
 
-type BDPHFAC struct {
+type BookDetailHighlightAttachmentContent struct {
 	FragmentSize      int64 `json:"fragment_size"`
 	NumberOfFragments int64 `json:"number_of_fragments"`
 	NoMatchSize       int64 `json:"no_match_size"`
+}
+
+// struct for unmarshalling book info result
+
+type BookInfoResultStruct struct {
+	Hits BookInfoHits `json:"hits"`
+}
+
+type BookInfoHits struct {
+	Hits []BookInfoHitsHits `json:"hits"`
+}
+
+type BookInfoHitsHits struct {
+	Source BookInfoStruct `json:"_source"`
+}
+
+// struct for ummarshalling book detail result
+
+type BookDetailResultStruct struct {
+	Hits BookDetailHits `json:"hits"`
+}
+
+type BookDetailHits struct {
+	Hits []BookDetailHitsHits `json:"hits"`
+}
+
+type BookDetailHitsHits struct {
+	Source    BookDetailSource          `json:"_source"`
+	Highlight BookDetailHighlightResult `json:"highlight"`
+}
+
+type BookDetailHighlightResult struct {
+	AttachmentContent []string `json:"attachment.content"`
+}
+
+type BookDetailSource struct {
+	Title  string `json:"title"`
+	Author string `json:"author"`
+	URL    string `json:"url"`
+	Cover  string `json:"cover"`
+	Page   int64  `json:"page"`
+}
+
+// struct for book search result
+type BookSearchResult struct {
+	BookInfo   []BookInfoStruct     `json:"book_info"`
+	BookDetail []BookDetailHitsHits `json:"book_detail"`
+}
+
+func GetJSONPassPayload(url string, payload []byte) []byte {
+	req, err := http.NewRequest("GET", url, bytes.NewBuffer(payload))
+	CheckError(err)
+	res, err := myClient.Do(req)
+	CheckError(err)
+	content, err := ioutil.ReadAll(res.Body)
+	CheckError(err)
+	fmt.Println(string(content))
+	return content
 }
 
 func GetAutocomplete(c *gin.Context) {
@@ -1193,10 +1255,10 @@ func GetAutocomplete(c *gin.Context) {
 	term := q["term"][0]
 	fmt.Println(term)
 
-	payloadInfo := &BIP{
+	payloadInfo := &BookInfoPayloadStruct{
 		Source: []string{"title", "author", "url", "cover"},
-		Query: BIPQ{
-			MultiMatch: MMQ{
+		Query: BookInfoQuery{
+			MultiMatch: MultiMatchQuery{
 				Query:  term,
 				Fields: []string{"title", "author"},
 			},
@@ -1207,10 +1269,10 @@ func GetAutocomplete(c *gin.Context) {
 	CheckError(err)
 
 	indexURL := "http://localhost:9200/lr_index/book_info/_search"
-	fmt.Println("Index URL: " + indexURL)
 
 	res := GetJSONPassPayload(indexURL, b)
-	target := BIRS{}
+
+	target := BookInfoResultStruct{}
 	json.Unmarshal(res, &target)
 
 	hits := target.Hits.Hits
@@ -1224,16 +1286,16 @@ func GetAutocomplete(c *gin.Context) {
 		})
 	}
 
-	payloadDetail := &BDP{
+	payloadDetail := &BookDetailPayloadStruct{
 		Source: []string{"title", "author", "url", "cover", "page"},
-		Query: BDPQ{
-			MatchPhrase: BDPQAC{
+		Query: BookDetailQuery{
+			MatchPhrase: BookDetailMatchPhrase{
 				AttachmentContent: term,
 			},
 		},
-		Highlight: BDPH{
-			Fields: BDPHF{
-				AttachmentContent: BDPHFAC{
+		Highlight: BookDetailHighlight{
+			Fields: BookDetailHighlightFields{
+				AttachmentContent: BookDetailHighlightAttachmentContent{
 					FragmentSize:      150,
 					NumberOfFragments: 3,
 					NoMatchSize:       150,
@@ -1245,83 +1307,27 @@ func GetAutocomplete(c *gin.Context) {
 	CheckError(err)
 
 	indexURL = "http://localhost:9200/lr_index/book_detail/_search"
-	fmt.Println("Index URL: " + indexURL)
 
 	res = GetJSONPassPayload(indexURL, b)
-	target2 := BDRS{}
+
+	target2 := BookDetailResultStruct{}
 	json.Unmarshal(res, &target2)
 
 	hits2 := target2.Hits.Hits
-	hitsBDRS := []BDRSHS{}
+	hitsBDS := []BookDetailHitsHits{}
 	for _, el := range hits2 {
-		fmt.Println(el.Source)
-		fmt.Println(el.Highlight)
-		hitsBDRS = append(hitsBDRS, BDRSHS{
+		hitsBDS = append(hitsBDS, BookDetailHitsHits{
 			Source:    el.Source,
 			Highlight: el.Highlight,
 		})
 	}
-	fmt.Println(hitsBDRS)
 
-	bsr := BSR{
+	bsr := BookSearchResult{
 		BookInfo:   hitsBIS,
-		BookDetail: hitsBDRS,
+		BookDetail: hitsBDS,
 	}
 
 	c.JSON(200, bsr)
-}
-
-type BSR struct {
-	BookInfo   []BookInfoStruct `json:"book_info"`
-	BookDetail []BDRSHS         `json:"book_detail"`
-}
-
-type BDRS struct {
-	Hits BDRSH `json:"hits"`
-}
-
-type BDRSH struct {
-	Hits []BDRSHS `json:"hits"`
-}
-
-type BDRSHS struct {
-	Source    BDS2 `json:"_source"`
-	Highlight BDH  `json:"highlight"`
-}
-
-type BDH struct {
-	AttachmentContent []string `json:"attachment.content"`
-}
-
-type BDS2 struct {
-	Title  string `json:"title"`
-	Author string `json:"author"`
-	URL    string `json:"url"`
-	Cover  string `json:"cover"`
-	Page   int64  `json:"page"`
-}
-
-type BIRS struct {
-	Hits BIRSH `json:"hits"`
-}
-
-type BIRSH struct {
-	Hits []BIRSHH `json:"hits"`
-}
-
-type BIRSHH struct {
-	Source BookInfoStruct `json:"_source"`
-}
-
-func GetJSONPassPayload(url string, payload []byte) []byte {
-	req, err := http.NewRequest("GET", url, bytes.NewBuffer(payload))
-	CheckError(err)
-	res, err := myClient.Do(req)
-	CheckError(err)
-	content, err := ioutil.ReadAll(res.Body)
-	CheckError(err)
-	fmt.Println(string(content))
-	return content
 }
 
 func GetCollections(c *gin.Context) {
