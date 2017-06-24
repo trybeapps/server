@@ -1079,6 +1079,68 @@ func (opfMetadata *OPFMetadataStruct) _FetchEPUBMetadata(opfXMLPath string) {
 	CheckError(err)
 }
 
+func _FetchEpubCoverPath(packagePath, coverFilePath string) string {
+	coverXMLContent, err := ioutil.ReadFile(coverFilePath)
+	CheckError(err)
+
+	//Parse the XMLContent to grab just the img element
+	strContent := string(coverXMLContent)
+	imgLoc := strings.Index(strContent, "<img")
+	prefixRem := strContent[imgLoc:]
+	endImgLoc := strings.Index(prefixRem, "/>")
+	//Move over by 2 to recover the '/>'
+	trimmed := prefixRem[:endImgLoc+2]
+
+	type ImgSrcStruct struct {
+		Src string `xml:"src,attr"`
+	}
+
+	imgSrc := ImgSrcStruct{}
+	err = xml.Unmarshal([]byte(trimmed), &imgSrc)
+
+	coverPath := packagePath + "/" + imgSrc.Src
+
+	return coverPath
+}
+
+func (opfMetadata *OPFMetadataStruct) _FetchEPUBCover(packagePath, opfFilePath string) string {
+	coverIdRef := opfMetadata.Spine.ItemRef.IdRef[0]
+
+	var coverPath string
+	if strings.Contains(coverIdRef, "cover") {
+		for i, e := range opfMetadata.Manifest.Item.Id {
+			if e == coverIdRef {
+				coverPath = opfMetadata.Manifest.Item.Href[i]
+				break
+			}
+		}
+		coverFilePath := packagePath + "/" + coverPath
+
+		if strings.Contains(coverFilePath, "html") || strings.Contains(coverFilePath, "xhtml") || strings.Contains(coverFilePath, "xml") {
+			coverPath = _FetchEpubCoverPath(packagePath, coverFilePath)
+		} else {
+			coverPath = coverFilePath
+		}
+	} else {
+		var coverHref string
+		for i, e := range opfMetadata.Manifest.Item.Id {
+			if strings.Contains(e, "cover") {
+				coverHref = opfMetadata.Manifest.Item.Href[i]
+				break
+			}
+		}
+
+		coverFilePath := packagePath + "/" + coverHref
+		if strings.Contains(coverFilePath, "html") || strings.Contains(coverFilePath, "xhtml") || strings.Contains(coverFilePath, "xml") {
+			coverPath = _FetchEpubCoverPath(packagePath, coverFilePath)
+		} else {
+			coverPath = coverFilePath
+		}
+	}
+
+	return coverPath
+}
+
 func (e *Env) UploadBook(c *gin.Context) {
 	email := _GetEmailFromSession(c)
 	if email != nil {
@@ -1233,68 +1295,6 @@ func (e *Env) UploadBook(c *gin.Context) {
 			}
 		}
 	}
-}
-
-func (opfMetadata *OPFMetadataStruct) _FetchEPUBCover(packagePath, opfFilePath string) string {
-	coverIdRef := opfMetadata.Spine.ItemRef.IdRef[0]
-
-	var coverPath string
-	if strings.Contains(coverIdRef, "cover") {
-		for i, e := range opfMetadata.Manifest.Item.Id {
-			if e == coverIdRef {
-				coverPath = opfMetadata.Manifest.Item.Href[i]
-				break
-			}
-		}
-		coverFilePath := packagePath + "/" + coverPath
-
-		if strings.Contains(coverFilePath, "html") || strings.Contains(coverFilePath, "xhtml") || strings.Contains(coverFilePath, "xml") {
-			coverPath = _FetchEpubCoverPath(packagePath, coverFilePath)
-		} else {
-			coverPath = coverFilePath
-		}
-	} else {
-		var coverHref string
-		for i, e := range opfMetadata.Manifest.Item.Id {
-			if strings.Contains(e, "cover") {
-				coverHref = opfMetadata.Manifest.Item.Href[i]
-				break
-			}
-		}
-
-		coverFilePath := packagePath + "/" + coverHref
-		if strings.Contains(coverFilePath, "html") || strings.Contains(coverFilePath, "xhtml") || strings.Contains(coverFilePath, "xml") {
-			coverPath = _FetchEpubCoverPath(packagePath, coverFilePath)
-		} else {
-			coverPath = coverFilePath
-		}
-	}
-
-	return coverPath
-}
-
-func _FetchEpubCoverPath(packagePath, coverFilePath string) string {
-	coverXMLContent, err := ioutil.ReadFile(coverFilePath)
-	CheckError(err)
-
-	//Parse the XMLContent to grab just the img element
-	strContent := string(coverXMLContent)
-	imgLoc := strings.Index(strContent, "<img")
-	prefixRem := strContent[imgLoc:]
-	endImgLoc := strings.Index(prefixRem, "/>")
-	//Move over by 2 to recover the '/>'
-	trimmed := prefixRem[:endImgLoc+2]
-
-	type ImgSrcStruct struct {
-		Src string `xml:"src,attr"`
-	}
-
-	imgSrc := ImgSrcStruct{}
-	err = xml.Unmarshal([]byte(trimmed), &imgSrc)
-
-	coverPath := packagePath + "/" + imgSrc.Src
-
-	return coverPath
 }
 
 // struct for marshalling book info
