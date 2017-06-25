@@ -1149,6 +1149,9 @@ func (opfMetadata *OPFMetadataStruct) _ConstructEPUBHTMLContent(packagePath stri
 		id := opfMetadata.Manifest.Item.Id
 		for j, f := range id {
 			if f == e {
+				if strings.Contains(f, "toc") {
+					continue
+				}
 				hrefSplit := strings.Split(opfMetadata.Manifest.Item.Href[j], "/")
 				if len(hrefSplit) > 1 {
 					hrefPath = hrefSplit[0]
@@ -1309,11 +1312,63 @@ func (e *Env) UploadBook(c *gin.Context) {
 				epubHTMLPath := opfMetadata._ConstructEPUBHTMLContent(packagePath)
 
 				// Insert new book in `book` table
-				bookId := e._InsertBookRecord(title, fileName, author, epubHTMLPath, cover, 0, "epub", uploadedOn, userId)
+				bookId := e._InsertBookRecord(title, fileName, author, epubHTMLPath, cover, 1, "epub", uploadedOn, userId)
 				fmt.Println(bookId)
+
+				// Feed book info to ES
+				bookInfo := BookInfoStruct{
+					Title:  title,
+					Author: author,
+					URL:    epubHTMLPath,
+					Cover:  cover,
+				}
+
+				fmt.Println(bookInfo)
+
+				// Feed book info to ES
+
+				indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(bookId))
+				fmt.Println(indexURL)
+
+				b, err := json.Marshal(bookInfo)
+				CheckError(err)
+
+				PutJSON(indexURL, b)
+
+				// Feed book detail to ES
+				go _FeedEPUBContent(epubHTMLPath, title, author, cover, userId, bookId)
 			}
 		}
 	}
+}
+
+func _FeedEPUBContent(epubHTMLPath string, title string, author string, cover string, userId int64, bookId int64) {
+	// Set home many CPU cores this function wants to use.
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	fmt.Println(runtime.NumCPU())
+
+	data, err := ioutil.ReadFile(epubHTMLPath)
+	CheckError(err)
+
+	sEnc := base64.StdEncoding.EncodeToString([]byte(string(data)))
+
+	bookDetail := BookDataStruct{
+		TheData: sEnc,
+		Title:   title,
+		Author:  author,
+		URL:     epubHTMLPath,
+		Cover:   cover,
+		Page:    1,
+	}
+
+	pageJSON, err := json.Marshal(bookDetail)
+	CheckError(err)
+
+	indexURL := "http://localhost:9200/lr_index/book_detail/" +
+		strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) +
+		"_" + strconv.Itoa(int(1)) + "?pipeline=attachment"
+	fmt.Println("Index URL: " + indexURL)
+	PutJSON(indexURL, pageJSON)
 }
 
 // struct for marshalling book info
