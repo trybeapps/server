@@ -106,10 +106,10 @@ func main() {
 	// Fields: id, title, filename, author, url, cover, pages, current_page, format, uploaded_on, user_id
 	// --------------------------------------------------------------------------------------------------
 	stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `book` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
-		" `title` VARCHAR(255) NOT NULL, `filename` VARCHAR(255) NOT NULL," +
-		" `author` VARCHAR(255) NOT NULL, `url` VARCHAR(255) NOT NULL," +
-		" `cover` VARCHAR(255) NOT NULL, `pages` INTEGER NOT NULL, `current_page` INTEGER DEFAULT 0," +
-		" `format` VARCHAR(255) NOT NULL, `uploaded_on` VARCHAR(255) NOT NULL, `user_id` INTEGER NOT NULL)")
+		" `title` VARCHAR(255) NOT NULL, `filename` VARCHAR(255) NOT NULL, `file_path` VARCHAR(255) NOT NULL," +
+		" `author` VARCHAR(255) NOT NULL, `url` VARCHAR(255) NOT NULL, `cover` VARCHAR(255) NOT NULL," +
+		" `pages` INTEGER NOT NULL, `current_page` INTEGER DEFAULT 0, `format` VARCHAR(255) NOT NULL," +
+		" `uploaded_on` VARCHAR(255) NOT NULL, `user_id` INTEGER NOT NULL)")
 	CheckError(err)
 
 	_, err = stmt.Exec()
@@ -270,18 +270,22 @@ func (e *Env) _GetUserId(email string) int64 {
 	return userId
 }
 
-func (e *Env) _GetBookId(fileName string) int64 {
-	rows, err := e.db.Query("SELECT `id` FROM `book` WHERE `filename` = ?", fileName)
+func (e *Env) _GetBookInfo(fileName string) (int64, string, string) {
+	rows, err := e.db.Query("SELECT `id`,`format`, `file_path` FROM `book` WHERE `filename` = ?", fileName)
 	CheckError(err)
 
-	var bookId int64
+	var (
+		bookId   int64
+		format   string
+		filePath string
+	)
 	if rows.Next() {
-		err := rows.Scan(&bookId)
+		err := rows.Scan(&bookId, &format, &filePath)
 		CheckError(err)
 	}
 	rows.Close()
 
-	return bookId
+	return bookId, format, filePath
 }
 
 func (e *Env) _CheckCurrentlyReading(bookId int64) int64 {
@@ -335,7 +339,7 @@ func (e *Env) SendBook(c *gin.Context) {
 		userId := e._GetUserId(email.(string))
 
 		// Get book id
-		bookId := e._GetBookId(name)
+		bookId, format, filePath := e._GetBookInfo(name)
 
 		// Get current time for date read to be used for currently reading feature
 		dateRead := _GetCurrentTime()
@@ -346,8 +350,19 @@ func (e *Env) SendBook(c *gin.Context) {
 		// Update currently_reading table
 		e._UpdateCurrentlyReading(currentlyReadingId, bookId, userId, dateRead)
 
-		// Return viewer.html for PDF viewer
-		c.HTML(200, "viewer.html", "")
+		if format == "pdf" {
+			// Return viewer.html for PDF viewer
+			c.HTML(200, "viewer.html", "")
+		} else {
+			// Remove dot from ./uploads
+			filePathSplit := strings.Split(filePath, "./uploads")
+			filePath = "/uploads" + filePathSplit[1]
+
+			// Return epub file xhtml file path
+			c.HTML(200, "epub_viewer.html", gin.H{
+				"filePath": filePath,
+			})
+		}
 	}
 
 	// if not signed in, redirect to sign in page
@@ -879,6 +894,7 @@ func _GeneratePDFCover(fileName, filePath, coverPath string) string {
 func (e *Env) _InsertBookRecord(
 	title string,
 	fileName string,
+	filePath string,
 	author string,
 	url string,
 	cover string,
@@ -887,10 +903,10 @@ func (e *Env) _InsertBookRecord(
 	uploadedOn string,
 	userId int64,
 ) int64 {
-	stmt, err := e.db.Prepare("INSERT INTO book (title, filename, author, url, cover, pages, format, uploaded_on, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := e.db.Prepare("INSERT INTO book (title, filename, file_path, author, url, cover, pages, format, uploaded_on, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	CheckError(err)
 
-	res, err := stmt.Exec(title, fileName, author, url, cover, pagesInt, "pdf", uploadedOn, userId)
+	res, err := stmt.Exec(title, fileName, filePath, author, url, cover, pagesInt, format, uploadedOn, userId)
 	CheckError(err)
 
 	id, err := res.LastInsertId()
@@ -1188,7 +1204,7 @@ func (opfMetadata *OPFMetadataStruct) _ConstructEPUBHTMLContent(packagePath stri
 	return writeHTMLPath
 }
 
-func _FeedEPUBContent(epubHTMLPath string, title string, author string, cover string, userId int64, bookId int64) {
+func _FeedEPUBContent(epubHTMLPath string, title string, author string, cover string, url string, userId int64, bookId int64) {
 	// Set home many CPU cores this function wants to use.
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	fmt.Println(runtime.NumCPU())
@@ -1202,7 +1218,7 @@ func _FeedEPUBContent(epubHTMLPath string, title string, author string, cover st
 		TheData: sEnc,
 		Title:   title,
 		Author:  author,
-		URL:     epubHTMLPath,
+		URL:     url,
 		Cover:   cover,
 		Page:    1,
 	}
@@ -1241,7 +1257,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 			// Construct filename for the book uploaded
 			fileName := _ConstructFileNameForBook(params["filename"], contentType)
 
-			bookId := e._GetBookId(fileName)
+			bookId, _, _ := e._GetBookInfo(fileName)
 
 			if bookId != 0 {
 				c.String(200, fileName+" already exists. ")
@@ -1289,7 +1305,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 				fmt.Println("Book cover: " + cover)
 
 				// Insert new book in `book` table
-				bookId := e._InsertBookRecord(title, fileName, author, url, cover, pagesInt, "pdf", uploadedOn, userId)
+				bookId := e._InsertBookRecord(title, fileName, filePath, author, url, cover, pagesInt, "pdf", uploadedOn, userId)
 
 				// Feed book info to ES
 				bookInfo := BookInfoStruct{
@@ -1340,15 +1356,17 @@ func (e *Env) UploadBook(c *gin.Context) {
 
 				epubHTMLPath := opfMetadata._ConstructEPUBHTMLContent(packagePath)
 
+				url := "/book/" + fileName
+
 				// Insert new book in `book` table
-				bookId := e._InsertBookRecord(title, fileName, author, epubHTMLPath, cover, 1, "epub", uploadedOn, userId)
+				bookId := e._InsertBookRecord(title, fileName, epubHTMLPath, author, url, cover, 1, "epub", uploadedOn, userId)
 				fmt.Println(bookId)
 
 				// Feed book info to ES
 				bookInfo := BookInfoStruct{
 					Title:  title,
 					Author: author,
-					URL:    epubHTMLPath,
+					URL:    url,
 					Cover:  cover,
 				}
 
@@ -1365,7 +1383,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 				PutJSON(indexURL, b)
 
 				// Feed book detail to ES
-				go _FeedEPUBContent(epubHTMLPath, title, author, cover, userId, bookId)
+				go _FeedEPUBContent(epubHTMLPath, title, author, cover, url, userId, bookId)
 
 				c.String(200, fileName+" uploaded successfully. ")
 			}
