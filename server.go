@@ -1265,9 +1265,56 @@ func (e *Env) UploadBook(c *gin.Context) {
 				fmt.Println(title)
 				fmt.Println(author)
 				fmt.Println(cover)
+
+				opfMetadata._ConstructEPUBHTMLContent(packagePath)
 			}
 		}
 	}
+}
+
+func (opfMetadata *OPFMetadataStruct) _ConstructEPUBHTMLContent(packagePath string) string {
+	epubHTMLContent := "<html><head><title>" + opfMetadata.Metadata.Title + "</title></head><body>"
+	idRef := opfMetadata.Spine.ItemRef.IdRef
+	var hrefPath string
+	for _, e := range idRef {
+		id := opfMetadata.Manifest.Item.Id
+		for j, f := range id {
+			if f == e {
+				hrefSplit := strings.Split(opfMetadata.Manifest.Item.Href[j], "/")
+				if len(hrefSplit) > 1 {
+					hrefPath = hrefSplit[0]
+				}
+
+				htmlPath := packagePath + "/" + opfMetadata.Manifest.Item.Href[j]
+				htmlContent, err := ioutil.ReadFile(htmlPath)
+				CheckError(err)
+
+				type XMLBodyContent struct {
+					Content string `xml:",innerxml"`
+				}
+
+				type XMLBodyStruct struct {
+					Body XMLBodyContent `xml:"body"`
+				}
+
+				xmlBody := XMLBodyStruct{}
+				err = xml.Unmarshal(htmlContent, &xmlBody)
+				CheckError(err)
+
+				epubHTMLContent += xmlBody.Body.Content + "<br><br><br>"
+
+				break
+			}
+		}
+	}
+
+	epubHTMLContent += "</body></html>"
+	writeHTMLPath := packagePath + "/" + hrefPath + "/" + "epub_content.html"
+	err := ioutil.WriteFile(writeHTMLPath, []byte(epubHTMLContent), 0700)
+	CheckError(err)
+
+	return ""
+
 }
 
 // struct for marshalling book info
@@ -1357,7 +1404,7 @@ type BookDetailSource struct {
 	Page   int64  `json:"page"`
 }
 
-// struct for book search result
+// struct for wrapping book search result
 type BookSearchResult struct {
 	BookInfo   []BookInfoStruct     `json:"book_info"`
 	BookDetail []BookDetailHitsHits `json:"book_detail"`
