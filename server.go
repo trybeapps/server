@@ -1165,7 +1165,7 @@ func (opfMetadata *OPFMetadataStruct) _ConstructEPUBHTMLContent(packagePath stri
 		id := opfMetadata.Manifest.Item.Id
 		for j, f := range id {
 			if f == e {
-				if strings.Contains(f, "toc") {
+				if strings.Contains(f, "toc") || strings.Contains(f, "cover") {
 					continue
 				}
 				hrefSplit := strings.Split(opfMetadata.Manifest.Item.Href[j], "/")
