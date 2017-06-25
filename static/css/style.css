@@ -61,6 +61,15 @@ header {
     top: -60px;
 }
 
+header .uploading-progress {
+  display: none;
+  position: absolute;
+  top: 0;
+  left:0;
+  background: #FF4848;
+  color: white;
+}
+
 header .header-container {
 	width: 1440px;
 	margin: 0 auto;

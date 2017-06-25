@@ -209,6 +209,7 @@ $(function() {
 		e.preventDefault()
 		var formData = new FormData($(this)[0])
 		console.log(formData)
+		$('.uploading-progress').show()
 		$.ajax({
 			url: '/upload',
 			type: 'POST',
@@ -217,6 +218,7 @@ $(function() {
 			cache: false,
 			processData:false,
             success: function (data) {
+            	$('.uploading-progress').hide()
                 alert(data)
                 window.location.href = "/"
             }
