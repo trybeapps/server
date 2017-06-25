@@ -38,6 +38,12 @@ body {
   color: white;
 }
 
+#epubIframe {
+  display: block;
+  width: 720px;
+  margin: 0 auto;
+}
+
 header {
 	position: fixed;
 	top: 0;

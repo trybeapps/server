@@ -1,0 +1,9 @@
+body {
+	display: block;
+	font-family: 'Helvetica Neue', 'Helvetica', serif;
+	font-size: 16px;
+	line-height: 22px;
+	background: #FFFFF8;
+	width: 100%;
+    margin: 0 auto;
+}

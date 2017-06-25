@@ -2,13 +2,31 @@
 <html>
 <head>
 	<title></title>
+	<link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-<iframe src="{{.filePath}}" width="100%" frameborder="0" scrolling="no" onload="resizeIframe(this)"></iframe>
-<script>
+<iframe id="epubIframe" src="{{.filePath}}" width="720px" frameborder="0" scrolling="no" onload="resizeIframe(this)"></iframe>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+  		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  		crossorigin="anonymous"></script>
+<script type="text/javascript">
   function resizeIframe(obj) {
     obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
   }
+
+  $(function() {
+	$('iframe').each(function(){
+    	function injectCSS(){
+        	$iframe.contents().find('head').append(
+            	$('<link/>', { rel: 'stylesheet', href: '/static/css/epub_iframe_style.css', type: 'text/css' })
+        	);
+    	}
+
+    	var $iframe = $(this);
+    	$iframe.on('load', injectCSS);
+    	injectCSS();
+	});
+  })
 </script>
 </body>
 </html>
