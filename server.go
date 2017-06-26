@@ -1189,7 +1189,7 @@ func (opfMetadata *OPFMetadataStruct) _ConstructEPUBHTMLContent(packagePath stri
 				err = xml.Unmarshal(htmlContent, &xmlBody)
 				CheckError(err)
 
-				epubHTMLContent += xmlBody.Body.Content + "<br><br><br>"
+				epubHTMLContent += "<section class='book-section' id='" + opfMetadata.Manifest.Item.Id[j] + "'>" + xmlBody.Body.Content + "<br><br><br></section>"
 
 				break
 			}
