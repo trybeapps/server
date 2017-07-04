@@ -350,6 +350,11 @@ func (e *Env) SendBook(c *gin.Context) {
 		// Get book id
 		bookId, format, filePath := e._GetBookInfo(name)
 
+		val, err := e.RedisClient.Get(name).Result()
+		CheckError(err)
+		fmt.Println("\n\n\n\n")
+		fmt.Println(val)
+
 		// Get current time for date read to be used for currently reading feature
 		dateRead := _GetCurrentTime()
 
@@ -1316,16 +1321,16 @@ func (e *Env) UploadBook(c *gin.Context) {
 				author := opfMetadata.Metadata.Author
 				cover := opfMetadata._FetchEPUBCover(packagePath, opfFilePath)
 
-				opfMarshal, err := json.Marshal(opfMetadata)
+				opfJSON, err := json.Marshal(opfMetadata)
 				CheckError(err)
 
-				err = e.RedisClient.Set(fileName, string(opfMarshal), 0).Err()
+				err = e.RedisClient.Set(fileName, string(opfJSON), 0).Err()
 				CheckError(err)
 
 				url := "/book/" + fileName
 
 				// Insert new book in `book` table
-				bookId := e._InsertBookRecord(title, fileName, filePath, author, url, cover, 1, "epub", uploadedOn, userId)
+				bookId := e._InsertBookRecord(title, fileName, packagePath, author, url, cover, 1, "epub", uploadedOn, userId)
 				fmt.Println(bookId)
 
 				// Feed book info to ES
