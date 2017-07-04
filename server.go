@@ -352,8 +352,12 @@ func (e *Env) SendBook(c *gin.Context) {
 
 		val, err := e.RedisClient.Get(name).Result()
 		CheckError(err)
+
+		opfMetadata := OPFMetadataStruct{}
+		json.Unmarshal([]byte(val), &opfMetadata)
+
 		fmt.Println("\n\n\n\n")
-		fmt.Println(val)
+		fmt.Println(opfMetadata)
 
 		// Get current time for date read to be used for currently reading feature
 		dateRead := _GetCurrentTime()
