@@ -42,13 +42,15 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/gomail.v2"
 )
 
 type Env struct {
-	db *sql.DB
+	db          *sql.DB
+	RedisClient *redis.Client
 }
 
 func main() {
@@ -198,8 +200,15 @@ func main() {
 
 	PutJSON("http://localhost:9200/lr_index", b)
 
-	// Set database environment
-	env := &Env{db: db}
+	// Initiate redis
+	client := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+
+	// Set database and redis environment
+	env := &Env{db: db, RedisClient: client}
 	// Router
 	r.GET("/", env.GetHomePage)
 	r.GET("/signin", GetSignIn)
@@ -1157,53 +1166,6 @@ func (opfMetadata *OPFMetadataStruct) _FetchEPUBCover(packagePath, opfFilePath s
 	return coverPath
 }
 
-func (opfMetadata *OPFMetadataStruct) _ConstructEPUBHTMLContent(packagePath string) string {
-	epubHTMLContent := "<html><head><title>" + opfMetadata.Metadata.Title + "</title></head><body>"
-	idRef := opfMetadata.Spine.ItemRef.IdRef
-	var hrefPath string
-	for _, e := range idRef {
-		id := opfMetadata.Manifest.Item.Id
-		for j, f := range id {
-			if f == e {
-				if strings.Contains(f, "toc") || strings.Contains(f, "cover") {
-					continue
-				}
-				hrefSplit := strings.Split(opfMetadata.Manifest.Item.Href[j], "/")
-				if len(hrefSplit) > 1 {
-					hrefPath = hrefSplit[0]
-				}
-
-				htmlPath := packagePath + "/" + opfMetadata.Manifest.Item.Href[j]
-				htmlContent, err := ioutil.ReadFile(htmlPath)
-				CheckError(err)
-
-				type XMLBodyContent struct {
-					Content string `xml:",innerxml"`
-				}
-
-				type XMLBodyStruct struct {
-					Body XMLBodyContent `xml:"body"`
-				}
-
-				xmlBody := XMLBodyStruct{}
-				err = xml.Unmarshal(htmlContent, &xmlBody)
-				CheckError(err)
-
-				epubHTMLContent += "<section class='book-section' id='" + opfMetadata.Manifest.Item.Id[j] + "'>" + xmlBody.Body.Content + "<br><br><br></section>"
-
-				break
-			}
-		}
-	}
-
-	epubHTMLContent += "</body></html>"
-	writeHTMLPath := packagePath + "/" + hrefPath + "/" + "epub_content.html"
-	err := ioutil.WriteFile(writeHTMLPath, []byte(epubHTMLContent), 0700)
-	CheckError(err)
-
-	return writeHTMLPath
-}
-
 func _FeedEPUBContent(epubHTMLPath string, title string, author string, cover string, url string, userId int64, bookId int64) {
 	// Set home many CPU cores this function wants to use.
 	runtime.GOMAXPROCS(runtime.NumCPU())
@@ -1354,12 +1316,16 @@ func (e *Env) UploadBook(c *gin.Context) {
 				author := opfMetadata.Metadata.Author
 				cover := opfMetadata._FetchEPUBCover(packagePath, opfFilePath)
 
-				epubHTMLPath := opfMetadata._ConstructEPUBHTMLContent(packagePath)
+				opfMarshal, err := json.Marshal(opfMetadata)
+				CheckError(err)
+
+				err = e.RedisClient.Set(fileName, string(opfMarshal), 0).Err()
+				CheckError(err)
 
 				url := "/book/" + fileName
 
 				// Insert new book in `book` table
-				bookId := e._InsertBookRecord(title, fileName, epubHTMLPath, author, url, cover, 1, "epub", uploadedOn, userId)
+				bookId := e._InsertBookRecord(title, fileName, filePath, author, url, cover, 1, "epub", uploadedOn, userId)
 				fmt.Println(bookId)
 
 				// Feed book info to ES
@@ -1383,7 +1349,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 				PutJSON(indexURL, b)
 
 				// Feed book detail to ES
-				go _FeedEPUBContent(epubHTMLPath, title, author, cover, url, userId, bookId)
+				// go _FeedEPUBContent(epubHTMLPath, title, author, cover, url, userId, bookId)
 
 				c.String(200, fileName+" uploaded successfully. ")
 			}
