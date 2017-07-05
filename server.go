@@ -220,6 +220,7 @@ func main() {
 	r.GET("/signout", GetSignOut)
 	r.POST("/upload", env.UploadBook)
 	r.GET("/book/:bookname", env.SendBook)
+	r.GET("/load-epub-fragment/:bookname/:type", env.SendEPUBFragment)
 	r.GET("/cover/:covername", SendBookCover)
 	r.GET("/books/:pagination", env.GetPagination)
 	r.GET("/autocomplete", GetAutocomplete)
@@ -339,6 +340,16 @@ func _GetCurrentTime() string {
 	return t.Format("20060102150405")
 }
 
+func _GetManifestId(idArray []string, hrefArray []string, idRef string, filePath string) string {
+	for i, e := range idArray {
+		if e == idRef {
+			hrefPath := filePath + "/" + hrefArray[i]
+			return hrefPath
+		}
+	}
+	return ""
+}
+
 func (e *Env) SendBook(c *gin.Context) {
 	email := _GetEmailFromSession(c)
 	if email != nil {
@@ -348,7 +359,11 @@ func (e *Env) SendBook(c *gin.Context) {
 		userId := e._GetUserId(email.(string))
 
 		// Get book id
-		bookId, format, filePath := e._GetBookInfo(name)
+		bookId, format, packagePath := e._GetBookInfo(name)
+
+		// Remove dot from ./uploads
+		filePathSplit := strings.Split(packagePath, "./uploads")
+		packagePath = "/uploads" + filePathSplit[1]
 
 		val, err := e.RedisClient.Get(name).Result()
 		CheckError(err)
@@ -358,15 +373,9 @@ func (e *Env) SendBook(c *gin.Context) {
 
 		idRef := opfMetadata.Spine.ItemRef.IdRef[0]
 		id := opfMetadata.Manifest.Item.Id
-		var hrefPath string
-		for i, e := range id {
-			if e == idRef {
-				hrefPath = filePath + "/" + opfMetadata.Manifest.Item.Href[i]
-			}
-		}
-		// Remove dot from ./uploads
-		filePathSplit := strings.Split(hrefPath, "./uploads")
-		filePath = "/uploads" + filePathSplit[1]
+		href := opfMetadata.Manifest.Item.Href
+
+		hrefPath := _GetManifestId(id, href, idRef, packagePath)
 
 		// Get current time for date read to be used for currently reading feature
 		dateRead := _GetCurrentTime()
@@ -383,13 +392,68 @@ func (e *Env) SendBook(c *gin.Context) {
 		} else {
 			// Return epub file xhtml file path
 			c.HTML(200, "epub_viewer.html", gin.H{
-				"filePath": filePath,
+				"fileName":    name,
+				"idRef":       idRef,
+				"packagePath": packagePath,
+				"filePath":    hrefPath,
 			})
 		}
 	}
 
 	// if not signed in, redirect to sign in page
 	c.Redirect(302, "/signin")
+}
+
+func (e *Env) SendEPUBFragment(c *gin.Context) {
+	email := _GetEmailFromSession(c)
+	if email != nil {
+		fileName := c.Param("bookname")
+		flowType := c.Param("type")
+		fmt.Println(flowType)
+
+		q := c.Request.URL.Query()
+		hrefQuery := q["href"][0]
+
+		// Remove '#' from the link
+		hrefQuery = strings.Split(hrefQuery, "#")[0]
+
+		packagePath, err := e.RedisClient.Get(fileName + "...filepath...").Result()
+		CheckError(err)
+
+		currentFragment := strings.Split(hrefQuery, packagePath+"/")[1]
+		fmt.Println("Current Fragment: " + currentFragment)
+
+		val, err := e.RedisClient.Get(fileName).Result()
+		CheckError(err)
+
+		opfMetadata := OPFMetadataStruct{}
+		json.Unmarshal([]byte(val), &opfMetadata)
+
+		href := opfMetadata.Manifest.Item.Href
+		id := opfMetadata.Manifest.Item.Id
+
+		idRef := opfMetadata.Spine.ItemRef.IdRef
+		var hrefPath string
+		for i, e := range href {
+			if e == currentFragment {
+				currentId := id[i]
+
+				for j, f := range idRef {
+					if f == currentId {
+						nextIdRef := idRef[j+1]
+						fmt.Println("Next Fragment: " + nextIdRef)
+						hrefPath = _GetManifestId(id, href, nextIdRef, packagePath)
+						break
+					}
+				}
+				break
+			}
+		}
+		c.String(200, hrefPath)
+
+	} else {
+		c.String(200, "Not signed in")
+	}
 }
 
 func SendBookCover(c *gin.Context) {
@@ -1334,6 +1398,13 @@ func (e *Env) UploadBook(c *gin.Context) {
 				CheckError(err)
 
 				err = e.RedisClient.Set(fileName, string(opfJSON), 0).Err()
+				CheckError(err)
+
+				// Remove dot from ./uploads
+				packagePathSplit := strings.Split(packagePath, "./uploads")
+				redisPackagePath := "/uploads" + packagePathSplit[1]
+
+				err = e.RedisClient.Set(fileName+"...filepath...", redisPackagePath, 0).Err()
 				CheckError(err)
 
 				url := "/book/" + fileName

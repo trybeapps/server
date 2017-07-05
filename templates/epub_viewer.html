@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title></title>
+	<title>{{.fileName}}</title>
 	<link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-<iframe id="epubIframe" src="{{.filePath}}" width="720px" frameborder="0" scrolling="no" onload="resizeIframe(this)"></iframe>
+<iframe id="epubIframe" spine-idref="{{.idRef}}" src="{{.filePath}}" width="720px" frameborder="0" scrolling="no" onload="resizeIframe(this)"></iframe>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
   		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   		crossorigin="anonymous"></script>
@@ -19,6 +19,34 @@
 		$(this).contents().find('head').append(
         	$('<link/>', { rel: 'stylesheet', href: '/static/css/epub_iframe_style.css', type: 'text/css' })
         )
+        $(this).contents().find("body").on('click', function(e) { 
+        	var $target = e.target
+        	console.log($target.attributes['href'].textContent)
+        	var hrefPath = $target.attributes['href'].textContent
+        	hrefPath = '{{.packagePath}}' + '/' + hrefPath
+        	$('#epubIframe').attr('src', hrefPath)
+        })
+	})
+
+	$(document).click(function(e) {
+		var href = $('#epubIframe').attr('src')
+		$.ajax({
+				url: '/load-epub-fragment/{{.fileName}}/next',
+				data: {
+					href: href
+				},
+				contentType: 'application/json',
+            	success: function(data) {
+                	if (data !== 'Not signed in') {
+                		$('#epubIframe').attr('src', data)
+                	} else {
+                		alert(data)
+                		window.location.href = '/'
+                	}
+            	}
+			})
+
+		return false
 	})
   })
 </script>
