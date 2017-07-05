@@ -356,8 +356,17 @@ func (e *Env) SendBook(c *gin.Context) {
 		opfMetadata := OPFMetadataStruct{}
 		json.Unmarshal([]byte(val), &opfMetadata)
 
-		fmt.Println("\n\n\n\n")
-		fmt.Println(opfMetadata)
+		idRef := opfMetadata.Spine.ItemRef.IdRef[0]
+		id := opfMetadata.Manifest.Item.Id
+		var hrefPath string
+		for i, e := range id {
+			if e == idRef {
+				hrefPath = filePath + "/" + opfMetadata.Manifest.Item.Href[i]
+			}
+		}
+		// Remove dot from ./uploads
+		filePathSplit := strings.Split(hrefPath, "./uploads")
+		filePath = "/uploads" + filePathSplit[1]
 
 		// Get current time for date read to be used for currently reading feature
 		dateRead := _GetCurrentTime()
@@ -372,10 +381,6 @@ func (e *Env) SendBook(c *gin.Context) {
 			// Return viewer.html for PDF viewer
 			c.HTML(200, "viewer.html", "")
 		} else {
-			// Remove dot from ./uploads
-			filePathSplit := strings.Split(filePath, "./uploads")
-			filePath = "/uploads" + filePathSplit[1]
-
 			// Return epub file xhtml file path
 			c.HTML(200, "epub_viewer.html", gin.H{
 				"filePath": filePath,
