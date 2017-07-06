@@ -38,14 +38,30 @@ body {
   color: white;
 }
 
+.epub-body {
+  overflow: hidden;
+}
+
 #epubIframe {
   position: absolute;
-  top: 60px;
+  top: 0;
   left: 0;
   background: #FFFFF8;
   z-index: 1;
   overflow-x: hidden;
-  padding-bottom: 100px;
+}
+
+.epub-prev, .epub-next {
+  position: fixed;
+  top: 50%;
+  left: 50px;
+  z-index: 999;
+  cursor: pointer;
+}
+
+.epub-next {
+  left: inherit;
+  right: 50px;
 }
 
 header {
@@ -91,6 +107,7 @@ header .header-container {
 	float: left;
 	font-family: 'Droid Sans', sans-serif;
 	font-size: 20px;
+  font-weight: 700;
 	color: #676767;
 	text-decoration: none;
 	margin-top: 18px;

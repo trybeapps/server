@@ -440,9 +440,15 @@ func (e *Env) SendEPUBFragment(c *gin.Context) {
 
 				for j, f := range idRef {
 					if f == currentId {
-						nextIdRef := idRef[j+1]
-						fmt.Println("Next Fragment: " + nextIdRef)
-						hrefPath = _GetManifestId(id, href, nextIdRef, packagePath)
+						if flowType == "next" {
+							nextIdRef := idRef[j+1]
+							fmt.Println("Next Fragment: " + nextIdRef)
+							hrefPath = _GetManifestId(id, href, nextIdRef, packagePath)
+						} else {
+							prevIdRef := idRef[j-1]
+							fmt.Println("Previous Fragment: " + prevIdRef)
+							hrefPath = _GetManifestId(id, href, prevIdRef, packagePath)
+						}
 						break
 					}
 				}
