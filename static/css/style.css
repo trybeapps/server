@@ -40,11 +40,12 @@ body {
 
 #epubIframe {
   position: absolute;
-  top: 0;
+  top: 60px;
   left: 0;
   background: #FFFFF8;
   z-index: 1;
   overflow-x: hidden;
+  padding-bottom: 100px;
 }
 
 header {
