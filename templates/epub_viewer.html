@@ -75,9 +75,16 @@
   		crossorigin="anonymous"></script>
   	<script src="/static/js/main.js" type="text/javascript"></script>
 	<script type="text/javascript">
+		var query = window.location.href.split('#')[1]
+		var pageChapter = query.split('&')[0].split('page=')[1]
+		var term = query.split('&')[1].split('term=')[1]
 
   		$(function() {
 			$('#epubIframe').bind('load', function() {
+				if (term) {
+					$('#epubIframe')[0].contentWindow.find(term)
+				}
+
 				$(this).contents().find('head').append(
         			$('<link/>', { rel: 'stylesheet', href: '/static/css/epub_iframe_style.css', type: 'text/css' })
         		)
@@ -112,6 +119,10 @@
                 		}
             		}
 				})
+			}
+
+			if (pageChapter) {
+				$('#epubIframe').attr('src', '{{.packagePath}}' + '/' + pageChapter)
 			}
 
 			$('.epub-next').click(function() {

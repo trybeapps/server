@@ -251,7 +251,8 @@ $(function() {
 					html = ''
 					console.log(data['book_detail'])
 					for (i in data['book_detail']) {
-						html += '<a href="' + data['book_detail'][i]['_source'].url + '#page=' + data['book_detail'][i]['_source'].page + '&term=' + term + '">' +
+						console.log(data['book_detail'][i]['_source'])
+						html += '<a href="' + data['book_detail'][i]['_source'].url + '#page=' + data['book_detail'][i]['_source']['se_url'] + '&term=' + term + '">' +
 						    '<img src="' + data['book_detail'][i]['_source'].cover + '">' +
 						    '<div class="sdtl-title">' + data['book_detail'][i]['_source'].title + ' <span>(Page ' + data['book_detail'][i]['_source'].page + ')</span></div>' +
 						    '<div class="sdtl-author">' + data['book_detail'][i]['_source'].author + '</div>'

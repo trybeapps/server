@@ -1040,8 +1040,10 @@ type BookDataStruct struct {
 	Title   string `json:"title"`
 	Author  string `json:"author"`
 	URL     string `json:"url"`
+	SeURL   string `json:"se_url"`
 	Cover   string `json:"cover"`
 	Page    int64  `json:"page"`
+	Format  string `json:"format"`
 }
 
 func _LoopThroughSplittedPages(userId int64, bookId int64, pagesInt int64, splitPDFPath string, title string, author string, url string, cover string) {
@@ -1061,8 +1063,10 @@ func _LoopThroughSplittedPages(userId int64, bookId int64, pagesInt int64, split
 			Title:   title,
 			Author:  author,
 			URL:     url,
+			SeURL:   "",
 			Cover:   cover,
 			Page:    i,
+			Format:  "pdf",
 		}
 
 		pageJSON, err := json.Marshal(bookDetail)
@@ -1250,33 +1254,44 @@ func (opfMetadata *OPFMetadataStruct) _FetchEPUBCover(packagePath, opfFilePath s
 	return coverPath
 }
 
-func _FeedEPUBContent(epubHTMLPath string, title string, author string, cover string, url string, userId int64, bookId int64) {
+func (opfMetadata *OPFMetadataStruct) _FeedEPUBContent(packagePath string, title string, author string, cover string, url string, userId int64, bookId int64) {
 	// Set home many CPU cores this function wants to use.
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	fmt.Println(runtime.NumCPU())
 
-	data, err := ioutil.ReadFile(epubHTMLPath)
-	CheckError(err)
+	idRef := opfMetadata.Spine.ItemRef.IdRef
+	id := opfMetadata.Manifest.Item.Id
 
-	sEnc := base64.StdEncoding.EncodeToString([]byte(string(data)))
+	for i, e := range idRef {
+		for j, f := range id {
+			if f == e {
+				data, err := ioutil.ReadFile(packagePath + "/" + opfMetadata.Manifest.Item.Href[j])
+				CheckError(err)
 
-	bookDetail := BookDataStruct{
-		TheData: sEnc,
-		Title:   title,
-		Author:  author,
-		URL:     url,
-		Cover:   cover,
-		Page:    1,
+				sEnc := base64.StdEncoding.EncodeToString([]byte(string(data)))
+
+				bookDetail := BookDataStruct{
+					TheData: sEnc,
+					Title:   title,
+					Author:  author,
+					URL:     url,
+					SeURL:   opfMetadata.Manifest.Item.Href[j],
+					Cover:   cover,
+					Page:    int64(i),
+					Format:  "epub",
+				}
+
+				pageJSON, err := json.Marshal(bookDetail)
+				CheckError(err)
+
+				indexURL := "http://localhost:9200/lr_index/book_detail/" +
+					strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) +
+					"_" + strconv.Itoa(int(i)) + "?pipeline=attachment"
+				fmt.Println("Index URL: " + indexURL)
+				PutJSON(indexURL, pageJSON)
+			}
+		}
 	}
-
-	pageJSON, err := json.Marshal(bookDetail)
-	CheckError(err)
-
-	indexURL := "http://localhost:9200/lr_index/book_detail/" +
-		strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) +
-		"_" + strconv.Itoa(int(1)) + "?pipeline=attachment"
-	fmt.Println("Index URL: " + indexURL)
-	PutJSON(indexURL, pageJSON)
 }
 
 func (e *Env) UploadBook(c *gin.Context) {
@@ -1430,7 +1445,6 @@ func (e *Env) UploadBook(c *gin.Context) {
 				fmt.Println(bookInfo)
 
 				// Feed book info to ES
-
 				indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(bookId))
 				fmt.Println(indexURL)
 
@@ -1440,7 +1454,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 				PutJSON(indexURL, b)
 
 				// Feed book detail to ES
-				// go _FeedEPUBContent(epubHTMLPath, title, author, cover, url, userId, bookId)
+				go opfMetadata._FeedEPUBContent(packagePath, title, author, cover, url, userId, bookId)
 
 				c.String(200, fileName+" uploaded successfully. ")
 			}
@@ -1531,8 +1545,10 @@ type BookDetailSource struct {
 	Title  string `json:"title"`
 	Author string `json:"author"`
 	URL    string `json:"url"`
+	SeURL  string `json:"se_url"`
 	Cover  string `json:"cover"`
 	Page   int64  `json:"page"`
+	Format string `json:"format"`
 }
 
 // struct for wrapping book search result
@@ -1589,7 +1605,7 @@ func GetAutocomplete(c *gin.Context) {
 	}
 
 	payloadDetail := &BookDetailPayloadStruct{
-		Source: []string{"title", "author", "url", "cover", "page"},
+		Source: []string{"title", "author", "url", "se_url", "cover", "page", "format"},
 		Query: BookDetailQuery{
 			MatchPhrase: BookDetailMatchPhrase{
 				AttachmentContent: term,
