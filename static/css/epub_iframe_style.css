@@ -1,13 +1,10 @@
 body {
-	display: block;
-	font-family: 'Helvetica Neue', 'Helvetica', serif;
-	font-size: 16px;
-	line-height: 25px;
-	background: #FFFFF8;
-	width: 100%;
-	height: auto;
-}
-
-svg, img, image {
+	display: block!important;
+	font-family: 'Helvetica Neue', 'Helvetica', serif!important;
+	font-size: 16px!important;
+	line-height: 25px!important;
+	background: #FFFFF8!important;
+	width: 700px!important;
 	height: auto!important;
+	margin: 50px auto!important;
 }
