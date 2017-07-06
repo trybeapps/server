@@ -365,17 +365,20 @@ func (e *Env) SendBook(c *gin.Context) {
 		filePathSplit := strings.Split(packagePath, "./uploads")
 		packagePath = "/uploads" + filePathSplit[1]
 
-		val, err := e.RedisClient.Get(name).Result()
-		CheckError(err)
+		var idRef, hrefPath string
+		if format == "epub" {
+			val, err := e.RedisClient.Get(name).Result()
+			CheckError(err)
 
-		opfMetadata := OPFMetadataStruct{}
-		json.Unmarshal([]byte(val), &opfMetadata)
+			opfMetadata := OPFMetadataStruct{}
+			json.Unmarshal([]byte(val), &opfMetadata)
 
-		idRef := opfMetadata.Spine.ItemRef.IdRef[0]
-		id := opfMetadata.Manifest.Item.Id
-		href := opfMetadata.Manifest.Item.Href
+			idRef = opfMetadata.Spine.ItemRef.IdRef[0]
+			id := opfMetadata.Manifest.Item.Id
+			href := opfMetadata.Manifest.Item.Href
 
-		hrefPath := _GetManifestId(id, href, idRef, packagePath)
+			hrefPath = _GetManifestId(id, href, idRef, packagePath)
+		}
 
 		// Get current time for date read to be used for currently reading feature
 		dateRead := _GetCurrentTime()
