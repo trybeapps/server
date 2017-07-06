@@ -4,14 +4,15 @@
 	<title>{{.fileName}}</title>
 	<link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body>
-<iframe id="epubIframe" spine-idref="{{.idRef}}" src="{{.filePath}}" width="100%" frameborder="0" scrolling="no" onload="resizeIframe(this)"></iframe>
+<body style="overflow: hidden;">
+<iframe id="epubIframe" spine-idref="{{.idRef}}" src="{{.filePath}}" width="100%" height="100%" frameborder="0"></iframe>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"
   		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   		crossorigin="anonymous"></script>
 <script type="text/javascript">
-  function resizeIframe(obj) {
-    obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+  function resizeIframe(obj){
+     obj.style.height = 0;
+     obj.style.height = (obj.contentWindow.document.body.scrollHeight + 1000) + 'px';
   }
 
   $(function() {
@@ -19,33 +20,41 @@
 		$(this).contents().find('head').append(
         	$('<link/>', { rel: 'stylesheet', href: '/static/css/epub_iframe_style.css', type: 'text/css' })
         )
+        
         $(this).contents().find("body").on('click', function(e) { 
         	var $target = e.target
-        	console.log($target.attributes['href'].textContent)
-        	var hrefPath = $target.attributes['href'].textContent
-        	hrefPath = '{{.packagePath}}' + '/' + hrefPath
-        	$('#epubIframe').attr('src', hrefPath)
+        	if (e.target.nodeName == 'a') {
+        		console.log($target.attributes['href'].textContent)
+        		var hrefPath = $target.attributes['href'].textContent
+        		hrefPath = '{{.packagePath}}' + '/' + hrefPath
+        		$('#epubIframe').attr('src', hrefPath)
+        	} else {
+        		nextFragment()
+        	}
         })
 	})
 
-	$(document).click(function(e) {
+	function nextFragment() {
 		var href = $('#epubIframe').attr('src')
 		$.ajax({
-				url: '/load-epub-fragment/{{.fileName}}/next',
-				data: {
-					href: href
-				},
-				contentType: 'application/json',
-            	success: function(data) {
-                	if (data !== 'Not signed in') {
-                		$('#epubIframe').attr('src', data)
-                	} else {
-                		alert(data)
-                		window.location.href = '/'
-                	}
-            	}
-			})
+			url: '/load-epub-fragment/{{.fileName}}/next',
+			data: {
+				href: href
+			},
+			contentType: 'application/json',
+            success: function(data) {
+            	if (data !== 'Not signed in') {
+                	$('#epubIframe').attr('src', data)
+				} else {
+                	alert(data)
+                	window.location.href = '/'
+                }
+            }
+		})
+	}
 
+	$(document).click(function(e) {
+		nextFragment()
 		return false
 	})
   })

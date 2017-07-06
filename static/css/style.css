@@ -39,8 +39,11 @@ body {
 }
 
 #epubIframe {
-  display: block;
-  margin: 0 auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  overflow-x: hidden;
 }
 
 header {
