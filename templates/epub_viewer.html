@@ -73,6 +73,7 @@
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js"
   		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   		crossorigin="anonymous"></script>
+  	<script type="text/javascript" src="/static/js/TextHighlighter.min.js"></script>	
   	<script src="/static/js/main.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		var query = window.location.href.split('#')[1]
@@ -80,6 +81,22 @@
 		if (query) {
 			pageChapter = query.split('&')[0].split('page=')[1]
 			term = query.split('&')[1].split('term=')[1]
+		}
+
+		var iframe = document.querySelector('iframe');
+
+		iframe.onload = function () {
+    		var hltr = new TextHighlighter(
+        		iframe.contentDocument.body, {
+        			onAfterHighlight: function (range, highlights) {
+                    	// alert('Created ' + highlights.length + ' highlight(s): ' + highlights.map(function (h) {
+                     //    	return '"' + h.innerText + '"';
+                    	// }).join(', '));
+                    	// alert(iframe.contentWindow.document.body.innerHTML)
+                    	console.log($('#epubIframe').contents().find('html').html())
+                	},
+        		}
+    		)
 		}
 
   		$(function() {
