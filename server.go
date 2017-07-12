@@ -119,9 +119,9 @@ func main() {
 
 	// Create currently_reading table
 	// Table: currently_reading
-	// -------------------
-	// Fields: id, user_id
-	// -------------------
+	// ---------------------------------------
+	// Fields: id, book_id, user_id, date_read
+	// ---------------------------------------
 	stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `currently_reading` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
 		" `book_id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `date_read` VARCHAR(255) NOT NULL)")
 	CheckError(err)
@@ -137,6 +137,19 @@ func main() {
 	stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `collection` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
 		" `title` VARCHAR(255) NOT NULL, `description` VARCHAR(1200) NOT NULL, `books` VARCHAR(1200) NOT NULL," +
 		" `cover` VARCHAR(255) NULL, `user_id` INTEGER NOT NULL)")
+	CheckError(err)
+
+	_, err = stmt.Exec()
+	CheckError(err)
+
+	// Create PDF Highlighter table
+	// Table: pdf_highlighter
+	// -----------------------------------------------------------------
+	// Fields: id, book_id, user_id, page_index, div_index, html_content
+	// -----------------------------------------------------------------
+	stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `pdf_highlighter` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
+		" `book_id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `page_index` INTEGER NOT NULL, `div_index` INTEGER NOT NULL," +
+		" `html_content` VARCHAR(1200) NOT NULL)")
 	CheckError(err)
 
 	_, err = stmt.Exec()

@@ -353,6 +353,10 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     </div> <!-- outerContainer -->
     <div id="printContainer"></div>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/static/js/TextHighlighter.min.js"></script>
     <script type="text/javascript">
     var term = window.location.href.split("&").pop().split('term=').pop()
     document.addEventListener('textlayerrendered', function (e) {
@@ -382,6 +386,21 @@ See https://github.com/adobe-type-tools/cmap-resources
     			window.location.href = filePath;
     		}
 		}
+
+    $(function() {
+      var hltr = new TextHighlighter(document.body, {
+        onAfterHighlight: function (range, highlights) {
+          highlights.map(function(h) {
+            // Get index of highlighted parent `div`
+            var hDivIndex = $(h).closest('div').index() + 1
+            // Get html which includes the highlighted span element
+            var html = $(h).closest('div').html()
+            // Get page index
+            var pIndex = $(h).closest('.page').index() + 1
+          })
+        },
+      });
+    })
     </script>
   </body>
 </html>
