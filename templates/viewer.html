@@ -397,6 +397,27 @@ See https://github.com/adobe-type-tools/cmap-resources
             var html = $(h).closest('div').html()
             // Get page index
             var pIndex = $(h).closest('.page').index() + 1
+
+            // Get filename from url
+            var fileName = window.location.pathname.split('/').pop();
+
+            data = {
+              'pageIndex': pIndex,
+              'divIndex': hDivIndex,
+              'htmlContent': html,
+              'fileName': fileName
+            }
+
+            $.ajax({
+              url: '/post-pdf-highlight',
+              type: 'POST',
+              data: JSON.stringify(data),
+              contentType: 'application/json; charset=utf-8',
+              success: function (data) {
+                console.log(data)
+              }
+            })
+
           })
         },
       });

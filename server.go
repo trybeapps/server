@@ -241,6 +241,7 @@ func main() {
 	r.GET("/add-collection", GetAddCollection)
 	r.POST("/post-new-collection", PostNewCollection)
 	r.GET("/collection/:id", GetCollection)
+	r.POST("/post-pdf-highlight", env.PostPDFHighlight)
 
 	// Listen and serve on 0.0.0.0:8080
 	r.Run(":8080")
@@ -1662,6 +1663,47 @@ func GetAutocomplete(c *gin.Context) {
 	}
 
 	c.JSON(200, bsr)
+}
+
+type PDFHighlightStruct struct {
+	PageIndex   int64  `json:"pageIndex" binding:"required"`
+	DivIndex    int64  `json:"divIndex" binding:"required"`
+	HTMLContent string `json:"htmlContent" binding:"required"`
+	FileName    string `json:"fileName" binding:"required"`
+}
+
+func (e *Env) PostPDFHighlight(c *gin.Context) {
+	email := _GetEmailFromSession(c)
+	if email != nil {
+		pdfHighlight := PDFHighlightStruct{}
+		err := c.BindJSON(&pdfHighlight)
+		CheckError(err)
+		fmt.Println(pdfHighlight)
+
+		// Get user id
+		userId := e._GetUserId(email.(string))
+
+		// Get book id
+		bookId, _, _ := e._GetBookInfo(pdfHighlight.FileName)
+
+		// -----------------------------------------------------------------
+		// Fields: id, book_id, user_id, page_index, div_index, html_content
+		// -----------------------------------------------------------------
+		stmt, err := e.db.Prepare("INSERT INTO `pdf_highlighter` (book_id, user_id, page_index, div_index, html_content) VALUES (?, ?, ?, ?, ?)")
+		CheckError(err)
+
+		res, err := stmt.Exec(bookId, userId, pdfHighlight.PageIndex, pdfHighlight.DivIndex, pdfHighlight.HTMLContent)
+		CheckError(err)
+
+		id, err := res.LastInsertId()
+		CheckError(err)
+
+		fmt.Println(id)
+
+		c.String(200, "Highlight data posted successfully")
+	} else {
+		c.String(200, "Not signed in")
+	}
 }
 
 func GetCollections(c *gin.Context) {
