@@ -423,6 +423,23 @@ See https://github.com/adobe-type-tools/cmap-resources
           })
         },
       });
+
+      $(document).bind('pagerendered', function (e) {
+        $.ajax({
+          url: '/get-pdf-highlights',
+          dataType: 'json',
+          data: {
+            'fileName': window.location.pathname.split('/').pop()
+          },
+          contentType: 'application/json',
+          success: function (data) {
+            for (i=0; i < data.length; i++) {
+              console.log(data[i])
+              $('#viewer').children('.page:nth-child(' + data[i]['page_index'] + ')').children('.textLayer').children('div:nth-child(' + data[i]['div_index'] + ')').html(data[i]['html_content'])
+            }
+          }
+        })
+      })
     })
     </script>
   </body>

@@ -242,6 +242,7 @@ func main() {
 	r.POST("/post-new-collection", PostNewCollection)
 	r.GET("/collection/:id", GetCollection)
 	r.POST("/post-pdf-highlight", env.PostPDFHighlight)
+	r.GET("/get-pdf-highlights", env.GetPDFHighlights)
 
 	// Listen and serve on 0.0.0.0:8080
 	r.Run(":8080")
@@ -1700,6 +1701,53 @@ func (e *Env) PostPDFHighlight(c *gin.Context) {
 		c.String(200, "Highlight data posted successfully")
 	} else {
 		c.String(200, "Not signed in")
+	}
+}
+
+type GetPDFHighlightStruct struct {
+	PageIndex   int64  `json:"page_index"`
+	DivIndex    int64  `json:"div_index"`
+	HTMLContent string `json:"html_content"`
+}
+
+func (e *Env) GetPDFHighlights(c *gin.Context) {
+	email := _GetEmailFromSession(c)
+	if email != nil {
+		q := c.Request.URL.Query()
+		fileName := q["fileName"][0]
+		fmt.Println(fileName)
+
+		// Get user id
+		userId := e._GetUserId(email.(string))
+
+		// Get book id
+		bookId, _, _ := e._GetBookInfo(fileName)
+
+		rows, err := e.db.Query("select page_index, div_index, html_content from pdf_highlighter where book_id = ? and user_id = ?", bookId, userId)
+		CheckError(err)
+
+		pdfHighlights := []GetPDFHighlightStruct{}
+
+		for rows.Next() {
+			var (
+				pageIndex   int64
+				divIndex    int64
+				htmlContent string
+			)
+
+			err := rows.Scan(&pageIndex, &divIndex, &htmlContent)
+			CheckError(err)
+
+			pdfHighlights = append(pdfHighlights, GetPDFHighlightStruct{
+				PageIndex:   pageIndex,
+				DivIndex:    divIndex,
+				HTMLContent: htmlContent,
+			})
+		}
+
+		c.JSON(200, pdfHighlights)
+	} else {
+		c.JSON(200, "Not signed in")
 	}
 }
 
