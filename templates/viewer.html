@@ -389,6 +389,9 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     $(function() {
       var hltr = new TextHighlighter(document.body, {
+        onBeforeHighlight: function (range) {
+          return window.confirm('Selected text: ' + range + '\nReally highlight?');
+        },
         onAfterHighlight: function (range, highlights) {
           highlights.map(function(h) {
             // Get index of highlighted parent `div`
