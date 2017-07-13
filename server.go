@@ -1686,9 +1686,6 @@ func (e *Env) PostPDFHighlight(c *gin.Context) {
 		// Get book id
 		bookId, _, _ := e._GetBookInfo(pdfHighlight.FileName)
 
-		// -----------------------------------------------------------------
-		// Fields: id, book_id, user_id, page_index, div_index, html_content
-		// -----------------------------------------------------------------
 		stmt, err := e.db.Prepare("INSERT INTO `pdf_highlighter` (book_id, user_id, page_index, div_index, html_content) VALUES (?, ?, ?, ?, ?)")
 		CheckError(err)
 
