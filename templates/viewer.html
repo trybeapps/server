@@ -394,7 +394,7 @@ See https://github.com/adobe-type-tools/cmap-resources
         },
         onAfterHighlight: function (range, highlights) {
           highlights.map(function(h) {
-            $(h).append('<div class="highlight-menu"></div>')
+            $(h).append('<div class="highlight-menu"><div class="hm-color"><div class="hmc-list"><div class="hmcl-color yellow"></div><div class="hmcl-color orange"></div><div class="hmcl-color green"></div></div></div></div>')
             // Get index of highlighted parent `div`
             var hDivIndex = $(h).closest('div').index() + 1
             // Get html which includes the highlighted span element

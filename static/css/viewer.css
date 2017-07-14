@@ -2158,16 +2158,57 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
 
 .highlighted {
   position: relative;
-  background-color: rgba(255, 255, 123,0.4)!important;
+  background-color: rgba(255, 255, 123, 0.4)!important;
 }
 
 .highlighted .highlight-menu {
   position: absolute;
   top: -40px;
   left: 0;
-  background: black;
+  background: rgba(0,0,0,0.8);
   width: 100px;
   height: 40px;
+  cursor: pointer;
+}
+
+.hm-color {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 20px;
+  height: 20px;
+  background: yellow;
+}
+
+.hm-color .hmc-list {
+  position: absolute;
+  top: -102px;
+  left: -10px;
+  width: 100px;
+  height: 90px;
+  background: rgba(0,0,0,0.8);
+  padding: 10px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.hm-color .hmc-list .hmcl-color {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 20px;
+    height: 20px;
+    background: yellow;
+}
+
+.hm-color .hmc-list .hmcl-color.orange {
+    left: 40px;
+    background: orange;
+}
+
+.hm-color .hmc-list .hmcl-color.green {
+    left: 70px;
+    background: green;
 }
 
 .textLayer {
