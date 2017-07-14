@@ -2156,6 +2156,19 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   margin-top: 6px;
 }
 
+.highlighted {
+  position: relative;
+}
+
+.highlighted .highlight-menu {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: black;
+  width: 100px;
+  height: 40px;
+}
+
 /* End custom styles */
 
 @media all and (max-width: 770px) {

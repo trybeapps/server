@@ -394,13 +394,13 @@ See https://github.com/adobe-type-tools/cmap-resources
         },
         onAfterHighlight: function (range, highlights) {
           highlights.map(function(h) {
+            $(h).append('<div class="highlight-menu"></div>')
             // Get index of highlighted parent `div`
             var hDivIndex = $(h).closest('div').index() + 1
             // Get html which includes the highlighted span element
             var html = $(h).closest('div').html()
             // Get page index
             var pIndex = $(h).closest('.page').index() + 1
-
             // Get filename from url
             var fileName = window.location.pathname.split('/').pop();
 
@@ -439,6 +439,11 @@ See https://github.com/adobe-type-tools/cmap-resources
           }
         })
       })
+
+      $(document).on('mouseover', '.highlighted', function() {
+
+      })
+
     })
     </script>
   </body>
