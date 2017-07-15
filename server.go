@@ -149,7 +149,7 @@ func main() {
 	// -----------------------------------------------------------------
 	stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `pdf_highlighter` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
 		" `book_id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `page_index` INTEGER NOT NULL, `div_index` INTEGER NOT NULL," +
-		" `html_content` VARCHAR(1200) NOT NULL)")
+		" `html_content` VARCHAR(1200) NOT NULL, `highlight_color` VARCHAR(255) NOT NULL)")
 	CheckError(err)
 
 	_, err = stmt.Exec()
@@ -243,6 +243,7 @@ func main() {
 	r.GET("/collection/:id", GetCollection)
 	r.POST("/post-pdf-highlight", env.PostPDFHighlight)
 	r.GET("/get-pdf-highlights", env.GetPDFHighlights)
+	r.POST("/post-pdf-highlight-color", env.PostPDFHighlightColor)
 
 	// Listen and serve on 0.0.0.0:8080
 	r.Run(":8080")
@@ -1667,10 +1668,11 @@ func GetAutocomplete(c *gin.Context) {
 }
 
 type PDFHighlightStruct struct {
-	PageIndex   int64  `json:"pageIndex" binding:"required"`
-	DivIndex    int64  `json:"divIndex" binding:"required"`
-	HTMLContent string `json:"htmlContent" binding:"required"`
-	FileName    string `json:"fileName" binding:"required"`
+	PageIndex      int64  `json:"pageIndex" binding:"required"`
+	DivIndex       int64  `json:"divIndex" binding:"required"`
+	HTMLContent    string `json:"htmlContent" binding:"required"`
+	FileName       string `json:"fileName" binding:"required"`
+	HighlightColor string `json:"highlightColor" binding:"required"`
 }
 
 func (e *Env) PostPDFHighlight(c *gin.Context) {
@@ -1687,10 +1689,10 @@ func (e *Env) PostPDFHighlight(c *gin.Context) {
 		// Get book id
 		bookId, _, _ := e._GetBookInfo(pdfHighlight.FileName)
 
-		stmt, err := e.db.Prepare("INSERT INTO `pdf_highlighter` (book_id, user_id, page_index, div_index, html_content) VALUES (?, ?, ?, ?, ?)")
+		stmt, err := e.db.Prepare("INSERT INTO `pdf_highlighter` (book_id, user_id, page_index, div_index, html_content, highlight_color) VALUES (?, ?, ?, ?, ?, ?)")
 		CheckError(err)
 
-		res, err := stmt.Exec(bookId, userId, pdfHighlight.PageIndex, pdfHighlight.DivIndex, pdfHighlight.HTMLContent)
+		res, err := stmt.Exec(bookId, userId, pdfHighlight.PageIndex, pdfHighlight.DivIndex, pdfHighlight.HTMLContent, pdfHighlight.HighlightColor)
 		CheckError(err)
 
 		id, err := res.LastInsertId()
@@ -1705,9 +1707,11 @@ func (e *Env) PostPDFHighlight(c *gin.Context) {
 }
 
 type GetPDFHighlightStruct struct {
-	PageIndex   int64  `json:"page_index"`
-	DivIndex    int64  `json:"div_index"`
-	HTMLContent string `json:"html_content"`
+	Id             int64  `json:"id"`
+	PageIndex      int64  `json:"page_index"`
+	DivIndex       int64  `json:"div_index"`
+	HTMLContent    string `json:"html_content"`
+	HighlightColor string `json:"highlight_color"`
 }
 
 func (e *Env) GetPDFHighlights(c *gin.Context) {
@@ -1723,31 +1727,61 @@ func (e *Env) GetPDFHighlights(c *gin.Context) {
 		// Get book id
 		bookId, _, _ := e._GetBookInfo(fileName)
 
-		rows, err := e.db.Query("select page_index, div_index, html_content from pdf_highlighter where book_id = ? and user_id = ?", bookId, userId)
+		rows, err := e.db.Query("select id, page_index, div_index, html_content, highlight_color from pdf_highlighter where book_id = ? and user_id = ?", bookId, userId)
 		CheckError(err)
 
 		pdfHighlights := []GetPDFHighlightStruct{}
 
 		for rows.Next() {
 			var (
-				pageIndex   int64
-				divIndex    int64
-				htmlContent string
+				id             int64
+				pageIndex      int64
+				divIndex       int64
+				htmlContent    string
+				highlightColor string
 			)
 
-			err := rows.Scan(&pageIndex, &divIndex, &htmlContent)
+			err := rows.Scan(&id, &pageIndex, &divIndex, &htmlContent, &highlightColor)
 			CheckError(err)
 
 			pdfHighlights = append(pdfHighlights, GetPDFHighlightStruct{
-				PageIndex:   pageIndex,
-				DivIndex:    divIndex,
-				HTMLContent: htmlContent,
+				Id:             id,
+				PageIndex:      pageIndex,
+				DivIndex:       divIndex,
+				HTMLContent:    htmlContent,
+				HighlightColor: highlightColor,
 			})
 		}
 
 		c.JSON(200, pdfHighlights)
 	} else {
 		c.JSON(200, "Not signed in")
+	}
+}
+
+type PDFHighlightColor struct {
+	HighlightColor string `json:"highlightColor" binding:"required"`
+	Id             string `json:"id" binding:"required"`
+}
+
+func (e *Env) PostPDFHighlightColor(c *gin.Context) {
+	email := _GetEmailFromSession(c)
+	if email != nil {
+		pdfHighlightColor := PDFHighlightColor{}
+		err := c.BindJSON(&pdfHighlightColor)
+		CheckError(err)
+		fmt.Println(pdfHighlightColor)
+
+		// Update dateRead for the given currentlyReadingId
+		stmt, err := e.db.Prepare("UPDATE `pdf_highlighter` SET highlight_color=? WHERE id=?")
+		CheckError(err)
+
+		_, err = stmt.Exec(pdfHighlightColor.HighlightColor, pdfHighlightColor.Id)
+		CheckError(err)
+
+		c.String(200, "Highlight updated successfully")
+	} else {
+		c.String(200, "Not signed in")
 	}
 }
 

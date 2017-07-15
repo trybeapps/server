@@ -394,7 +394,11 @@ See https://github.com/adobe-type-tools/cmap-resources
         },
         onAfterHighlight: function (range, highlights) {
           highlights.map(function(h) {
-            $(h).append('<div class="highlight-menu"><div class="hm-color"><div class="hmc-list"><div class="hmcl-color yellow"></div><div class="hmcl-color orange"></div><div class="hmcl-color green"></div></div></div></div>')
+            // Set default highlight color
+            $(h).css('background-color', 'rgba(255, 255, 0, 0.4)')
+
+            // Append highlight menu
+            $(h).append('<div class="highlight-menu"><div class="hm-color"><div class="hmc-list"><div class="hmcl-color yellow"></div><div class="hmcl-color orange"></div><div class="hmcl-color green"></div><div class="hmcl-color blue"></div><div class="hmcl-color brown"></div><div class="hmcl-color turquoise"></div><div class="hmcl-color purple"></div><div class="hmcl-color chartreuse"></div><div class="hmcl-color crimson"></div></div></div></div>')
             // Get index of highlighted parent `div`
             var hDivIndex = $(h).closest('div').index() + 1
             // Get html which includes the highlighted span element
@@ -403,12 +407,15 @@ See https://github.com/adobe-type-tools/cmap-resources
             var pIndex = $(h).closest('.page').index() + 1
             // Get filename from url
             var fileName = window.location.pathname.split('/').pop();
+            // Highlight color
+            var highlightColor = 'rgba(255, 255, 0, 0.4)'
 
             data = {
               'pageIndex': pIndex,
               'divIndex': hDivIndex,
               'htmlContent': html,
-              'fileName': fileName
+              'fileName': fileName,
+              'highlightColor': highlightColor
             }
 
             $.ajax({
@@ -434,13 +441,37 @@ See https://github.com/adobe-type-tools/cmap-resources
           contentType: 'application/json',
           success: function (data) {
             for (i=0; i < data.length; i++) {
-              $('#viewer').children('.page:nth-child(' + data[i]['page_index'] + ')').children('.textLayer').children('div:nth-child(' + data[i]['div_index'] + ')').html(data[i]['html_content'])
+              // Update htmlContent with highlight color
+              var htmlContent = data[i]['html_content'].split('style="background-color: rgba(255, 255, 0, 0.4);"').join('style="background-color: ' + data[i]['highlight_color'] + ';"')
+              $('#viewer').children('.page:nth-child(' + data[i]['page_index'] + ')').children('.textLayer').children('div:nth-child(' + data[i]['div_index'] + ')').attr('data-highlight-id', data[i]['id']).html(htmlContent)
             }
           }
         })
       })
 
       $(document).on('mouseover', '.highlighted', function() {
+
+      })
+
+      $(document).on('click', '.hmcl-color', function() {
+        var bgColor = $(this).css('background-color')
+        bgColor = 'rgba(' + bgColor.split('rgb(').pop().split(')')[0].split(',').join(',') + ', 0.4)'
+        $(this).closest('.highlighted').css('background-color', bgColor)
+        var id = $(this).closest('.highlighted').parent('div').attr('data-highlight-id')
+
+        var data = {
+          'highlightColor': bgColor,
+          'id': id
+        }
+        $.ajax({
+          url: '/post-pdf-highlight-color',
+          type: 'POST',
+          data: JSON.stringify(data),
+          contentType: 'application/json; charset=utf-8',
+          success: function (data) {
+            console.log(data)
+          }
+        })
 
       })
 
