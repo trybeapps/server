@@ -443,6 +443,10 @@ See https://github.com/adobe-type-tools/cmap-resources
             for (i=0; i < data.length; i++) {
               // Update htmlContent with highlight color
               var htmlContent = data[i]['html_content'].split('style="background-color: rgba(255, 255, 0, 0.4);"').join('style="background-color: ' + data[i]['highlight_color'] + ';"')
+
+              // Update highlight menu color
+              var htmlContent = htmlContent.split('hm-color"').join('hm-color" style="background-color: ' + data[i]['highlight_color'].split(', 0.4').join(', 1') + ';"')
+              
               $('#viewer').children('.page:nth-child(' + data[i]['page_index'] + ')').children('.textLayer').children('div:nth-child(' + data[i]['div_index'] + ')').attr('data-highlight-id', data[i]['id']).html(htmlContent)
             }
           }
