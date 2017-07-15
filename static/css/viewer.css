@@ -2265,6 +2265,15 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   opacity: 1!important;
 }
 
+.annotationLayer {
+  position: absolute;
+  top: 0;
+  right: -250px;
+  width: 240px;
+  height: 120px;
+  background: white;
+}
+
 /* End custom styles */
 
 @media all and (max-width: 770px) {
