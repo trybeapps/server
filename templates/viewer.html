@@ -457,6 +457,10 @@ See https://github.com/adobe-type-tools/cmap-resources
 
       })
 
+      $(document).on('click', '.hm-color', function() {
+        $(this).children('.hmc-list').toggle()
+      })
+
       $(document).on('click', '.hmcl-color', function() {
         var bgColor = $(this).css('background-color')
         bgColor = 'rgba(' + bgColor.split('rgb(').pop().split(')')[0].split(',').join(',') + ', 0.4)'
@@ -480,10 +484,6 @@ See https://github.com/adobe-type-tools/cmap-resources
             console.log(data)
           }
         })
-      })
-
-      $(document).on('click', '.hm-color', function() {
-        $(this).children('.hmc-list').toggle()
       })
 
     })
