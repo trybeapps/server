@@ -2158,6 +2158,7 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
 
 .highlighted {
   position: relative;
+  color: black;
 }
 
 .highlighted .highlight-menu {
@@ -2224,41 +2225,41 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
 
 .hm-color .hmc-list .hmcl-color.green {
     left: 70px;
-    background: green;
+    background: rgba(4, 195, 4, 1);
 }
 
 .hm-color .hmc-list .hmcl-color.blue {
     top: 40px;
-    background: #0000FF;
+    background: rgba(93, 93, 255, 1);
 }
 
-.hm-color .hmc-list .hmcl-color.brown {
+.hm-color .hmc-list .hmcl-color.gray {
     top: 40px;
     left: 40px;
-    background: #A52A2A;
+    background: rgba(160, 160, 160, 1);
 }
 
 .hm-color .hmc-list .hmcl-color.turquoise {
     top: 40px;
     left: 70px;
-    background: #40E0D0;
+    background: rgba(64, 224, 208, 1);
 }
 
 .hm-color .hmc-list .hmcl-color.purple {
     top: 70px;
-    background: #A900FF;
+    background: rgba(199, 88, 255, 1);
 }
 
 .hm-color .hmc-list .hmcl-color.chartreuse {
     top: 70px;
     left: 40px;
-    background: #7FFF00;
+    background: rgba(127, 255, 0, 1);
 }
 
 .hm-color .hmc-list .hmcl-color.crimson {
     top: 70px;
     left: 70px;
-    background: #ED143D;
+    background: rgba(237, 20, 61, 1);
 }
 
 .textLayer {

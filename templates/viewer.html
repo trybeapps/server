@@ -395,10 +395,10 @@ See https://github.com/adobe-type-tools/cmap-resources
         onAfterHighlight: function (range, highlights) {
           highlights.map(function(h) {
             // Set default highlight color
-            $(h).css('background-color', 'rgba(255, 255, 0, 0.4)')
+            $(h).css('background-color', 'rgba(255, 255, 0, 1)')
 
             // Append highlight menu
-            $(h).append('<div class="highlight-menu"><div class="hm-color"><div class="hmc-list"><div class="hmcl-color yellow"></div><div class="hmcl-color orange"></div><div class="hmcl-color green"></div><div class="hmcl-color blue"></div><div class="hmcl-color brown"></div><div class="hmcl-color turquoise"></div><div class="hmcl-color purple"></div><div class="hmcl-color chartreuse"></div><div class="hmcl-color crimson"></div></div></div><svg class="hm-annotation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20"><g class="nc-icon-wrapper" fill="none" stroke="#FFF" stroke-width="5" stroke-linecap="square" stroke-miterlimit="10"><path d="M62 6H2v40h20l10 12 10-12h20z"/><path data-color="color-2" d="M16 20h32M16 32h18"/></g></svg><svg class="hm-delete" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20"><g class="nc-icon-wrapper" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="square" stroke-miterlimit="10"><path data-color="color-2" d="M22 10V2h20v8"/><path d="M54 18v40a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V18"/><path data-color="color-2" d="M32 31v18M22 31v18m20-18v18"/><path d="M4 10h56v8H4z"/></g></svg></div>')
+            $(h).append('<div class="highlight-menu"><div class="hm-color"><div class="hmc-list"><div class="hmcl-color yellow"></div><div class="hmcl-color orange"></div><div class="hmcl-color green"></div><div class="hmcl-color blue"></div><div class="hmcl-color gray"></div><div class="hmcl-color turquoise"></div><div class="hmcl-color purple"></div><div class="hmcl-color chartreuse"></div><div class="hmcl-color crimson"></div></div></div><svg class="hm-annotation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20"><g class="nc-icon-wrapper" fill="none" stroke="#FFF" stroke-width="5" stroke-linecap="square" stroke-miterlimit="10"><path d="M62 6H2v40h20l10 12 10-12h20z"/><path data-color="color-2" d="M16 20h32M16 32h18"/></g></svg><svg class="hm-delete" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20"><g class="nc-icon-wrapper" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="square" stroke-miterlimit="10"><path data-color="color-2" d="M22 10V2h20v8"/><path d="M54 18v40a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V18"/><path data-color="color-2" d="M32 31v18M22 31v18m20-18v18"/><path d="M4 10h56v8H4z"/></g></svg></div>')
             // Get index of highlighted parent `div`
             var hDivIndex = $(h).closest('div').index() + 1
             // Get html which includes the highlighted span element
@@ -408,7 +408,7 @@ See https://github.com/adobe-type-tools/cmap-resources
             // Get filename from url
             var fileName = window.location.pathname.split('/').pop();
             // Highlight color
-            var highlightColor = 'rgba(255, 255, 0, 0.4)'
+            var highlightColor = 'rgba(255, 255, 0, 1)'
 
             data = {
               'pageIndex': pIndex,
@@ -442,7 +442,7 @@ See https://github.com/adobe-type-tools/cmap-resources
           success: function (data) {
             for (i=0; i < data.length; i++) {
               // Update htmlContent with highlight color
-              var htmlContent = data[i]['html_content'].split('style="background-color: rgba(255, 255, 0, 0.4);"').join('style="background-color: ' + data[i]['highlight_color'] + ';"')
+              var htmlContent = data[i]['html_content'].split('style="background-color: rgb(255, 255, 0);"').join('style="background-color: ' + data[i]['highlight_color'] + ';"')
 
               // Update highlight menu color
               var htmlContent = htmlContent.split('hm-color"').join('hm-color" style="background-color: ' + data[i]['highlight_color'].split(', 0.4').join(', 1') + ';"')
@@ -463,7 +463,7 @@ See https://github.com/adobe-type-tools/cmap-resources
 
       $(document).on('click', '.hmcl-color', function() {
         var bgColor = $(this).css('background-color')
-        bgColor = 'rgba(' + bgColor.split('rgb(').pop().split(')')[0].split(',').join(',') + ', 0.4)'
+        bgColor = 'rgba(' + bgColor.split('rgb(').pop().split(')')[0].split(',').join(',') + ', 1)'
         $(this).closest('.highlighted').css('background-color', bgColor)
 
         $(this).closest('.hm-color').css('background-color', bgColor.split(', 0.4').join(', 1'))
