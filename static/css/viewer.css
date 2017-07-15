@@ -2179,7 +2179,19 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   cursor: pointer;
 }
 
+.hm-annotation, .hm-delete {
+  position: absolute;
+  top: 10px;
+  left: 40px;
+  cursor: pointer;
+}
+
+.hm-delete {
+  left: 70px;
+}
+
 .hm-color .hmc-list {
+  display: none;
   position: absolute;
   top: -112px;
   left: -10px;
