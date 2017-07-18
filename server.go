@@ -144,12 +144,24 @@ func main() {
 
 	// Create PDF Highlighter table
 	// Table: pdf_highlighter
-	// -----------------------------------------------------------------
-	// Fields: id, book_id, user_id, page_index, div_index, html_content
-	// -----------------------------------------------------------------
+	// ----------------------------------------------------------------------------------
+	// Fields: id, book_id, user_id, page_index, div_index, html_content, highlight_color
+	// ----------------------------------------------------------------------------------
 	stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `pdf_highlighter` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
-		" `book_id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `page_index` INTEGER NOT NULL, `div_index` INTEGER NOT NULL," +
-		" `html_content` VARCHAR(1200) NOT NULL, `highlight_color` VARCHAR(255) NOT NULL)")
+		" `book_id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `page_index` VARCHAR(255) NOT NULL," +
+		" `div_index` VARCHAR(255) NOT NULL, `highlight_color` VARCHAR(255) NOT NULL)")
+	CheckError(err)
+
+	_, err = stmt.Exec()
+	CheckError(err)
+
+	// Create PDF Highlighter HTML table
+	// Table: pdf_highlighter_html
+	// ----------------------------------------
+	// Fields: id, highlighter_id, html_content
+	// ----------------------------------------
+	stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `pdf_highlighter_html` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
+		" `highlighter_id` INTEGER NOT NULL, `html_content` VARCHAR(1200) NOT NULL)")
 	CheckError(err)
 
 	_, err = stmt.Exec()
@@ -1668,11 +1680,11 @@ func GetAutocomplete(c *gin.Context) {
 }
 
 type PDFHighlightStruct struct {
-	PageIndex      int64  `json:"pageIndex" binding:"required"`
-	DivIndex       int64  `json:"divIndex" binding:"required"`
-	HTMLContent    string `json:"htmlContent" binding:"required"`
-	FileName       string `json:"fileName" binding:"required"`
-	HighlightColor string `json:"highlightColor" binding:"required"`
+	PageIndex      []string `json:"pageIndex" binding:"required"`
+	DivIndex       []string `json:"divIndex" binding:"required"`
+	HTMLContent    []string `json:"htmlContent" binding:"required"`
+	FileName       string   `json:"fileName" binding:"required"`
+	HighlightColor string   `json:"highlightColor" binding:"required"`
 }
 
 func (e *Env) PostPDFHighlight(c *gin.Context) {
@@ -1689,10 +1701,14 @@ func (e *Env) PostPDFHighlight(c *gin.Context) {
 		// Get book id
 		bookId, _, _ := e._GetBookInfo(pdfHighlight.FileName)
 
-		stmt, err := e.db.Prepare("INSERT INTO `pdf_highlighter` (book_id, user_id, page_index, div_index, html_content, highlight_color) VALUES (?, ?, ?, ?, ?, ?)")
+		// Conver array to string
+		pageIndex := strings.Join(pdfHighlight.PageIndex, ",")
+		divIndex := strings.Join(pdfHighlight.DivIndex, ",")
+
+		stmt, err := e.db.Prepare("INSERT INTO `pdf_highlighter` (book_id, user_id, page_index, div_index, highlight_color) VALUES (?, ?, ?, ?, ?)")
 		CheckError(err)
 
-		res, err := stmt.Exec(bookId, userId, pdfHighlight.PageIndex, pdfHighlight.DivIndex, pdfHighlight.HTMLContent, pdfHighlight.HighlightColor)
+		res, err := stmt.Exec(bookId, userId, pageIndex, divIndex, pdfHighlight.HighlightColor)
 		CheckError(err)
 
 		id, err := res.LastInsertId()
@@ -1700,18 +1716,35 @@ func (e *Env) PostPDFHighlight(c *gin.Context) {
 
 		fmt.Println(id)
 
+		for _, v := range pdfHighlight.HTMLContent {
+			stmt, err := e.db.Prepare("INSERT INTO `pdf_highlighter_html` (highlighter_id, html_content) VALUES (?, ?)")
+			CheckError(err)
+
+			_, err = stmt.Exec(id, v)
+			CheckError(err)
+		}
+
 		c.String(200, "Highlight data posted successfully")
 	} else {
 		c.String(200, "Not signed in")
 	}
 }
 
-type GetPDFHighlightStruct struct {
+type GetPDFHighlightMetadata struct {
 	Id             int64  `json:"id"`
-	PageIndex      int64  `json:"page_index"`
-	DivIndex       int64  `json:"div_index"`
-	HTMLContent    string `json:"html_content"`
+	PageIndex      string `json:"page_index"`
+	DivIndex       string `json:"div_index"`
 	HighlightColor string `json:"highlight_color"`
+}
+
+type GetPDFHighlightHTML struct {
+	HId         int64  `json:"hid"`
+	HTMLContent string `json:"html_content"`
+}
+
+type PDFHighlights struct {
+	Metadata []GetPDFHighlightMetadata `json:"metadata"`
+	HTML     []GetPDFHighlightHTML     `json:"html"`
 }
 
 func (e *Env) GetPDFHighlights(c *gin.Context) {
@@ -1727,30 +1760,51 @@ func (e *Env) GetPDFHighlights(c *gin.Context) {
 		// Get book id
 		bookId, _, _ := e._GetBookInfo(fileName)
 
-		rows, err := e.db.Query("select id, page_index, div_index, html_content, highlight_color from pdf_highlighter where book_id = ? and user_id = ?", bookId, userId)
+		rows, err := e.db.Query("select id, page_index, div_index, highlight_color from pdf_highlighter where book_id = ? and user_id = ?", bookId, userId)
 		CheckError(err)
 
-		pdfHighlights := []GetPDFHighlightStruct{}
+		pdfHighlightsMetadata := []GetPDFHighlightMetadata{}
 
 		for rows.Next() {
 			var (
 				id             int64
-				pageIndex      int64
-				divIndex       int64
-				htmlContent    string
+				pageIndex      string
+				divIndex       string
 				highlightColor string
 			)
 
-			err := rows.Scan(&id, &pageIndex, &divIndex, &htmlContent, &highlightColor)
+			err := rows.Scan(&id, &pageIndex, &divIndex, &highlightColor)
 			CheckError(err)
 
-			pdfHighlights = append(pdfHighlights, GetPDFHighlightStruct{
+			pdfHighlightsMetadata = append(pdfHighlightsMetadata, GetPDFHighlightMetadata{
 				Id:             id,
 				PageIndex:      pageIndex,
 				DivIndex:       divIndex,
-				HTMLContent:    htmlContent,
 				HighlightColor: highlightColor,
 			})
+		}
+
+		pdfHighlightsHTML := []GetPDFHighlightHTML{}
+		for _, v := range pdfHighlightsMetadata {
+			rows, err := e.db.Query("select html_content from pdf_highlighter_html where highlighter_id=?", v.Id)
+			CheckError(err)
+
+			for rows.Next() {
+				var htmlContent string
+
+				err := rows.Scan(&htmlContent)
+				CheckError(err)
+
+				pdfHighlightsHTML = append(pdfHighlightsHTML, GetPDFHighlightHTML{
+					HId:         v.Id,
+					HTMLContent: htmlContent,
+				})
+			}
+		}
+
+		pdfHighlights := PDFHighlights{
+			Metadata: pdfHighlightsMetadata,
+			HTML:     pdfHighlightsHTML,
 		}
 
 		c.JSON(200, pdfHighlights)
