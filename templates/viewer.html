@@ -524,11 +524,10 @@ See https://github.com/adobe-type-tools/cmap-resources
         })
       })
 
-      // $(document).on('click', '.hm-annotation', function() {
-      //   var $hParent = $(this).closest('.highlighted').parent('div')
-      //   var hTop = $hParent.css('top')
-      //   $(this).closest('.page').append('<div class="annotationLayer" style="top: ' + hTop + ';"></div>')
-      // })
+      $(document).on('click', '.hm-annotation', function() {
+        var hTop = $('.'+currentHighlight).css('top')
+        $(this).closest('.page').append('<div class="annotationLayer" style="top: ' + hTop + ';"></div>')
+      })
 
     })
     </script>
