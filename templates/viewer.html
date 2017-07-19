@@ -396,7 +396,10 @@ See https://github.com/adobe-type-tools/cmap-resources
           var hDivIndex = []
             , html = []
             , pIndex = []
+            , $h = []
+
           highlights.map(function(h) {
+            $h.push($(h))
             // Set default highlight color
             $(h).css('background-color', 'rgba(255, 255, 0, 1)')
             // Get index of highlighted parent `div`
@@ -406,9 +409,6 @@ See https://github.com/adobe-type-tools/cmap-resources
             // Get page index
             pIndex.push(($(h).closest('.page').index() + 1).toString())
           })
-          console.log(hDivIndex)
-          console.log(html)
-          console.log(pIndex)
 
           var data = {
             'pageIndex': pIndex,
@@ -424,7 +424,9 @@ See https://github.com/adobe-type-tools/cmap-resources
             data: JSON.stringify(data),
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
-              console.log(data)
+              for (i=0; i<$h.length; i++) {
+                $h[i].closest('div').attr('data-highlight-id', data).addClass('highlight-id-'+data)
+              }
             }
           })
         },
@@ -439,16 +441,16 @@ See https://github.com/adobe-type-tools/cmap-resources
           },
           contentType: 'application/json',
           success: function (data) {
-            for (i=0; i<data['html'].length; i++) {
-              var hId = data['html'][i]['hid']
-              var htmlContent = data['html'][i]['html_content']
+            for (i=0; i<data['detail'].length; i++) {
+              var hId = data['detail'][i]['hid']
+              var pageIndex = data['detail'][i]['page_index']
+              var divIndex = data['detail'][i]['div_index']
+              var htmlContent = data['detail'][i]['html_content']
+              $('#viewer').children('.page:nth-child(' + pageIndex + ')').children('.textLayer').children('div:nth-child(' + divIndex + ')').attr('data-highlight-id', hId).addClass('highlight-id-'+hId).html(htmlContent)
 
-              for (j=0; j<data['metadata'].length; j++) {
-                if (data['metadata'][j]['id'] == hId) {
-                  var divIndex = data['metadata'][j]['div_index'].split(",")
-                  var pageIndex = data['metadata'][j]['page_index'].split(",")
-                  var highlightColor = data['metadata'][j]['highlight_color']
-                  $('#viewer').children('.page:nth-child(' + pageIndex[i] + ')').children('.textLayer').children('div:nth-child(' + divIndex[i] + ')').attr('data-highlight-id', hId).addClass('highlight-id-'+hId).html(htmlContent)
+              for (j=0; j<data['color'].length; j++) {
+                if (data['color'][j]['id'] == hId) {
+                  var highlightColor = data['color'][j]['highlight_color']
                   $('.highlight-id-' + hId).children('.highlighted').css('background-color', highlightColor)
                 }
               }
@@ -478,7 +480,6 @@ See https://github.com/adobe-type-tools/cmap-resources
         var bgColor = $(this).css('background-color')
         bgColor = 'rgba(' + bgColor.split('rgb(').pop().split(')')[0].split(',').join(',') + ', 1)'
         $(this).closest('.page').children('.highlight-menu').children('.hm-color').css('background-color', bgColor)
-        
         currentHighlight = $(this).closest('div').attr('class')
       })
 
