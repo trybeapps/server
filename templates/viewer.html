@@ -471,25 +471,33 @@ See https://github.com/adobe-type-tools/cmap-resources
       var currentHighlight = ""
 
       $(document).on('mouseenter', '.highlighted', function() {
-        if ($(this).closest('.page').children('.highlight-menu').length == 0) {
-          $(this).closest('.page').append('<div class="highlight-menu"><div class="hm-color"><div class="hmc-list"><div class="hmcl-color yellow"></div><div class="hmcl-color orange"></div><div class="hmcl-color green"></div><div class="hmcl-color blue"></div><div class="hmcl-color gray"></div><div class="hmcl-color turquoise"></div><div class="hmcl-color purple"></div><div class="hmcl-color chartreuse"></div><div class="hmcl-color crimson"></div></div></div><svg class="hm-annotation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20"><g class="nc-icon-wrapper" fill="none" stroke="#FFF" stroke-width="5" stroke-linecap="square" stroke-miterlimit="10"><path d="M62 6H2v40h20l10 12 10-12h20z"/><path data-color="color-2" d="M16 20h32M16 32h18"/></g></svg><svg class="hm-delete" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20"><g class="nc-icon-wrapper" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="square" stroke-miterlimit="10"><path data-color="color-2" d="M22 10V2h20v8"/><path d="M54 18v40a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V18"/><path data-color="color-2" d="M32 31v18M22 31v18m20-18v18"/><path d="M4 10h56v8H4z"/></g></svg></div>')
+        if ($(this).closest('.page').children('.highlight-wrap').length == 0) {
+          $(this).closest('.page').append('<div class="highlight-wrap"><div class="highlight-menu"><div class="hm-color"><div class="hmc-list"><div class="hmcl-color yellow"></div><div class="hmcl-color orange"></div><div class="hmcl-color green"></div><div class="hmcl-color blue"></div><div class="hmcl-color gray"></div><div class="hmcl-color turquoise"></div><div class="hmcl-color purple"></div><div class="hmcl-color chartreuse"></div><div class="hmcl-color crimson"></div></div></div><svg class="hm-annotation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20"><g class="nc-icon-wrapper" fill="none" stroke="#FFF" stroke-width="5" stroke-linecap="square" stroke-miterlimit="10"><path d="M62 6H2v40h20l10 12 10-12h20z"/><path data-color="color-2" d="M16 20h32M16 32h18"/></g></svg><svg class="hm-delete" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20"><g class="nc-icon-wrapper" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="square" stroke-miterlimit="10"><path data-color="color-2" d="M22 10V2h20v8"/><path d="M54 18v40a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V18"/><path data-color="color-2" d="M32 31v18M22 31v18m20-18v18"/><path d="M4 10h56v8H4z"/></g></svg></div></div>')
         }
         var hTop = $(this).closest('div').css('top').split('px')[0] - 50
-        $(this).closest('.page').children('.highlight-menu').css('top', hTop + 'px').show()
+        $(this).closest('.page').children('.highlight-wrap').css('top', hTop + 'px').show()
 
         var bgColor = $(this).css('background-color')
         bgColor = 'rgba(' + bgColor.split('rgb(').pop().split(')')[0].split(',').join(',') + ', 1)'
-        $(this).closest('.page').children('.highlight-menu').children('.hm-color').css('background-color', bgColor)
+        $(this).closest('.page').children('.highlight-wrap').children('.highlight-menu').children('.hm-color').css('background-color', bgColor)
         currentHighlight = $(this).closest('div').attr('class')
       })
 
-      // $(document).on('mouseleave', '.highlighted', function() {
-      //   $(this).closest('.page').children('.highlight-menu').hide()
-      // })
+      $(document).on('mouseleave', '.highlighted', function() {
+        $(this).closest('.page').children('.highlight-wrap').hide()
+      })
+
+      $(document).on('mouseleave', '.highlight-wrap', function() {
+        $(this).hide()
+      })
+
+      $(document).on('mouseenter', '.highlight-wrap', function() {
+        $(this).show()
+      })
 
       $(document).on('mousemove', '.highlighted', function(e) {
         var offsetLeft = $(this).closest('.page').offset().left
-        $(this).closest('.page').children('.highlight-menu').css('left', (e.pageX - offsetLeft - 50) + 'px')
+        $(this).closest('.page').children('.highlight-wrap').css('left', (e.pageX - offsetLeft - 50) + 'px')
       })
 
       $(document).on('click', '.hmcl-color', function() {

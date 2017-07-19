@@ -2159,12 +2159,19 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
 .highlighted {
   position: relative;
   color: black;
+  cursor: pointer;
 }
 
-.highlight-menu {
+
+.highlight-wrap {
   position: absolute;
   top: 0;
   left: 0;
+  width: 100px;
+  height: 50px;
+}
+
+.highlight-menu {
   background: rgba(0,0,0,0.8);
   width: 100px;
   height: 40px;
