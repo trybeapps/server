@@ -2161,9 +2161,9 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   color: black;
 }
 
-.highlighted .highlight-menu {
+.highlight-menu {
   position: absolute;
-  top: -40px;
+  top: 0;
   left: 0;
   background: rgba(0,0,0,0.8);
   width: 100px;
