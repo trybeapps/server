@@ -2280,6 +2280,9 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   width: 240px;
   height: 120px;
   background: white;
+  outline: none;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* End custom styles */

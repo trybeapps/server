@@ -388,7 +388,7 @@ See https://github.com/adobe-type-tools/cmap-resources
 		}
 
     $(function() {
-      var hltr = new TextHighlighter(document.body, {
+      var hltr = new TextHighlighter(document.getElementById('viewer'), {
         onBeforeHighlight: function (range) {
           return window.confirm('Selected text: ' + range + '\nReally highlight?');
         },
@@ -463,11 +463,6 @@ See https://github.com/adobe-type-tools/cmap-resources
         $(this).children('.hmc-list').toggle()
       })
 
-      $(document).on('click', '.highlighted', function() {
-        var className = $(this).closest('div').attr('class')
-        $('.'+className).children('.highlighted').css('background-color', 'red')
-      })
-
       var currentHighlight = ""
 
       $(document).on('mouseenter', '.highlighted', function() {
@@ -526,7 +521,25 @@ See https://github.com/adobe-type-tools/cmap-resources
 
       $(document).on('click', '.hm-annotation', function() {
         var hTop = $('.'+currentHighlight).css('top')
-        $(this).closest('.page').append('<div class="annotationLayer" style="top: ' + hTop + ';"></div>')
+        $(this).closest('.page').append('<div contenteditable="true" class="annotationLayer" style="top: ' + hTop + ';">Comment here</div>')
+      })
+
+      $(document).on('keyup', '.annotationLayer', function() {
+        var id = currentHighlight.split('-').pop()
+        var comment = $(this).text()
+        var data = {
+          'id': id,
+          'comment': comment
+        }
+        $.ajax({
+          url: '/post-pdf-highlight-comment',
+          type: 'POST',
+          data: JSON.stringify(data),
+          contentType: 'application/json; charset=utf-8',
+          success: function (data) {
+            console.log(data)
+          }
+        })
       })
 
     })

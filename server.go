@@ -144,11 +144,12 @@ func main() {
 
 	// Create PDF Highlighter table
 	// Table: pdf_highlighter
-	// ---------------------------------------------
-	// Fields: id, book_id, user_id, highlight_color
-	// ---------------------------------------------
+	// ----------------------------------------------------------------
+	// Fields: id, book_id, user_id, highlight_color, highlight_comment
+	// ----------------------------------------------------------------
 	stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `pdf_highlighter` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
-		" `book_id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `highlight_color` VARCHAR(255) NOT NULL)")
+		" `book_id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `highlight_color` VARCHAR(255) NOT NULL," +
+		" `highlight_comment` VARCHAR(255) NULL)")
 	CheckError(err)
 
 	_, err = stmt.Exec()
@@ -256,6 +257,7 @@ func main() {
 	r.POST("/post-pdf-highlight", env.PostPDFHighlight)
 	r.GET("/get-pdf-highlights", env.GetPDFHighlights)
 	r.POST("/post-pdf-highlight-color", env.PostPDFHighlightColor)
+	r.POST("/post-pdf-highlight-comment", env.PostPDFHighlightComment)
 
 	// Listen and serve on 0.0.0.0:8080
 	r.Run(":8080")
@@ -1824,11 +1826,37 @@ func (e *Env) PostPDFHighlightColor(c *gin.Context) {
 		CheckError(err)
 		fmt.Println(pdfHighlightColor)
 
-		// Update dateRead for the given currentlyReadingId
+		// Update highlight color for the given id
 		stmt, err := e.db.Prepare("UPDATE `pdf_highlighter` SET highlight_color=? WHERE id=?")
 		CheckError(err)
 
 		_, err = stmt.Exec(pdfHighlightColor.HighlightColor, pdfHighlightColor.Id)
+		CheckError(err)
+
+		c.String(200, "Highlight updated successfully")
+	} else {
+		c.String(200, "Not signed in")
+	}
+}
+
+type PDFHighlightComment struct {
+	Comment string `json:"comment"`
+	Id      string `json:"id"`
+}
+
+func (e *Env) PostPDFHighlightComment(c *gin.Context) {
+	email := _GetEmailFromSession(c)
+	if email != nil {
+		pdfHighlightComment := PDFHighlightComment{}
+		err := c.BindJSON(&pdfHighlightComment)
+		CheckError(err)
+		fmt.Println(pdfHighlightComment)
+
+		// Update highlight comment for the given id
+		stmt, err := e.db.Prepare("UPDATE `pdf_highlighter` SET highlight_comment=? WHERE id=?")
+		CheckError(err)
+
+		_, err = stmt.Exec(pdfHighlightComment.Comment, pdfHighlightComment.Id)
 		CheckError(err)
 
 		c.String(200, "Highlight updated successfully")
