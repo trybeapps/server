@@ -469,7 +469,7 @@ See https://github.com/adobe-type-tools/cmap-resources
               for (j=0; j<data['detail'].length; j++) {
                 if (data['detail'][j]['hid'] == id) {
                   var pageIndex = data['detail'][j]['page_index']
-                  $('#viewer').children('.page:nth-child(' + pageIndex + ')').append('<div contenteditable="true" class="annotationLayer" id="ann_'+id+'" style="top: ' + hTop + ';">'+comment+'</div>')
+                  $('#viewer').children('.page:nth-child(' + pageIndex + ')').append('<div contenteditable="true" class="annotation-layer" id="ann_'+id+'" style="top: ' + hTop + ';">'+comment+'</div>')
                   break
                 }
               }
@@ -546,7 +546,7 @@ See https://github.com/adobe-type-tools/cmap-resources
           alert('You already have annotation layer for this highlight.')
           return false
         }
-        $(this).closest('.page').append('<div id="ann_'+id+'" contenteditable="true" class="annotationLayer" style="top: ' + hTop + ';">Comment here</div>')
+        $(this).closest('.page').append('<div id="ann_'+id+'" contenteditable="true" class="annotation-layer" style="top: ' + hTop + ';">Comment here</div>')
       })
 
       // Move cursor to end of contenteditable element
@@ -571,41 +571,41 @@ See https://github.com/adobe-type-tools/cmap-resources
         }
       }
 
-      $(document).on('keydown', '.annotationLayer', function(e) {
+      $(document).on('keydown', '.annotation-layer', function(e) {
         if (e.which == 74) {
           var comment = $(this).text() + 'j'
           $(this).text(comment)
           setEndOfContenteditable($(this)[0]);
-          $('.annotationLayer').keyup()
+          $('.annotation-layer').keyup()
           return false;
         } else if (e.which == 78) {
           var comment = $(this).text() + 'n'
           $(this).text(comment)
           setEndOfContenteditable($(this)[0]);
-          $('.annotationLayer').keyup()
+          $('.annotation-layer').keyup()
           return false;
         } else if (e.which == 80) {
           var comment = $(this).text() + 'p'
           $(this).text(comment)
           setEndOfContenteditable($(this)[0]);
-          $('.annotationLayer').keyup()
+          $('.annotation-layer').keyup()
           return false;
         } else if (e.which == 75) {
           var comment = $(this).text() + 'k'
           $(this).text(comment)
           setEndOfContenteditable($(this)[0]);
-          $('.annotationLayer').keyup()
+          $('.annotation-layer').keyup()
           return false;
         } else if (e.which == 82) {
           var comment = $(this).text() + 'r'
           $(this).text(comment)
           setEndOfContenteditable($(this)[0]);
-          $('.annotationLayer').keyup()
+          $('.annotation-layer').keyup()
           return false;
         }
       })
 
-      $(document).on('keyup', '.annotationLayer', function() {
+      $(document).on('keyup', '.annotation-layer', function() {
         var id = $(this).attr('id').split('_').pop()
         var hTop = $('.highlight-id-'+id).css('top')
         var comment = $(this).text()
@@ -625,9 +625,9 @@ See https://github.com/adobe-type-tools/cmap-resources
         })
       })
 
-      $(document).on('mouseenter', '.annotationLayer', function() {
+      $(document).on('mouseenter', '.annotation-layer', function() {
         var $this = $(this)
-        $('.annotationLayer').each(function() {
+        $('.annotation-layer').each(function() {
           $(this).removeClass('focus')
         })
         $this.addClass('focus')

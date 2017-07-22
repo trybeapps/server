@@ -2273,7 +2273,7 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   opacity: 1!important;
 }
 
-.annotationLayer {
+.annotation-layer {
   position: absolute;
   top: 0;
   right: -250px;
@@ -2291,7 +2291,7 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   box-sizing: border-box;
 }
 
-.annotationLayer.focus {
+.annotation-layer.focus {
   z-index: 1;
 }
 
