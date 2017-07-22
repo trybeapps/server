@@ -391,6 +391,7 @@ See https://github.com/adobe-type-tools/cmap-resources
     $(function() {
       var hltr = new TextHighlighter(document.getElementById('viewer'), {
         onBeforeHighlight: function (range) {
+          if ($(range.commonAncestorContainer.parentElement).attr('class') == 'annotation-layer focus') return false
           return window.confirm('Selected text: ' + range + '\nReally highlight?');
         },
         onAfterHighlight: function (range, highlights) {
