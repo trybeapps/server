@@ -30,6 +30,7 @@ See https://github.com/adobe-type-tools/cmap-resources
     <link rel="icon" type="image/png" href="/static/img/favicon-16x16.png" sizes="16x16">
     <link rel="icon" type="image/png" href="/static/img/favicon-32x32.png" sizes="32x32">
     <link rel="icon" type="image/png" href="/static/img/favicon-96x96.png" sizes="96x96">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
     <link rel="stylesheet" href="../static/css/viewer.css">
 	<!-- This snippet is used in production (included from viewer.html) -->
 	<link rel="resource" type="application/l10n" href="../static/js/pdfjs/web/locale/locale.properties">
@@ -452,6 +453,24 @@ See https://github.com/adobe-type-tools/cmap-resources
                 if (data['color'][j]['id'] == hId) {
                   var highlightColor = data['color'][j]['highlight_color']
                   $('.highlight-id-' + hId).children('.highlighted').css('background-color', highlightColor)
+                  break
+                }
+              }
+            }
+
+            for (i=0; i<data['color'].length; i++) {
+              var id = data['color'][i]['id']
+              console.log(data['color'][i])
+              var hTop = data['color'][i]['highlight_top']
+              var comment = data['color'][i]['highlight_comment']
+              if ($('#ann_'+id).length) {
+                continue
+              }
+              for (j=0; j<data['detail'].length; j++) {
+                if (data['detail'][j]['hid'] == id) {
+                  var pageIndex = data['detail'][j]['page_index']
+                  $('#viewer').children('.page:nth-child(' + pageIndex + ')').append('<div contenteditable="true" class="annotationLayer" id="ann_'+id+'" style="top: ' + hTop + ';">'+comment+'</div>')
+                  break
                 }
               }
             }
@@ -521,9 +540,11 @@ See https://github.com/adobe-type-tools/cmap-resources
 
       $(document).on('click', '.hm-annotation', function() {
         var hTop = $('.'+currentHighlight).css('top')
-        $(this).closest('.page').append('<div contenteditable="true" class="annotationLayer" style="top: ' + hTop + ';">Comment here</div>')
+        var id = currentHighlight.split('-').pop()
+        $(this).closest('.page').append('<div id="ann_'+id+'" contenteditable="true" class="annotationLayer" style="top: ' + hTop + ';">Comment here</div>')
       })
 
+      // Move cursor to end of contenteditable element
       function setEndOfContenteditable(contentEditableElement)
       {
         var range,selection;
@@ -579,11 +600,13 @@ See https://github.com/adobe-type-tools/cmap-resources
         }
       })
 
-      $(document).on('keyup', '.annotationLayer', function(e) {
-        var id = currentHighlight.split('-').pop()
+      $(document).on('keyup', '.annotationLayer', function() {
+        var id = $(this).attr('id').split('_').pop()
+        var hTop = $('.highlight-id-'+id).css('top')
         var comment = $(this).text()
         var data = {
           'id': id,
+          'top': hTop,
           'comment': comment
         }
         $.ajax({
@@ -597,6 +620,13 @@ See https://github.com/adobe-type-tools/cmap-resources
         })
       })
 
+      $(document).on('mouseenter', '.annotationLayer', function() {
+        var $this = $(this)
+        $('.annotationLayer').each(function() {
+          $(this).removeClass('focus')
+        })
+        $this.addClass('focus')
+      })
     })
     </script>
   </body>

@@ -149,7 +149,7 @@ func main() {
 	// ----------------------------------------------------------------
 	stmt, err = db.Prepare("CREATE TABLE IF NOT EXISTS `pdf_highlighter` (`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
 		" `book_id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `highlight_color` VARCHAR(255) NOT NULL," +
-		" `highlight_comment` VARCHAR(255) NULL)")
+		" `highlight_top` VARCHAR(255) NOT NULL, `highlight_comment` VARCHAR(255) NOT NULL)")
 	CheckError(err)
 
 	_, err = stmt.Exec()
@@ -1703,10 +1703,10 @@ func (e *Env) PostPDFHighlight(c *gin.Context) {
 		// Get book id
 		bookId, _, _ := e._GetBookInfo(pdfHighlight.FileName)
 
-		stmt, err := e.db.Prepare("INSERT INTO `pdf_highlighter` (book_id, user_id, highlight_color) VALUES (?, ?, ?)")
+		stmt, err := e.db.Prepare("INSERT INTO `pdf_highlighter` (book_id, user_id, highlight_color, highlight_top, highlight_comment) VALUES (?, ?, ?, ?, ?)")
 		CheckError(err)
 
-		res, err := stmt.Exec(bookId, userId, pdfHighlight.HighlightColor)
+		res, err := stmt.Exec(bookId, userId, pdfHighlight.HighlightColor, "", "")
 		CheckError(err)
 
 		id, err := res.LastInsertId()
@@ -1728,9 +1728,11 @@ func (e *Env) PostPDFHighlight(c *gin.Context) {
 	}
 }
 
-type GetPDFHighlightColor struct {
-	Id             int64  `json:"id"`
-	HighlightColor string `json:"highlight_color"`
+type GetPDFHighlightColorComment struct {
+	Id               int64  `json:"id"`
+	HighlightColor   string `json:"highlight_color"`
+	HighlightTop     string `json:"highlight_top"`
+	HighlightComment string `json:"highlight_comment"`
 }
 
 type GetPDFHighlightDetail struct {
@@ -1741,8 +1743,8 @@ type GetPDFHighlightDetail struct {
 }
 
 type PDFHighlightsStruct struct {
-	Color  []GetPDFHighlightColor  `json:"color"`
-	Detail []GetPDFHighlightDetail `json:"detail"`
+	Color  []GetPDFHighlightColorComment `json:"color"`
+	Detail []GetPDFHighlightDetail       `json:"detail"`
 }
 
 func (e *Env) GetPDFHighlights(c *gin.Context) {
@@ -1758,28 +1760,32 @@ func (e *Env) GetPDFHighlights(c *gin.Context) {
 		// Get book id
 		bookId, _, _ := e._GetBookInfo(fileName)
 
-		rows, err := e.db.Query("select id, highlight_color from pdf_highlighter where book_id = ? and user_id = ?", bookId, userId)
+		rows, err := e.db.Query("select id, highlight_color, highlight_top, highlight_comment from pdf_highlighter where book_id = ? and user_id = ?", bookId, userId)
 		CheckError(err)
 
-		pdfHighlightColor := []GetPDFHighlightColor{}
+		pdfHighlightColorComment := []GetPDFHighlightColorComment{}
 
 		for rows.Next() {
 			var (
-				id             int64
-				highlightColor string
+				id               int64
+				highlightColor   string
+				highlightTop     string
+				highlightComment string
 			)
 
-			err := rows.Scan(&id, &highlightColor)
+			err := rows.Scan(&id, &highlightColor, &highlightTop, &highlightComment)
 			CheckError(err)
 
-			pdfHighlightColor = append(pdfHighlightColor, GetPDFHighlightColor{
-				Id:             id,
-				HighlightColor: highlightColor,
+			pdfHighlightColorComment = append(pdfHighlightColorComment, GetPDFHighlightColorComment{
+				Id:               id,
+				HighlightColor:   highlightColor,
+				HighlightTop:     highlightTop,
+				HighlightComment: highlightComment,
 			})
 		}
 
 		pdfHighlightDetail := []GetPDFHighlightDetail{}
-		for _, v := range pdfHighlightColor {
+		for _, v := range pdfHighlightColorComment {
 			rows, err := e.db.Query("select page_index, div_index, html_content from pdf_highlighter_detail where highlighter_id=?", v.Id)
 			CheckError(err)
 
@@ -1803,7 +1809,7 @@ func (e *Env) GetPDFHighlights(c *gin.Context) {
 		}
 
 		pdfHighlights := PDFHighlightsStruct{
-			Color:  pdfHighlightColor,
+			Color:  pdfHighlightColorComment,
 			Detail: pdfHighlightDetail,
 		}
 
@@ -1840,8 +1846,9 @@ func (e *Env) PostPDFHighlightColor(c *gin.Context) {
 }
 
 type PDFHighlightComment struct {
-	Comment string `json:"comment"`
 	Id      string `json:"id"`
+	Top     string `json:"top"`
+	Comment string `json:"comment"`
 }
 
 func (e *Env) PostPDFHighlightComment(c *gin.Context) {
@@ -1853,10 +1860,10 @@ func (e *Env) PostPDFHighlightComment(c *gin.Context) {
 		fmt.Println(pdfHighlightComment)
 
 		// Update highlight comment for the given id
-		stmt, err := e.db.Prepare("UPDATE `pdf_highlighter` SET highlight_comment=? WHERE id=?")
+		stmt, err := e.db.Prepare("UPDATE `pdf_highlighter` SET highlight_top=?, highlight_comment=? WHERE id=?")
 		CheckError(err)
 
-		_, err = stmt.Exec(pdfHighlightComment.Comment, pdfHighlightComment.Id)
+		_, err = stmt.Exec(pdfHighlightComment.Top, pdfHighlightComment.Comment, pdfHighlightComment.Id)
 		CheckError(err)
 
 		c.String(200, "Highlight updated successfully")
