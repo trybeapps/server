@@ -495,6 +495,7 @@ See https://github.com/adobe-type-tools/cmap-resources
         bgColor = 'rgba(' + bgColor.split('rgb(').pop().split(')')[0].split(',').join(',') + ', 1)'
         $(this).closest('.page').children('.highlight-wrap').children('.highlight-menu').children('.hm-color').css('background-color', bgColor)
         currentHighlight = $(this).closest('div').attr('class')
+        $('#ann_' + currentHighlight.split('-').pop()).mouseenter()
       })
 
       $(document).on('mouseleave', '.highlighted', function() {
@@ -541,6 +542,10 @@ See https://github.com/adobe-type-tools/cmap-resources
       $(document).on('click', '.hm-annotation', function() {
         var hTop = $('.'+currentHighlight).css('top')
         var id = currentHighlight.split('-').pop()
+        if ($('#ann_'+id).length) {
+          alert('You already have annotation layer for this highlight.')
+          return false
+        }
         $(this).closest('.page').append('<div id="ann_'+id+'" contenteditable="true" class="annotationLayer" style="top: ' + hTop + ';">Comment here</div>')
       })
 
