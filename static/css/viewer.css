@@ -60,8 +60,8 @@
   background-color: rgb(0, 100, 0);
 }
 
-.textLayer ::selection { background: rgb(0,0,255); }
-.textLayer ::-moz-selection { background: rgb(0,0,255); }
+.textLayer ::selection { background: #FF4848; color: white; }
+.textLayer ::-moz-selection { background: #FF4848; color: white; }
 
 .textLayer .endOfContent {
   display: block;
@@ -2158,7 +2158,7 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
 
 .highlighted {
   position: relative;
-  color: black;
+  color: white;
   cursor: pointer;
 }
 
@@ -2204,7 +2204,7 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   top: -112px;
   left: -10px;
   width: 100px;
-  height: 100px;
+  height: 102px;
   background: rgba(0,0,0,0.8);
   padding: 10px;
   box-sizing: border-box;
@@ -2217,7 +2217,7 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
     left: 10px;
     width: 20px;
     height: 20px;
-    background: rgba(255, 255, 0, 1);
+    background: rgba(154, 154, 8, 1);
     box-sizing: border-box;
 }
 
@@ -2227,7 +2227,7 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
 
 .hm-color .hmc-list .hmcl-color.orange {
     left: 40px;
-    background: rgba(255, 165, 0, 1);
+    background: rgba(199, 138, 25, 1);
 }
 
 .hm-color .hmc-list .hmcl-color.green {
@@ -2249,18 +2249,18 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
 .hm-color .hmc-list .hmcl-color.turquoise {
     top: 40px;
     left: 70px;
-    background: rgba(64, 224, 208, 1);
+    background: rgba(26, 193, 177, 1);
 }
 
 .hm-color .hmc-list .hmcl-color.purple {
     top: 70px;
-    background: rgba(199, 88, 255, 1);
+    background: rgba(165, 24, 236, 1);
 }
 
 .hm-color .hmc-list .hmcl-color.chartreuse {
     top: 70px;
     left: 40px;
-    background: rgba(127, 255, 0, 1);
+    background: rgba(113, 193, 32, 1);
 }
 
 .hm-color .hmc-list .hmcl-color.crimson {

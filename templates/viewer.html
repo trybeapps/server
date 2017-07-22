@@ -402,7 +402,7 @@ See https://github.com/adobe-type-tools/cmap-resources
           highlights.map(function(h) {
             $h.push($(h))
             // Set default highlight color
-            $(h).css('background-color', 'rgba(255, 255, 0, 1)')
+            $(h).css('background-color', 'rgba(154, 154, 8, 1)')
             // Get index of highlighted parent `div`
             hDivIndex.push(($(h).closest('div').index() + 1).toString())
             // Get html which includes the highlighted span element
@@ -463,14 +463,16 @@ See https://github.com/adobe-type-tools/cmap-resources
               console.log(data['color'][i])
               var hTop = data['color'][i]['highlight_top']
               var comment = data['color'][i]['highlight_comment']
-              if ($('#ann_'+id).length) {
-                continue
-              }
-              for (j=0; j<data['detail'].length; j++) {
-                if (data['detail'][j]['hid'] == id) {
-                  var pageIndex = data['detail'][j]['page_index']
-                  $('#viewer').children('.page:nth-child(' + pageIndex + ')').append('<div contenteditable="true" class="annotation-layer" id="ann_'+id+'" style="top: ' + hTop + ';">'+comment+'</div>')
-                  break
+              if (comment != "") {
+                if ($('#ann_'+id).length) {
+                  continue
+                }
+                for (j=0; j<data['detail'].length; j++) {
+                  if (data['detail'][j]['hid'] == id) {
+                    var pageIndex = data['detail'][j]['page_index']
+                    $('#viewer').children('.page:nth-child(' + pageIndex + ')').append('<div contenteditable="true" class="annotation-layer" id="ann_'+id+'" style="top: ' + hTop + ';">'+comment+'</div>')
+                    break
+                  }
                 }
               }
             }
@@ -649,7 +651,7 @@ See https://github.com/adobe-type-tools/cmap-resources
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
               console.log(data)
-              $('.'+currentHighlight).children('.highlighted').remove()
+              $('.'+currentHighlight).children('.highlighted').contents().unwrap()
               $('#ann_'+id).remove()
             }
           })
