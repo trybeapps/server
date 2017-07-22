@@ -258,6 +258,7 @@ func main() {
 	r.GET("/get-pdf-highlights", env.GetPDFHighlights)
 	r.POST("/post-pdf-highlight-color", env.PostPDFHighlightColor)
 	r.POST("/post-pdf-highlight-comment", env.PostPDFHighlightComment)
+	r.POST("/delete-pdf-highlight", env.DeletePDFHighlight)
 
 	// Listen and serve on 0.0.0.0:8080
 	r.Run(":8080")
@@ -1723,6 +1724,37 @@ func (e *Env) PostPDFHighlight(c *gin.Context) {
 		}
 
 		c.String(200, strconv.Itoa(int(id)))
+	} else {
+		c.String(200, "Not signed in")
+	}
+}
+
+type DeleteHighlightIdStruct struct {
+	Id string `json:"id"`
+}
+
+func (e *Env) DeletePDFHighlight(c *gin.Context) {
+	email := _GetEmailFromSession(c)
+	if email != nil {
+		deleteHighlight := DeleteHighlightIdStruct{}
+		err := c.BindJSON(&deleteHighlight)
+		CheckError(err)
+		fmt.Println(deleteHighlight)
+
+		// Delete highlight record with the given id
+		stmt, err := e.db.Prepare("DELETE FROM `pdf_highlighter` WHERE id=?")
+		CheckError(err)
+
+		_, err = stmt.Exec(deleteHighlight.Id)
+		CheckError(err)
+
+		// Delete detail attached to the highlight
+		stmt, err = e.db.Prepare("DELETE FROM `pdf_highlighter_detail` WHERE highlighter_id=?")
+		CheckError(err)
+
+		_, err = stmt.Exec(deleteHighlight.Id)
+
+		c.String(200, "Highlight updated successfully")
 	} else {
 		c.String(200, "Not signed in")
 	}
