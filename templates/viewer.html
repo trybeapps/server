@@ -416,7 +416,7 @@ See https://github.com/adobe-type-tools/cmap-resources
             'divIndex': hDivIndex,
             'htmlContent': html,
             'fileName': window.location.pathname.split('/').pop(),
-            'highlightColor': 'rgba(255, 255, 0, 1)'
+            'highlightColor': 'rgba(154, 154, 8, 1)'
           }
 
           $.ajax({
@@ -574,40 +574,7 @@ See https://github.com/adobe-type-tools/cmap-resources
       }
 
       $(document).on('keydown', '.annotation-layer', function(e) {
-        if (e.which == 74) {
-          var comment = $(this).text() + 'j'
-          $(this).text(comment)
-          setEndOfContenteditable($(this)[0]);
-          $('.annotation-layer').keyup()
-          return false;
-        } else if (e.which == 78) {
-          var comment = $(this).text() + 'n'
-          $(this).text(comment)
-          setEndOfContenteditable($(this)[0]);
-          $('.annotation-layer').keyup()
-          return false;
-        } else if (e.which == 80) {
-          var comment = $(this).text() + 'p'
-          $(this).text(comment)
-          setEndOfContenteditable($(this)[0]);
-          $('.annotation-layer').keyup()
-          return false;
-        } else if (e.which == 75) {
-          var comment = $(this).text() + 'k'
-          $(this).text(comment)
-          setEndOfContenteditable($(this)[0]);
-          $('.annotation-layer').keyup()
-          return false;
-        } else if (e.which == 82) {
-          var comment = $(this).text() + 'r'
-          $(this).text(comment)
-          setEndOfContenteditable($(this)[0]);
-          $('.annotation-layer').keyup()
-          return false;
-        }
-      })
-
-      $(document).on('keyup', '.annotation-layer', function() {
+        e.stopImmediatePropagation()
         var id = $(this).attr('id').split('_').pop()
         var hTop = $('.highlight-id-'+id).css('top')
         var comment = $(this).text()
@@ -651,7 +618,23 @@ See https://github.com/adobe-type-tools/cmap-resources
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
               console.log(data)
-              $('.'+currentHighlight).children('.highlighted').contents().unwrap()
+              $('.'+currentHighlight).each(function() {
+                var highlightContents = $(this).contents()
+                var html = ""
+                if (highlightContents.length == 3) {
+                  html = highlightContents[0].data + highlightContents[1].innerText + highlightContents[2].data
+                } else if (highlightContents.length == 2) {
+                  if (highlightContents[0].nodeName == 'SPAN') {
+                    html = highlightContents[0].innerText + highlightContents[1].data
+                  } else {
+                    html = highlightContents[0].data + highlightContents[1].innerText
+                  }
+                } else if (highlightContents.length == 1) {
+                  html = highlightContents[0].innerText
+                }
+                $(this).html(html)
+              })
+              
               $('#ann_'+id).remove()
             }
           })
