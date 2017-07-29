@@ -1917,7 +1917,11 @@ func (e *Env) SaveEPUBHighlight(c *gin.Context) {
 		epubHighlight := EPUBHighlightStruct{}
 		err := c.BindJSON(&epubHighlight)
 		CheckError(err)
-		fmt.Println(epubHighlight.Href)
+
+		href := strings.Join(strings.Split(epubHighlight.Href, "/uploads"), "uploads")
+
+		err = ioutil.WriteFile(href, []byte(epubHighlight.HTML), 0644)
+		CheckError(err)
 
 		c.String(200, "Highlight saved successfully")
 	} else {

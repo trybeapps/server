@@ -151,6 +151,37 @@
 
 			var currentHighlight = ''
 
+			function saveHighlight() {
+                var fileName = '{{.fileName}}'
+                var href = $('#epubIframe').attr('src')
+                var html = $('#epubIframe').contents().find('html').html()
+                    			
+                var htmlAttributes = $('#epubIframe').contents().find('html')[0].attributes
+                var htmlTag = '<html'
+                for (i=0; i < htmlAttributes.length; i++) {
+                	htmlTag += ' ' + htmlAttributes[i].nodeName + '="' + htmlAttributes[i].nodeValue + '"'
+                }
+                htmlTag += '>'
+
+                html = htmlTag + html + '</html>'
+
+                var data = {
+                	'fileName': fileName,
+                    'href': href,
+                    'html': html
+                }
+
+                $.ajax({
+            		url: '/save-epub-highlight',
+            		type: 'POST',
+            		data: JSON.stringify(data),
+            		contentType: 'application/json; charset=utf-8',
+            		success: function (data) {
+            			console.log(data)
+            		}
+          		})
+            }
+
 			iframe.onload = function () {
     			var hltr = new TextHighlighter(
         			iframe.contentDocument.body, {
@@ -163,28 +194,7 @@
         						$(h).attr('data-offset-left', h.offsetLeft)
         						$(h).attr('data-offset-top', h.offsetTop)
                     		})
-        					// var $highlight = $(highlights)
-        					// console.log(highlights)
-        					// $highlight.append('<div class="epub-highlight-menu"></div>')
-        					// console.log(highlights[0].offsetLeft)
-             //        		var fileName = '{{.fileName}}'
-             //        		var href = $('#epubIframe').attr('src')
-             //        		var html = $('#epubIframe').contents().find('html').html()
-             //        		console.log(html)
-             //        		var data = {
-             //        			'fileName': fileName,
-             //        			'href': href,
-             //        			'html': html
-             //        		}
-             //        		$.ajax({
-            	// 				url: '/save-epub-highlight',
-            	// 				type: 'POST',
-            	// 				data: JSON.stringify(data),
-            	// 				contentType: 'application/json; charset=utf-8',
-            	// 				success: function (data) {
-            	// 					console.log(data)
-            	// 				}
-          			// 		})
+                    		saveHighlight()
                 		},
         			}
     			)
@@ -217,7 +227,8 @@
       			})
 
     			$(iframe.contentDocument).on('click', function(e) {
-    				if ($(e.target).attr('class') != 'hm-color') {
+    				var c = $(e.target).attr('class')
+    				if ((c != 'epub-highlight-menu') && (c != 'hm-color') && (c != 'hm-annotation') && (c != 'hm-delete')) {
     					$(iframe.contentDocument.body).children('.epub-highlight-menu-wrap').hide()
     				}
     			})
@@ -229,6 +240,7 @@
       			$(iframe.contentDocument).on('click', '.hmcl-color', function() {
       				var bgColor = $(this).css('background-color')
       				$(iframe.contentDocument.body).find('.'+currentHighlight).css('background-color', bgColor)
+      				saveHighlight()
       			})
 			}
   		})
