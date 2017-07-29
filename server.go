@@ -259,6 +259,7 @@ func main() {
 	r.POST("/post-pdf-highlight-color", env.PostPDFHighlightColor)
 	r.POST("/post-pdf-highlight-comment", env.PostPDFHighlightComment)
 	r.POST("/delete-pdf-highlight", env.DeletePDFHighlight)
+	r.POST("/save-epub-highlight", env.SaveEPUBHighlight)
 
 	// Listen and serve on 0.0.0.0:8080
 	r.Run(":8080")
@@ -1899,6 +1900,26 @@ func (e *Env) PostPDFHighlightComment(c *gin.Context) {
 		CheckError(err)
 
 		c.String(200, "Highlight updated successfully")
+	} else {
+		c.String(200, "Not signed in")
+	}
+}
+
+type EPUBHighlightStruct struct {
+	FileName string `json:"fileName"`
+	Href     string `json:"href"`
+	HTML     string `json:"html"`
+}
+
+func (e *Env) SaveEPUBHighlight(c *gin.Context) {
+	email := _GetEmailFromSession(c)
+	if email != nil {
+		epubHighlight := EPUBHighlightStruct{}
+		err := c.BindJSON(&epubHighlight)
+		CheckError(err)
+		fmt.Println(epubHighlight.Href)
+
+		c.String(200, "Highlight saved successfully")
 	} else {
 		c.String(200, "Not signed in")
 	}

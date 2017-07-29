@@ -1,10 +1,116 @@
 body {
-	display: block!important;
-	font-family: 'Helvetica Neue', 'Helvetica', serif;
-	font-size: 16px!important;
-	line-height: 25px!important;
-	background: #FFFFF8!important;
-	width: 700px!important;
-	height: auto!important;
-	margin: 50px auto!important;
+  display: block!important;
+  font-family: 'Helvetica Neue', 'Helvetica', serif;
+  font-size: 16px!important;
+  line-height: 25px!important;
+  background: #FFFFF8!important;
+  width: 700px!important;
+  height: auto!important;
+  margin: 50px auto!important;
+}
+
+.highlighted {
+	position: relative;
+	background-color: rgba(154, 154, 8, 1);
+}
+
+.epub-highlight-menu {
+  background: rgba(0,0,0,0.8);
+  width: 100px;
+  height: 40px;
+  position: absolute;
+  top: -43px;
+  left: 0;
+}
+
+.hm-color {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 20px;
+  height: 20px;
+  background: yellow;
+  cursor: pointer;
+}
+
+.hm-annotation, .hm-delete {
+  position: absolute;
+  top: 10px;
+  left: 40px;
+  cursor: pointer;
+}
+
+.hm-delete {
+  left: 70px;
+}
+
+.hm-color .hmc-list {
+  display: none;
+  position: absolute;
+  top: -112px;
+  left: -10px;
+  width: 100px;
+  height: 102px;
+  background: rgba(0,0,0,0.8);
+  padding: 10px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.hm-color .hmc-list .hmcl-color {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 20px;
+    height: 20px;
+    background: rgba(154, 154, 8, 1);
+    box-sizing: border-box;
+}
+
+.hm-color .hmc-list .hmcl-color.active, .hm-color .hmc-list .hmcl-color:hover {
+  border: 1px solid #FF4848;
+}
+
+.hm-color .hmc-list .hmcl-color.orange {
+    left: 40px;
+    background: rgba(199, 138, 25, 1);
+}
+
+.hm-color .hmc-list .hmcl-color.green {
+    left: 70px;
+    background: rgba(4, 195, 4, 1);
+}
+
+.hm-color .hmc-list .hmcl-color.blue {
+    top: 40px;
+    background: rgba(93, 93, 255, 1);
+}
+
+.hm-color .hmc-list .hmcl-color.gray {
+    top: 40px;
+    left: 40px;
+    background: rgba(160, 160, 160, 1);
+}
+
+.hm-color .hmc-list .hmcl-color.turquoise {
+    top: 40px;
+    left: 70px;
+    background: rgba(26, 193, 177, 1);
+}
+
+.hm-color .hmc-list .hmcl-color.purple {
+    top: 70px;
+    background: rgba(165, 24, 236, 1);
+}
+
+.hm-color .hmc-list .hmcl-color.chartreuse {
+    top: 70px;
+    left: 40px;
+    background: rgba(113, 193, 32, 1);
+}
+
+.hm-color .hmc-list .hmcl-color.crimson {
+    top: 70px;
+    left: 70px;
+    background: rgba(237, 20, 61, 1);
 }

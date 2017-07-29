@@ -85,20 +85,6 @@
 
 		var iframe = document.querySelector('iframe');
 
-		iframe.onload = function () {
-    		var hltr = new TextHighlighter(
-        		iframe.contentDocument.body, {
-        			onAfterHighlight: function (range, highlights) {
-                    	// alert('Created ' + highlights.length + ' highlight(s): ' + highlights.map(function (h) {
-                     //    	return '"' + h.innerText + '"';
-                    	// }).join(', '));
-                    	// alert(iframe.contentWindow.document.body.innerHTML)
-                    	console.log($('#epubIframe').contents().find('html').html())
-                	},
-        		}
-    		)
-		}
-
   		$(function() {
 			$('#epubIframe').bind('load', function() {
 				if (term) {
@@ -152,6 +138,74 @@
 			$('.epub-prev').click(function() {
 				nextFragment('/load-epub-fragment/{{.fileName}}/prev')
 			})
+
+			function getRandomNumber() {
+				var randomNumber = Math.floor(Math.random()*89999+10000)
+        		var highlightExists = $('.highlight-id-'+randomNumber).length
+        		while (highlightExists) {
+        			randomNumber = Math.floor(Math.random()*89999+10000)
+        			highlightExists = $('.highlight-id-'+randomNumber).length
+        		}
+        		return randomNumber
+			}
+
+			iframe.onload = function () {
+    			var hltr = new TextHighlighter(
+        			iframe.contentDocument.body, {
+        				onAfterHighlight: function (range, highlights) {
+        					console.log(highlights)
+        					var randomNumber = getRandomNumber()
+        					$(iframe.contentDocument.body).append('<div class="epub-highlight-menu"><div class="hm-color"><div class="hmc-list"><div class="hmcl-color yellow"></div><div class="hmcl-color orange"></div><div class="hmcl-color green"></div><div class="hmcl-color blue"></div><div class="hmcl-color gray"></div><div class="hmcl-color turquoise"></div><div class="hmcl-color purple"></div><div class="hmcl-color chartreuse"></div><div class="hmcl-color crimson"></div></div></div><svg class="hm-annotation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20"><g class="nc-icon-wrapper" fill="none" stroke="#FFF" stroke-width="5" stroke-linecap="square" stroke-miterlimit="10"><path d="M62 6H2v40h20l10 12 10-12h20z"/><path data-color="color-2" d="M16 20h32M16 32h18"/></g></svg><svg class="hm-delete" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20"><g class="nc-icon-wrapper" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="square" stroke-miterlimit="10"><path data-color="color-2" d="M22 10V2h20v8"/><path d="M54 18v40a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V18"/><path data-color="color-2" d="M32 31v18M22 31v18m20-18v18"/><path d="M4 10h56v8H4z"/></g></svg></div>')
+        					highlights.map(function(h) {
+        						$(h).addClass('highlight-id-'+randomNumber)
+        						$(h).attr('data-offset-left', h.offsetLeft)
+        						$(h).attr('data-offset-top', h.offsetTop)
+                    		})
+        					// var $highlight = $(highlights)
+        					// console.log(highlights)
+        					// $highlight.append('<div class="epub-highlight-menu"></div>')
+        					// console.log(highlights[0].offsetLeft)
+             //        		var fileName = '{{.fileName}}'
+             //        		var href = $('#epubIframe').attr('src')
+             //        		var html = $('#epubIframe').contents().find('html').html()
+             //        		console.log(html)
+             //        		var data = {
+             //        			'fileName': fileName,
+             //        			'href': href,
+             //        			'html': html
+             //        		}
+             //        		$.ajax({
+            	// 				url: '/save-epub-highlight',
+            	// 				type: 'POST',
+            	// 				data: JSON.stringify(data),
+            	// 				contentType: 'application/json; charset=utf-8',
+            	// 				success: function (data) {
+            	// 					console.log(data)
+            	// 				}
+          			// 		})
+                		},
+        			}
+    			)
+
+    			$(iframe.contentDocument.body).on('mouseenter', '.highlighted', function() {
+    				var top = (parseInt($(this).attr('data-offset-top')) - 43) + 'px'
+    				var left = $(this).attr('data-offset-left') + 'px'
+    				$(iframe.contentDocument.body).children('.epub-highlight-menu').css({
+    					'top': top,
+    					'left': left
+    				})
+    			})
+
+    			$(iframe.contentDocument.body).on('mousemove', '.highlighted', function(e) {
+        			var top = (e.pageY - 43) + 'px'
+        			var left = e.pageX + 'px'
+        			$(iframe.contentDocument.body).children('.epub-highlight-menu').css({
+    					'top': top,
+    					'left': left
+    				})
+      			})
+
+			}
   		})
 	</script>
 </body>
