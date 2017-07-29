@@ -193,18 +193,29 @@
     				$(iframe.contentDocument.body).children('.epub-highlight-menu').css({
     					'top': top,
     					'left': left
-    				})
+    				}).show()
+    			})
+
+    			$(iframe.contentDocument.body).on('mouseenter', '.epub-highlight-menu', function() {
+    				$(this).show()
     			})
 
     			$(iframe.contentDocument.body).on('mousemove', '.highlighted', function(e) {
         			var top = (e.pageY - 43) + 'px'
-        			var left = e.pageX + 'px'
+        			var left = (e.pageX - 50) + 'px'
         			$(iframe.contentDocument.body).children('.epub-highlight-menu').css({
     					'top': top,
     					'left': left
-    				})
+    				}).show()
       			})
 
+      			$(iframe.contentDocument.body).on('mouseleave', '.highlighted', function() {
+      				$(iframe.contentDocument.body).children('.epub-highlight-menu').hide()
+      			})
+
+    			$(iframe.contentDocument).on('click', function() {
+    				$(iframe.contentDocument.body).children('.epub-highlight-menu').hide()
+    			})
 			}
   		})
 	</script>
