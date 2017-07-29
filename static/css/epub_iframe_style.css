@@ -11,16 +11,22 @@ body {
 
 .highlighted {
 	position: relative;
-	background-color: rgba(154, 154, 8, 1);
+	background-color: rgb(154, 154, 8);
+  color: white;
+}
+
+.epub-highlight-menu-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 50px;
 }
 
 .epub-highlight-menu {
   background: rgba(0,0,0,0.8);
   width: 100px;
   height: 40px;
-  position: absolute;
-  top: -43px;
-  left: 0;
 }
 
 .hm-color {
@@ -29,7 +35,7 @@ body {
   left: 10px;
   width: 20px;
   height: 20px;
-  background: yellow;
+  background: rgb(154, 154, 8);
   cursor: pointer;
 }
 
@@ -63,7 +69,7 @@ body {
     left: 10px;
     width: 20px;
     height: 20px;
-    background: rgba(154, 154, 8, 1);
+    background: rgb(154, 154, 8);
     box-sizing: border-box;
 }
 
@@ -73,44 +79,44 @@ body {
 
 .hm-color .hmc-list .hmcl-color.orange {
     left: 40px;
-    background: rgba(199, 138, 25, 1);
+    background: rgb(199, 138, 25);
 }
 
 .hm-color .hmc-list .hmcl-color.green {
     left: 70px;
-    background: rgba(4, 195, 4, 1);
+    background: rgb(4, 195, 4);
 }
 
 .hm-color .hmc-list .hmcl-color.blue {
     top: 40px;
-    background: rgba(93, 93, 255, 1);
+    background: rgb(93, 93, 255);
 }
 
 .hm-color .hmc-list .hmcl-color.gray {
     top: 40px;
     left: 40px;
-    background: rgba(160, 160, 160, 1);
+    background: rgb(160, 160, 160);
 }
 
 .hm-color .hmc-list .hmcl-color.turquoise {
     top: 40px;
     left: 70px;
-    background: rgba(26, 193, 177, 1);
+    background: rgb(26, 193, 177);
 }
 
 .hm-color .hmc-list .hmcl-color.purple {
     top: 70px;
-    background: rgba(165, 24, 236, 1);
+    background: rgb(165, 24, 236);
 }
 
 .hm-color .hmc-list .hmcl-color.chartreuse {
     top: 70px;
     left: 40px;
-    background: rgba(113, 193, 32, 1);
+    background: rgb(113, 193, 32);
 }
 
 .hm-color .hmc-list .hmcl-color.crimson {
     top: 70px;
     left: 70px;
-    background: rgba(237, 20, 61, 1);
+    background: rgb(237, 20, 61);
 }
