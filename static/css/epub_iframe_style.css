@@ -143,3 +143,17 @@ body {
 .annotation-layer.focus {
   z-index: 1;
 }
+
+.annotation-layer .annotation-save {
+    width: 100%;
+    height: 30px;
+    background: #ff4848;
+    text-align: center;
+    padding-top: 2px;
+    box-sizing: border-box;
+    color: white;
+    cursor: pointer;
+    position: absolute;
+    left: 0;
+    bottom: 0px;
+}

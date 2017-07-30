@@ -255,8 +255,13 @@
           				alert('You already have annotation layer for this highlight.')
           				return false
         			}
-        			$(iframe.contentDocument.body).append('<div id="ann_'+id+'" contenteditable="true" class="annotation-layer" style="top: ' + hTop + ';">Comment here</div>')
+        			$(iframe.contentDocument.body).append('<div id="ann_'+id+'" contenteditable="true" class="annotation-layer" style="top: ' + hTop + ';">Comment here<div contenteditable="false" class="annotation-save">Save</div></div>')
         			saveHighlight()
+      			})
+
+      			$(iframe.contentDocument).on('click', '.annotation-layer .annotation-save', function() {
+      				saveHighlight()
+      				alert('Comment saved successfully')
       			})
 
       			$(iframe.contentDocument).on('mouseenter', '.annotation-layer', function() {
@@ -265,10 +270,6 @@
           				$(this).removeClass('focus')
         			})
         			$this.addClass('focus')
-      			})
-
-      			$(iframe.contentDocument).on('keydown', '.annotation-layer', function() {
-      				saveHighlight()
       			})
 
       			$(iframe.contentDocument).on('click', '.hm-delete', function() {
