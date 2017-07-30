@@ -185,6 +185,10 @@
 			iframe.onload = function () {
     			var hltr = new TextHighlighter(
         			iframe.contentDocument.body, {
+        				onBeforeHighlight: function (range) {
+          					if ($(range.commonAncestorContainer.parentElement).attr('class') == 'annotation-layer focus') return false
+          					return window.confirm('Selected text: ' + range + '\nReally highlight?')
+        				},
         				onAfterHighlight: function (range, highlights) {
         					var randomNumber = getRandomNumber()
         					$(iframe.contentDocument.body).append('<div class="epub-highlight-menu-wrap"><div class="epub-highlight-menu"><div class="hm-color"><div class="hmc-list"><div class="hmcl-color yellow"></div><div class="hmcl-color orange"></div><div class="hmcl-color green"></div><div class="hmcl-color blue"></div><div class="hmcl-color gray"></div><div class="hmcl-color turquoise"></div><div class="hmcl-color purple"></div><div class="hmcl-color chartreuse"></div><div class="hmcl-color crimson"></div></div></div><svg class="hm-annotation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20"><g class="nc-icon-wrapper" fill="none" stroke="#FFF" stroke-width="5" stroke-linecap="square" stroke-miterlimit="10"><path d="M62 6H2v40h20l10 12 10-12h20z"/><path data-color="color-2" d="M16 20h32M16 32h18"/></g></svg><svg class="hm-delete" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="20" height="20"><g class="nc-icon-wrapper" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="square" stroke-miterlimit="10"><path data-color="color-2" d="M22 10V2h20v8"/><path d="M54 18v40a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4V18"/><path data-color="color-2" d="M32 31v18M22 31v18m20-18v18"/><path d="M4 10h56v8H4z"/></g></svg></div></div>')
@@ -200,12 +204,14 @@
     			)
 
     			$(iframe.contentDocument.body).on('mouseenter', '.highlighted', function() {
+    				currentHighlight = $(this).attr('class').split(' ').pop()
     				var top = (parseInt($(this).attr('data-offset-top')) - 43) + 'px'
     				var left = $(this).attr('data-offset-left') + 'px'
     				$(iframe.contentDocument.body).children('.epub-highlight-menu-wrap').css({
     					'top': top,
     					'left': left
     				}).show()
+    				$(iframe.contentDocument.body).children('#ann_' + currentHighlight.split('-').pop()).mouseenter()
     			})
 
     			$(iframe.contentDocument.body).on('mouseenter', '.epub-highlight-menu-wrap', function() {
@@ -213,7 +219,6 @@
     			})
 
     			$(iframe.contentDocument.body).on('mousemove', '.highlighted', function(e) {
-    				currentHighlight = $(this).attr('class').split(' ').pop()
         			var top = (e.pageY - 43) + 'px'
         			var left = (e.pageX - 50) + 'px'
         			$(iframe.contentDocument.body).children('.epub-highlight-menu-wrap').css({
@@ -240,6 +245,29 @@
       			$(iframe.contentDocument).on('click', '.hmcl-color', function() {
       				var bgColor = $(this).css('background-color')
       				$(iframe.contentDocument.body).find('.'+currentHighlight).css('background-color', bgColor)
+      				saveHighlight()
+      			})
+
+      			$(iframe.contentDocument).on('click', '.hm-annotation', function() {
+      				var hTop = $(iframe.contentDocument.body).find('.'+currentHighlight).attr('data-offset-top') + 'px'
+        			var id = currentHighlight.split('-').pop()
+        			if ($(iframe.contentDocument.body).children('#ann_'+id).length) {
+          				alert('You already have annotation layer for this highlight.')
+          				return false
+        			}
+        			$(iframe.contentDocument.body).append('<div id="ann_'+id+'" contenteditable="true" class="annotation-layer" style="top: ' + hTop + ';">Comment here</div>')
+        			saveHighlight()
+      			})
+
+      			$(iframe.contentDocument).on('mouseenter', '.annotation-layer', function() {
+        			var $this = $(this)
+        			$(iframe.contentDocument.body).children('.annotation-layer').each(function() {
+          				$(this).removeClass('focus')
+        			})
+        			$this.addClass('focus')
+      			})
+
+      			$(iframe.contentDocument).on('keydown', '.annotation-layer', function() {
       				saveHighlight()
       			})
 			}
