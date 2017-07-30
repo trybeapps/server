@@ -270,6 +270,19 @@
       			$(iframe.contentDocument).on('keydown', '.annotation-layer', function() {
       				saveHighlight()
       			})
+
+      			$(iframe.contentDocument).on('click', '.hm-delete', function() {
+      				var retVal = confirm("Do you want to delete this highlight?");
+        			if( retVal == true ) {
+          				var id = currentHighlight.split('-').pop()
+          				$(iframe.contentDocument.body).find('.'+currentHighlight).each(function() {
+          					$(this).replaceWith($(this).html())
+          				})
+          				$(iframe.contentDocument.body).children('#ann_'+id).remove()
+          				$(iframe.contentDocument.body).children('.epub-highlight-menu-wrap').hide()
+          				saveHighlight()
+          			}
+      			})
 			}
   		})
 	</script>

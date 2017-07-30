@@ -13,6 +13,7 @@ body {
 	position: relative;
 	background-color: rgb(154, 154, 8);
   color: white;
+  cursor: pointer;
 }
 
 .epub-highlight-menu-wrap {
