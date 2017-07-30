@@ -186,7 +186,8 @@
     			var hltr = new TextHighlighter(
         			iframe.contentDocument.body, {
         				onBeforeHighlight: function (range) {
-          					if ($(range.commonAncestorContainer.parentElement).attr('class') == 'annotation-layer focus') return false
+        					console.log(range.commonAncestorContainer.parentElement)
+          					if (($(range.commonAncestorContainer.parentElement).attr('class') == 'annotation-layer focus') || ($(range.commonAncestorContainer.parentElement).attr('class') == 'annotation-save'))return false
           					return window.confirm('Selected text: ' + range + '\nReally highlight?')
         				},
         				onAfterHighlight: function (range, highlights) {

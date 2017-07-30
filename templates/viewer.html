@@ -391,7 +391,7 @@ See https://github.com/adobe-type-tools/cmap-resources
     $(function() {
       var hltr = new TextHighlighter(document.getElementById('viewer'), {
         onBeforeHighlight: function (range) {
-          if ($(range.commonAncestorContainer.parentElement).attr('class') == 'annotation-layer focus') return false
+          if ((range.commonAncestorContainer.parentElement.className == 'ann-text') || (range.commonAncestorContainer.parentElement.className == 'annotation-save')) return false
           return window.confirm('Selected text: ' + range + '\nReally highlight?')
         },
         onAfterHighlight: function (range, highlights) {
@@ -471,7 +471,7 @@ See https://github.com/adobe-type-tools/cmap-resources
                 for (j=0; j<data['detail'].length; j++) {
                   if (data['detail'][j]['hid'] == id) {
                     var pageIndex = data['detail'][j]['page_index']
-                    $('#viewer').children('.page:nth-child(' + pageIndex + ')').append('<div contenteditable="true" class="annotation-layer" id="ann_'+id+'" style="top: ' + hTop + ';">'+comment+'</div>')
+                    $('#viewer').children('.page:nth-child(' + pageIndex + ')').append('<div class="annotation-layer" id="ann_'+id+'" style="top: ' + hTop + ';"><p class="ann-text" contenteditable="true">'+comment+'</p><div class="annotation-save" contenteditable="false">Save</div></div>')
                     break
                   }
                 }
@@ -549,14 +549,15 @@ See https://github.com/adobe-type-tools/cmap-resources
           alert('You already have annotation layer for this highlight.')
           return false
         }
-        $(this).closest('.page').append('<div id="ann_'+id+'" contenteditable="true" class="annotation-layer" style="top: ' + hTop + ';">Comment here</div>')
+        $(this).closest('.page').append('<div id="ann_'+id+'" class="annotation-layer" style="top: ' + hTop + ';"><p class="ann-text" contenteditable="true">Comment here</p><div contenteditable="false" class="annotation-save">Save</div></div>')
       })
 
-      $(document).on('keydown', '.annotation-layer', function(e) {
+      $(document).on('click', '.annotation-layer .annotation-save', function(e) {
         e.stopImmediatePropagation()
-        var id = $(this).attr('id').split('_').pop()
+        var id = $(this).parent().attr('id').split('_').pop()
         var hTop = $('.highlight-id-'+id).css('top')
-        var comment = $(this).text()
+        var comment = $(this).siblings('p').text()
+        console.log(comment)
         var data = {
           'id': id,
           'top': hTop,
@@ -569,6 +570,7 @@ See https://github.com/adobe-type-tools/cmap-resources
           contentType: 'application/json; charset=utf-8',
           success: function (data) {
             console.log(data)
+            alert('Comment saved successfully')
           }
         })
       })
