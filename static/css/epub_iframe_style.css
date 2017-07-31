@@ -149,6 +149,7 @@ body {
   height: 110px;
   overflow-y: auto;
   outline: none;
+  margin: 0;
 }
 
 .annotation-layer .annotation-save {
