@@ -836,14 +836,18 @@ func _SendEmail(token string, email string, name string) {
 	m := gomail.NewMessage()
 	m.SetHeader("From", "no-reply@libreread.org")
 	m.SetHeader("To", email)
-	// m.SetAddressHeader("Cc", "hello@nirm.al", "Nirmal")
 	m.SetHeader("Subject", "LibreRead Email Confirmation")
 	m.SetBody("text/html", "Hi "+name+
 		",<br><br>Please confirm your email by clicking this link<br>"+
 		confirmEmailLink)
-	// m.Attach("/home/Alex/lolcat.jpg")
 
-	d := gomail.NewDialer("smtp.zoho.com", 587, "no-reply@libreread.org", "eWzBiT2PsEnB")
+	smtp_server := os.Getenv("LIBREREAD_SMTP_SERVER")
+	smtp_port, err := strconv.Atoi(os.Getenv("LIBREREAD_SMTP_PORT"))
+	CheckError(err)
+	smtp_address := os.Getenv("LIBREREAD_SMTP_ADDRESS")
+	smtp_password := os.Getenv("LIBREREAD_SMTP_PASSWORD")
+
+	d := gomail.NewDialer(smtp_server, smtp_port, smtp_address, smtp_password)
 
 	// Send the confirmation email
 	if err := d.DialAndSend(m); err != nil {
