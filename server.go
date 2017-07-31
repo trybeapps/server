@@ -843,7 +843,7 @@ func _SendEmail(token string, email string, name string) {
 		confirmEmailLink)
 	// m.Attach("/home/Alex/lolcat.jpg")
 
-	d := gomail.NewDialer("smtp.zoho.com", 587, "no-reply@libreread.org", "magicmode")
+	d := gomail.NewDialer("smtp.zoho.com", 587, "no-reply@libreread.org", "eWzBiT2PsEnB")
 
 	// Send the confirmation email
 	if err := d.DialAndSend(m); err != nil {
