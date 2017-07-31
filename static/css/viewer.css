@@ -2285,10 +2285,9 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
   color: #161616;
   background: white;
   outline: none;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
+  border: 1px solid #DFDFDF;
   padding: 10px;
-  /* box-shadow: 0 0 9px rgba(0,0,0,0.6); */
   box-sizing: border-box;
 }
 
@@ -2297,6 +2296,8 @@ html[dir='rtl'] #documentPropertiesOverlay .row > * {
 }
 
 .annotation-layer p {
+  height: 110px;
+  overflow-y: auto;
   outline: none;
 }
 
