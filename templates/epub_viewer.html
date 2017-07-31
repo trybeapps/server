@@ -187,7 +187,7 @@
         			iframe.contentDocument.body, {
         				onBeforeHighlight: function (range) {
         					console.log(range.commonAncestorContainer.parentElement)
-          					if (($(range.commonAncestorContainer.parentElement).attr('class') == 'annotation-layer focus') || ($(range.commonAncestorContainer.parentElement).attr('class') == 'annotation-save'))return false
+          					if (($(range.commonAncestorContainer.parentElement).attr('class') == 'ann-text') || ($(range.commonAncestorContainer.parentElement).attr('class') == 'annotation-save'))return false
           					return window.confirm('Selected text: ' + range + '\nReally highlight?')
         				},
         				onAfterHighlight: function (range, highlights) {
@@ -256,7 +256,7 @@
           				alert('You already have annotation layer for this highlight.')
           				return false
         			}
-        			$(iframe.contentDocument.body).append('<div id="ann_'+id+'" contenteditable="true" class="annotation-layer" style="top: ' + hTop + ';">Comment here<div contenteditable="false" class="annotation-save">Save</div></div>')
+        			$(iframe.contentDocument.body).append('<div id="ann_'+id+'" class="annotation-layer" style="top: ' + hTop + ';"><p class="ann-text" contenteditable="true">Comment here...</p><div contenteditable="false" class="annotation-save">Save</div></div>')
         			saveHighlight()
       			})
 
