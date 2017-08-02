@@ -834,7 +834,7 @@ func _SendEmail(token string, email string, name string) {
 	confirmEmailLink := "http://localhost:8080/confirm-email?token=" + token
 
 	m := gomail.NewMessage()
-	m.SetHeader("From", "info@libreread.org")
+	m.SetHeader("From", os.Getenv("LIBREREAD_SMTP_ADDRESS"))
 	m.SetHeader("To", email)
 	m.SetHeader("Subject", "LibreRead Email Confirmation")
 	m.SetBody("text/html", "Hi "+name+
