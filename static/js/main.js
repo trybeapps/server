@@ -196,7 +196,7 @@ $(function() {
 				console.log(files[i])
 			}
 			else {
-				alert(files[i].name + '(Wrong file format. Only PDFs are supported.)')
+				alert(files[i].name + ' (Wrong file format. Only EPUBs and PDFs are supported.)')
 				continue
 			}
 		}
