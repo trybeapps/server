@@ -38,6 +38,10 @@ body {
   color: white;
 }
 
+.s-bg {
+  background-image: url('../img/lp_bg.png');
+}
+
 .epub-body {
   overflow: hidden;
 }
@@ -348,24 +352,30 @@ header .header-container {
 
 .sign-form {
 	display: block;
-	width: 240px;
+	width: 370px;
+  height: auto;
 	margin: 120px auto;
+  padding-bottom: 30px;
+  border: 1px solid #DFDFDF;
+  background: white;
 }
 
 .sign-form label {
 	display: block;
   font-weight: 700;
   text-align: center;
+  margin-top: 30px;
 }
 
 .sign-form input[type="text"], .sign-form input[type="password"] {
-	width: 100%;
+  display: block;
+	width: 240px;
   height: 34px;
   font-size: 16px;
   border: 1px solid #B1B1B1;
   padding: 0 10px;
   outline: none;
-	margin-top: 20px;
+	margin: 20px auto 0;
 }
 
 .sign-form input[type="text"]:focus, .sign-form input[type="password"]:focus {
