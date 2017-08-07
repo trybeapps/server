@@ -257,15 +257,7 @@ header .header-container {
   padding-left: 20px;
 }
 
-.header-nav .hn-book-nav, 
-.header-nav .hn-collection-nav,
-.header-nav .hn-settings-nav,
-.header-nav .hn-sign-out-nav, 
-.header-nav .hn-sign-nav,
-.header-nav-small .hn-book-nav, 
-.header-nav-small .hn-collection-nav,
-.header-nav-small .hn-settings-nav,
-.header-nav-small .hn-sign-out-nav {
+.header-nav a {
 	float: left;
 	margin-top: 17.5px;
 	margin-right: 30px;
@@ -277,10 +269,7 @@ header .header-container {
 	margin-right: 0;
 }
 
-.header-nav-small .hn-book-nav, 
-.header-nav-small .hn-collection-nav,
-.header-nav-small .hn-settings-nav, 
-.header-nav-small .hn-sign-out-nav {
+.header-nav-small a {
 	float: none;
 	display: block;
 	border: 1px solid #DFDFDF;
@@ -306,12 +295,13 @@ header .header-container {
   margin-right: 30px;
 }
 
-.epub-nav a:nth-child(5) {
+.epub-nav a:nth-child(6) {
   margin-right: 0;
 }
 
 .header-nav-small a {
-	clear: both;
+  clear: both;
+	overflow: hidden;
 }
 
 .header-nav svg, .header-nav-small svg {
@@ -323,10 +313,16 @@ header .header-container {
 	margin-right: 20px;
 }
 
-.header-nav .hn-book-nav:hover svg g, 
-.header-nav .hn-collection-nav:hover svg path, 
-.header-nav .hn-settings-nav:hover svg g {
-	stroke: #FF4848;
+.header-nav a:hover svg g, 
+.header-nav a:hover svg path, 
+.header-nav a:hover svg g {
+	fill: #FF4848;
+}
+
+.epub-nav a:hover svg g, 
+.epub-nav a:hover svg path, 
+.epub-nav a:hover svg g {
+  fill: #FF4848;
 }
 
 .header-nav .hn-sign-out-nav:hover svg g {
@@ -341,11 +337,7 @@ header .header-container {
 	cursor: pointer;
 }
 
-.header-nav .hn-book-nav:hover label, 
-.header-nav .hn-collection-nav:hover label,
-.header-nav .hn-settings-nav:hover label,
-.header-nav .hn-sign-out-nav:hover label,
-.header-nav .hn-user-nav:hover label {
+.header-nav a:hover label {
 	color: #FF4848;
 }
 
