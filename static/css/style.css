@@ -1103,6 +1103,16 @@ footer {
 }
 
 @media screen
+  and (max-width: 700px) {
+
+  .epub-prev, .epub-next {
+    top: 90%;
+    background: white;
+  }
+
+}
+
+@media screen
   and (max-device-width: 470px) {
 
   	.search-dropdown {
