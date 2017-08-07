@@ -484,7 +484,7 @@ input[type="submit"] {
 	float: right;
 }
 
-.crcb-arrow .left, .crcb-arrow .right {
+.crcb-arrow .left, .crcb-arrow .right, .epub-prev, .epub-next {
 	float: left;
 	width: 60px;
 	height: 47px;
@@ -492,7 +492,11 @@ input[type="submit"] {
 	cursor: pointer;
 }
 
-.crcb-arrow .left {
+.epub-prev, .epub-next {
+  border: 4px solid #676767;
+}
+
+.crcb-arrow .left, .epub-prev {
 	margin-right: 30px;
 }
 
@@ -500,19 +504,23 @@ input[type="submit"] {
 	background: white;
 }
 
-.crcb-arrow .left.none, .crcb-arrow .right.none {
+.epub-prev:hover, .epub-next:hover {
+  background: #676767;
+}
+
+.crcb-arrow .left.none, .crcb-arrow .right.none, .epub-prev.none, .epub-next.none {
 	background: none;
 	border: none;
 	padding-top: 4px;
 	cursor: auto;
 }
 
-.crcb-arrow .left svg, .crcb-arrow .right svg {
+.crcb-arrow .left svg, .crcb-arrow .right svg, .epub-prev svg, .epub-next svg {
 	display: block;
 	margin: 10px auto;
 }
 
-.crcb-arrow .left.none svg g, .crcb-arrow .right.none svg g {
+.crcb-arrow .left.none svg g, .crcb-arrow .right.none svg g, .epub-prev.none svg g, .epub-next.none svg g {
 	stroke: #BEBEBE;
 }
 
@@ -520,7 +528,11 @@ input[type="submit"] {
 	stroke: #333;
 }
 
-.crcb-arrow .left.none:hover svg g, .crcb-arrow .right.none:hover svg g {
+.epub-prev:hover svg g, .epub-next:hover svg g {
+  stroke: #fff;
+}
+
+.crcb-arrow .left.none:hover svg g, .crcb-arrow .right.none:hover svg g, .epub-prev.none:hover svg g, .epub-next.none:hover svg g {
 	stroke: #BEBEBE;
 }
 

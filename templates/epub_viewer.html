@@ -68,8 +68,12 @@
 		</div>
 	</header>
 	<iframe id="epubIframe" spine-idref="{{.idRef}}" src="{{.filePath}}" width="100%" height="100%" frameborder="0" style="display: none;"></iframe>
-	<svg class="epub-prev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="28" height="28"><path d="M2 8.001c0 .326.159.632.427.819l10 7A1 1 0 0 0 14 15.001V.999A.999.999 0 0 0 12.427.18l-10 7A.999.999 0 0 0 2 7.999v.002C2 8 2 8 2 8.001z" class="nc-icon-wrapper" fill="#676767"/></svg>
-	<svg class="epub-next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="28" height="28"><path d="M14 7.999a.999.999 0 0 0-.427-.819l-10-7A1 1 0 0 0 2 .999V15a.999.999 0 0 0 1.573.819l10-7A.995.995 0 0 0 14 8.001v-.002c0 .001 0 .001 0 0z" class="nc-icon-wrapper" fill="#676767"/></svg>
+	<div class="epub-prev">
+		<svg width="33" height="20" viewBox="0 0 33 20" xmlns="http://www.w3.org/2000/svg"><title>Group 2</title><g stroke="#676767" stroke-width="3" fill="none" fill-rule="evenodd"><path d="M33 10.143H3"/><path stroke-linecap="square" d="M10.143 17.286L3 10.143 10.143 3"/></g></svg>
+	</div>
+	<div class="epub-next">
+		<svg width="33" height="20" viewBox="0 0 33 20" xmlns="http://www.w3.org/2000/svg"><title>Group 3</title><g stroke="#676767" stroke-width="3" fill="none" fill-rule="evenodd"><path d="M0 10.143h30"/><path stroke-linecap="square" d="M22.857 3L30 10.143l-7.143 7.143"/></g></svg>
+	</div>
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js"
   		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   		crossorigin="anonymous"></script>
@@ -108,6 +112,7 @@
 			})
 
 			function nextFragment(url) {
+				$('.epub-prev,.epub-next').removeClass('none')
 				var href = $('#epubIframe').attr('src')
 				$.ajax({
 					url: url,
@@ -116,13 +121,11 @@
 					},
 					contentType: 'application/json',
             		success: function(data) {
-            			if (data !== 'Not signed in') {
-            				$('#epubIframe').hide()
-                			$('#epubIframe').attr('src', data)
-						} else {
-                			alert(data)
-                			window.location.href = '/'
-                		}
+            			console.log(data)
+            			$('#epubIframe').hide()
+                		$('#epubIframe').attr('src', data.href_path)
+                		if (data.left_none == true) $('.epub-prev').addClass('none')
+                		if (data.right_none == true) $('.epub-next').addClass('none')
             		}
 				})
 			}
@@ -132,10 +135,12 @@
 			}
 
 			$('.epub-next').click(function() {
+				if ($(this).hasClass('none')) return false
 				nextFragment('/load-epub-fragment/{{.fileName}}/next')
 			})
 
 			$('.epub-prev').click(function() {
+				if ($(this).hasClass('none')) return false
 				nextFragment('/load-epub-fragment/{{.fileName}}/prev')
 			})
 

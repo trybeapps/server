@@ -439,6 +439,12 @@ func (e *Env) SendBook(c *gin.Context) {
 	c.Redirect(302, "/signin")
 }
 
+type HrefDataStruct struct {
+	HrefPath  string `json:"href_path"`
+	LeftNone  bool   `json:"left_none"`
+	RightNone bool   `json:"right_none"`
+}
+
 func (e *Env) SendEPUBFragment(c *gin.Context) {
 	email := _GetEmailFromSession(c)
 	if email != nil {
@@ -468,7 +474,11 @@ func (e *Env) SendEPUBFragment(c *gin.Context) {
 		id := opfMetadata.Manifest.Item.Id
 
 		idRef := opfMetadata.Spine.ItemRef.IdRef
+
 		var hrefPath string
+		var leftNone bool = false
+		var rightNone bool = false
+
 		for i, e := range href {
 			if e == currentFragment {
 				currentId := id[i]
@@ -479,10 +489,18 @@ func (e *Env) SendEPUBFragment(c *gin.Context) {
 							nextIdRef := idRef[j+1]
 							fmt.Println("Next Fragment: " + nextIdRef)
 							hrefPath = _GetManifestId(id, href, nextIdRef, packagePath)
+
+							if j+2 >= len(idRef) {
+								rightNone = true
+							}
 						} else {
 							prevIdRef := idRef[j-1]
 							fmt.Println("Previous Fragment: " + prevIdRef)
 							hrefPath = _GetManifestId(id, href, prevIdRef, packagePath)
+
+							if j-2 < 0 {
+								leftNone = true
+							}
 						}
 						break
 					}
@@ -490,7 +508,14 @@ func (e *Env) SendEPUBFragment(c *gin.Context) {
 				break
 			}
 		}
-		c.String(200, hrefPath)
+
+		hrefData := HrefDataStruct{
+			HrefPath:  hrefPath,
+			LeftNone:  leftNone,
+			RightNone: rightNone,
+		}
+
+		c.JSON(200, hrefData)
 
 	} else {
 		c.String(200, "Not signed in")
