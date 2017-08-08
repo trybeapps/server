@@ -487,23 +487,37 @@ func (e *Env) GetBookMetaData(c *gin.Context) {
 func (e *Env) EditBook(c *gin.Context) {
 	email := _GetEmailFromSession(c)
 	if email != nil {
-		name := c.Param("bookname")
+		fileName := c.PostForm("filename")
+		fmt.Println(fileName)
 
-		// Get book metadata
-		title, author, cover := e._GetBookMetaData(name)
+		title := c.PostForm("title")
 		fmt.Println(title)
-		fmt.Println(author)
-		fmt.Println(cover)
 
-		c.HTML(200, "edit_book.html", gin.H{
-			"fileName": name,
-			"title":    title,
-			"author":   author,
-			"cover":    cover,
-		})
+		author := c.PostForm("author")
+		fmt.Println(author)
+
+		stmt, err := e.db.Prepare("update book set title=?, author=? where filename=?")
+		CheckError(err)
+
+		_, err = stmt.Exec(title, author, fileName)
+		CheckError(err)
+
+		file, _ := c.FormFile("cover")
+		if file != nil {
+			fmt.Println(file.Filename)
+			c.SaveUploadedFile(file, "./uploads/img/"+file.Filename)
+
+			cover := "./uploads/img/" + file.Filename
+
+			stmt, err := e.db.Prepare("update book set cover=? where filename=?")
+			CheckError(err)
+
+			_, err = stmt.Exec(cover, fileName)
+			CheckError(err)
+		}
+
+		c.String(200, "Book metadata saved successfully")
 	}
-	// if not signed in, redirect to sign in page
-	c.Redirect(302, "/signin")
 }
 
 type HrefDataStruct struct {

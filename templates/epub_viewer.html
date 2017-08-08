@@ -55,12 +55,16 @@
 	<div class="edit-metadata-wrapper">
 		<div class="emw-close">Close</div>
 		<div class="emw-dialog">
-			<label>Book Metadata</label>
-			<input type="text" class="emwd-title">
-			<input type="text" class="emwd-author">
-			<img src="/" class="emwd-cover">
-			<input type="button" class="secondary-button emwd-change-cover" value="Change image">
-			<input type="submit" value="Save changes" class="emwd-submit">
+			<form enctype="multipart/form-data">
+				<label>Book Metadata</label>
+				<input type="text" name="filename" value="{{.fileName}}" style="display: none;">
+				<input type="text" name="title" class="emwd-title">
+				<input type="text" name="author" class="emwd-author">
+				<img src="/" class="emwd-cover">
+				<input type="file" name="cover" class="emwd-cover-upload" style="display: none;">
+				<input type="button" class="secondary-button emwd-change-cover" value="Change image">
+				<input type="submit" value="Save changes" class="emwd-submit">
+			</form>
 		</div>
 	</div>
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js"
@@ -342,6 +346,44 @@
 
       			$(document).on('click', '.emw-close', function() {
       				$('.edit-metadata-wrapper').hide()
+      			})
+
+      			$(document).on('click', '.emwd-change-cover', function() {
+      				$('.emwd-cover-upload').click()
+      			})
+
+      			function showCoverPreview(input) {
+      				if (input.files && input.files[0]) {
+        				var reader = new FileReader();
+
+        				reader.onload = function (e) {
+            				$('.emwd-cover').attr('src', e.target.result);
+        				}
+
+        				reader.readAsDataURL(input.files[0]);
+    				}
+      			}
+
+      			$('.emwd-cover-upload').change(function() {
+      				showCoverPreview(this)
+      			})
+
+      			$(document).on('click', '.emwd-submit', function(e) {
+      				e.preventDefault()
+      				var formData = new FormData($('.emw-dialog form')[0]);
+
+      				$.ajax({
+      					url: '/edit-book/{{.fileName}}',
+        				type: 'POST',
+        				data: formData,
+        				success: function (data) {
+            				alert(data)
+            				$('.edit-metadata-wrapper').hide()
+        				},
+        				cache: false,
+        				contentType: false,
+        				processData: false
+      				})
       			})
 			}
   		})
