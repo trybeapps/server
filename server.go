@@ -246,6 +246,8 @@ func main() {
 	r.GET("/signout", GetSignOut)
 	r.POST("/upload", env.UploadBook)
 	r.GET("/book/:bookname", env.SendBook)
+	r.GET("/get-book-metadata", env.GetBookMetaData)
+	r.POST("/edit-book/:bookname", env.EditBook)
 	r.GET("/load-epub-fragment/:bookname/:type", env.SendEPUBFragment)
 	r.GET("/cover/:covername", SendBookCover)
 	r.GET("/books/:pagination", env.GetPagination)
@@ -313,7 +315,7 @@ func (e *Env) _GetUserId(email string) int64 {
 }
 
 func (e *Env) _GetBookInfo(fileName string) (int64, string, string) {
-	rows, err := e.db.Query("SELECT `id`,`format`, `file_path` FROM `book` WHERE `filename` = ?", fileName)
+	rows, err := e.db.Query("SELECT `id`, `format`, `file_path` FROM `book` WHERE `filename` = ?", fileName)
 	CheckError(err)
 
 	var (
@@ -328,6 +330,24 @@ func (e *Env) _GetBookInfo(fileName string) (int64, string, string) {
 	rows.Close()
 
 	return bookId, format, filePath
+}
+
+func (e *Env) _GetBookMetaData(fileName string) (string, string, string) {
+	rows, err := e.db.Query("SELECT `title`, `author`, `cover` FROM `book` WHERE `filename` = ?", fileName)
+	CheckError(err)
+
+	var (
+		title  string
+		author string
+		cover  string
+	)
+	if rows.Next() {
+		err := rows.Scan(&title, &author, &cover)
+		CheckError(err)
+	}
+	rows.Close()
+
+	return title, author, cover
 }
 
 func (e *Env) _CheckCurrentlyReading(bookId int64) int64 {
@@ -435,6 +455,53 @@ func (e *Env) SendBook(c *gin.Context) {
 		}
 	}
 
+	// if not signed in, redirect to sign in page
+	c.Redirect(302, "/signin")
+}
+
+type GetBookMetadataStruct struct {
+	Title  string `json:"title"`
+	Author string `json:"author"`
+	Cover  string `json:"cover"`
+}
+
+func (e *Env) GetBookMetaData(c *gin.Context) {
+	q := c.Request.URL.Query()
+	name := q["fileName"][0]
+
+	// Get book metadata
+	title, author, cover := e._GetBookMetaData(name)
+
+	// Remove dot from cover
+	cover = "/uploads" + strings.Split(cover, "./uploads")[1]
+
+	bookMetadata := GetBookMetadataStruct{
+		Title:  title,
+		Author: author,
+		Cover:  cover,
+	}
+
+	c.JSON(200, bookMetadata)
+}
+
+func (e *Env) EditBook(c *gin.Context) {
+	email := _GetEmailFromSession(c)
+	if email != nil {
+		name := c.Param("bookname")
+
+		// Get book metadata
+		title, author, cover := e._GetBookMetaData(name)
+		fmt.Println(title)
+		fmt.Println(author)
+		fmt.Println(cover)
+
+		c.HTML(200, "edit_book.html", gin.H{
+			"fileName": name,
+			"title":    title,
+			"author":   author,
+			"cover":    cover,
+		})
+	}
 	// if not signed in, redirect to sign in page
 	c.Redirect(302, "/signin")
 }
