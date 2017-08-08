@@ -9,6 +9,11 @@ body {
   margin: 50px auto!important;
 }
 
+body.perc150 {
+  font-size: 20px!important;
+  line-height: 29px!important;
+}
+
 .highlighted {
 	position: relative;
 	background-color: rgb(154, 154, 8);

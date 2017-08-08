@@ -273,6 +273,40 @@
       				if (e.which == '37') nextFragment('/load-epub-fragment/{{.fileName}}/prev')
       				else if (e.which == '39') nextFragment('/load-epub-fragment/{{.fileName}}/next')
       			})
+
+      			$(document).on('click', '.hn-fullscreen-nav', function(e) {
+      				e.preventDefault()
+      				var docelem = document.documentElement
+      				if (docelem.requestFullscreen) {
+        				docelem.requestFullscreen()
+    				}
+    				else if (docelem.mozRequestFullScreen) {
+        				docelem.mozRequestFullScreen()
+    				}
+    				else if (docelem.webkitRequestFullscreen) {
+        				docelem.webkitRequestFullscreen()
+    				}
+    				else if (docelem.msRequestFullscreen) {
+        				docelem.msRequestFullscreen()
+    				}
+      			})
+
+      			$(document).on('click', '.hn-zoom-in-nav', function(e) {
+      				e.preventDefault()
+      				$(iframe.contentDocument.body).removeClass('perc150').addClass('perc150')
+      			})
+
+      			$(document).on('click', '.hn-zoom-out-nav', function(e) {
+      				e.preventDefault()
+      				$(iframe.contentDocument.body).removeClass('perc150')
+      			})
+
+      			$(document).on('click', '.hn-download-nav', function(e) {
+      				e.preventDefault()
+      				var fileName = window.location.pathname.split('/').pop();
+					var fileURL = "/uploads/" + fileName;
+					window.location.href = fileURL
+      			})
 			}
   		})
 	</script>
