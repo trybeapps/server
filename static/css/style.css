@@ -47,16 +47,6 @@ body {
   overflow: hidden;
 }
 
-#epubIframe {
-  position: absolute;
-  top: 60px;
-  left: 0;
-  background: #FFFFF8;
-  z-index: 1;
-  overflow-x: hidden;
-  padding-bottom: 60px;
-}
-
 .epub-prev, .epub-next {
   position: fixed;
   top: 50%;
@@ -68,6 +58,14 @@ body {
 .epub-next {
   left: inherit;
   right: 50px;
+}
+
+#epub-viewer {
+  width: 1380px;
+  height: 600px;
+  position: relative;
+  margin: 0 auto;
+  top: 110px;
 }
 
 .edit-metadata-wrapper {

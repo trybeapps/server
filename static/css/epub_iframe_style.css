@@ -1,12 +1,23 @@
 body {
-  display: block!important;
-  font-family: 'Helvetica Neue', 'Helvetica', serif;
-  font-size: 16px!important;
-  line-height: 25px!important;
-  background: #FFFFF8!important;
-  width: 700px!important;
-  height: auto!important;
-  margin: 50px auto!important;
+      display: block!important;
+    font-family: 'Helvetica Neue', 'Helvetica', serif;
+    font-size: 16px!important;
+    line-height: 25px!important;
+    background: #FFFFF8!important;
+    width: 100%!important;
+    height: 600px!important;
+    margin: 0!important;
+    column-width: 660px!important;
+    column-gap: 60px!important;
+    padding: 0!important;
+    /* -webkit-clip-path: inset(0% -208% 0% 204%); */
+    transform: translateX(0%);
+    overflow-y: hidden!important;
+}
+
+img,image {
+  max-width: 600px!important;
+  max-height: 600px!important;
 }
 
 body.perc150 {

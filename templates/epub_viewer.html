@@ -45,11 +45,14 @@
 			</div>
 		</div>
 	</header>
-	<iframe id="epubIframe" spine-idref="{{.idRef}}" src="{{.filePath}}" width="100%" height="100%" frameborder="0" style="display: none;"></iframe>
-	<div class="epub-prev none">
+	<div id="epub-viewer">
+		<iframe id="epubIframe" spine-idref="{{.idRef}}" src="{{.filePath}}" width="100%" height="100%" frameborder="0" style="display: none;"></iframe>
+		<iframe id="epubIframe2" spine-idref="{{.idRef}}" src="/uploads/The_Viking_Warrior_by_Ben_Hubbard/text/part0004.html" width="100%" height="100%" frameborder="0" style="display: none;"></iframe>
+	</div>
+	<div class="epub-prev none" style="display: none;">
 		<svg width="33" height="20" viewBox="0 0 33 20" xmlns="http://www.w3.org/2000/svg"><title>Group 2</title><g stroke="#676767" stroke-width="3" fill="none" fill-rule="evenodd"><path d="M33 10.143H3"/><path stroke-linecap="square" d="M10.143 17.286L3 10.143 10.143 3"/></g></svg>
 	</div>
-	<div class="epub-next">
+	<div class="epub-next" style="display: none;">
 		<svg width="33" height="20" viewBox="0 0 33 20" xmlns="http://www.w3.org/2000/svg"><title>Group 3</title><g stroke="#676767" stroke-width="3" fill="none" fill-rule="evenodd"><path d="M0 10.143h30"/><path stroke-linecap="square" d="M22.857 3L30 10.143l-7.143 7.143"/></g></svg>
 	</div>
 	<div class="edit-metadata-wrapper">
@@ -80,10 +83,11 @@
 			term = query.split('&')[1].split('term=')[1]
 		}
 
-		var iframe = document.querySelector('iframe');
+		var iframe = document.getElementById('epubIframe');
+		var iframe2 = document.getElementById('epubIframe2');
 
   		$(function() {
-			$('#epubIframe').bind('load', function() {
+			$('#epubIframe,#epubIframe2').bind('load', function() {
 				if (term) {
 					$('#epubIframe')[0].contentWindow.find(term)
 				}
@@ -180,7 +184,17 @@
           		})
             }
 
+            iframe2.onload = function() {
+            	$(iframe2.contentDocument.body).append('<span id="mymarker"></span>')
+      			console.log($($('#epubIframe')[0].contentDocument.body).children('#mymarker').offset().left)
+            }
+
 			iframe.onload = function () {
+				$(iframe.contentDocument.body).append('<span id="mymarker"></span>')
+				setTimeout(function(){
+					console.log($($('#epubIframe')[0].contentDocument.body).children('#mymarker').offset().left)
+				},3000)
+
     			var hltr = new TextHighlighter(
         			iframe.contentDocument.body, {
         				onBeforeHighlight: function (range) {
