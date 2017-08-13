@@ -252,7 +252,11 @@ $(function() {
 					console.log(data['book_detail'])
 					for (i in data['book_detail']) {
 						console.log(data['book_detail'][i]['_source'])
-						html += '<a href="' + data['book_detail'][i]['_source'].url + '#page=' + data['book_detail'][i]['_source']['se_url'] + '&term=' + term + '">' +
+						var format = data['book_detail'][i]['_source']['format']
+						var page = ""
+						if (format == "pdf") page = data['book_detail'][i]['_source']['page']
+						else page = data['book_detail'][i]['_source']['se_url']
+						html += '<a href="' + data['book_detail'][i]['_source'].url + '#page=' + page + '&term=' + term + '">' +
 						    '<img src="' + data['book_detail'][i]['_source'].cover + '">' +
 						    '<div class="sdtl-title">' + data['book_detail'][i]['_source'].title + ' <span>(Page ' + data['book_detail'][i]['_source'].page + ')</span></div>' +
 						    '<div class="sdtl-author">' + data['book_detail'][i]['_source'].author + '</div>'
