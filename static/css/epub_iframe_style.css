@@ -1,6 +1,6 @@
 body {
   display: block!important;
-  font-family: Georgia, serif;
+  font-family: Georgia, serif!important;
   font-size: 21px!important;
   line-height: 1.58!important;
   background: #FFFFF8!important;
@@ -8,6 +8,12 @@ body {
   height: auto;
   margin: 50px auto!important;
   padding: 0!important;
+}
+
+p {
+  font-family: Georgia, serif!important;
+  font-size: 21px!important;
+  line-height: 1.58!important;
 }
 
 img,image {
