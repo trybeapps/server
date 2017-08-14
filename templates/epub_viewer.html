@@ -182,6 +182,26 @@
           		})
             }
 
+            $(document).on('click', '.hn-zoom-in-nav', function(e) {
+      			e.preventDefault()
+      			if ($(iframe.contentDocument.body).hasClass('perc150')) {
+      				$(iframe.contentDocument.body).removeClass('perc150').removeClass('perc200').addClass('perc200')
+      			} else if ($(iframe.contentDocument.body).hasClass('perc200')) {
+      				return false
+      			} else {
+      				$(iframe.contentDocument.body).removeClass('perc150').removeClass('perc200').addClass('perc150')
+      			}
+      		})
+
+      		$(document).on('click', '.hn-zoom-out-nav', function(e) {
+      			e.preventDefault()
+      			if ($(iframe.contentDocument.body).hasClass('perc150')) {
+      				$(iframe.contentDocument.body).removeClass('perc150')
+      			} else {
+      				$(iframe.contentDocument.body).removeClass('perc200').addClass('perc150')
+      			}
+      		})
+
 			iframe.onload = function () {
     			var hltr = new TextHighlighter(
         			iframe.contentDocument.body, {
@@ -306,16 +326,6 @@
     				else if (docelem.msRequestFullscreen) {
         				docelem.msRequestFullscreen()
     				}
-      			})
-
-      			$(document).on('click', '.hn-zoom-in-nav', function(e) {
-      				e.preventDefault()
-      				$(iframe.contentDocument.body).removeClass('perc150').addClass('perc150')
-      			})
-
-      			$(document).on('click', '.hn-zoom-out-nav', function(e) {
-      				e.preventDefault()
-      				$(iframe.contentDocument.body).removeClass('perc150')
       			})
 
       			$(document).on('click', '.hn-download-nav', function(e) {

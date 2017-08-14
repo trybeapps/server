@@ -21,9 +21,13 @@ img,image {
   max-height: 600px!important;
 }
 
-body.perc150 {
-  font-size: 20px!important;
-  line-height: 29px!important;
+body.perc150, body.perc150 p {
+  font-size: 25px!important;
+  line-height: 1.64!important;
+}
+
+body.perc200, body.perc200 p {
+  font-size: 29px!important;
 }
 
 .highlighted {
