@@ -197,7 +197,7 @@
       			e.preventDefault()
       			if ($(iframe.contentDocument.body).hasClass('perc150')) {
       				$(iframe.contentDocument.body).removeClass('perc150')
-      			} else {
+      			} else if ($(iframe.contentDocument.body).hasClass('perc200')) {
       				$(iframe.contentDocument.body).removeClass('perc200').addClass('perc150')
       			}
       		})
