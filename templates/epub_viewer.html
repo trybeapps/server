@@ -290,12 +290,12 @@
       				if (e.which == '37') nextFragment('/load-epub-fragment/{{.fileName}}/prev')
       				else if (e.which == '39') nextFragment('/load-epub-fragment/{{.fileName}}/next')
       			})
-
-      			$(document).on('keyup', function(e) {
-      				if (e.which == '37') nextFragment('/load-epub-fragment/{{.fileName}}/prev')
-      				else if (e.which == '39') nextFragment('/load-epub-fragment/{{.fileName}}/next')
-      			})
 			}
+
+      		$(document).on('keyup', function(e) {
+      			if (e.which == '37') nextFragment('/load-epub-fragment/{{.fileName}}/prev')
+      			else if (e.which == '39') nextFragment('/load-epub-fragment/{{.fileName}}/next')
+      		})
 
 			$(document).on('click', '.hn-zoom-in-nav', function(e) {
       			e.preventDefault()
