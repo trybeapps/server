@@ -69,7 +69,7 @@ body {
   background-color: transparent;
 
   /* For IE10+, color of the progress bar */
-  color: #FF4848;
+  color: #CCCCCC;
 
   z-index: 999999;
 }
@@ -89,7 +89,7 @@ body {
 }
 
 .progress-bar {
-  background-color: #FF4848;
+  background-color: #CCCCCC;
   width: 0%;
   display: block;
   height: inherit;

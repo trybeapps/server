@@ -334,50 +334,37 @@
     				lastScrollTop = st;
 				}
 
-
-
-
-var getMax = function(){
-    return $(iframe.contentDocument).height() - $(window).height();
-  }
+				var getMax = function(){
+    				return $(iframe.contentDocument).height() - $(iframe.contentWindow).height();
+  				}
     
-  var getValue = function(){
-    return $(iframe.contentDocument).scrollTop();
-  }
-console.log(getMax())
-    var progressBar = $('.progress-bar'), 
-        max = getMax(), 
-        value, width;
+  				var getValue = function(){
+    				return $(iframe.contentDocument).scrollTop();
+  				}
+    
+    			var progressBar = $('.progress-bar'), 
+        			max, value, width;
         
-    var getWidth = function() {
-      // Calculate width in percentage
-      value = getValue();
-      console.log(value)
-      console.log($(window).height())          
-      width = (value/max) * 100;
-      width = width + '%';
-      return width;
-    }
+    			var getWidth = function() {
+      				// Calculate width in percentage
+      				value = getValue();
+      				max = getMax();
+      				width = (value/max) * 100;
+      				width = width + '%';
+      				return width;
+    			}
         
-    var setWidth = function(){
-    	//console.log(getWidth())
-      progressBar.css({ width: getWidth() });
-    }
+    			var setWidth = function(){
+      				progressBar.css({ width: getWidth() });
+    			}
         
-    $(iframe.contentDocument).on('scroll', setWidth);
-    $(window).on('resize', function(){
-      // Need to reset the Max attr
-      max = getMax();
-      setWidth();
-    });
-
-
-
-
-
-
-
-
+    			$(iframe.contentDocument).on('scroll', setWidth);
+    			
+    			$(window).on('resize', function(){
+      				// Need to reset the Max attr
+      				max = getMax();
+      				setWidth();
+    			});
 
 			}
 
