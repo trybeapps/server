@@ -2,6 +2,9 @@
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-Equiv="Cache-Control" Content="no-cache" />
+    <meta http-Equiv="Pragma" Content="no-cache" />
+    <meta http-Equiv="Expires" Content="0" />
 	<title>{{.fileName}}</title>
 	<link rel="icon" type="image/png" href="/static/img/favicon-16x16.png" sizes="16x16">
 	<link rel="icon" type="image/png" href="/static/img/favicon-32x32.png" sizes="32x32">
@@ -114,7 +117,7 @@
 				$('.progress-bar').css('width', '0%');
 				$('header').removeClass('nav-up').addClass('nav-down');
 				$('.epub-prev,.epub-next').removeClass('none')
-				var href = $('#epubIframe').attr('src')
+				var href = $('#epubIframe').attr('src').split('?random=')[0]
 				$.ajax({
 					url: url,
 					data: {
@@ -124,7 +127,7 @@
             		success: function(data) {
             			console.log(data)
             			$('#epubIframe').hide()
-                		$('#epubIframe').attr('src', data.href_path)
+                		$('#epubIframe').attr('src', data.href_path + '?random=' + (new Date()).getTime() + Math.floor(Math.random() * 1000000))
                 		if (data.left_none == true) $('.epub-prev').addClass('none')
                 		if (data.right_none == true) $('.epub-next').addClass('none')
             		}
@@ -159,7 +162,7 @@
 
 			function saveHighlight() {
                 var fileName = '{{.fileName}}'
-                var href = $('#epubIframe').attr('src')
+                var href = $('#epubIframe').attr('src').split('?random=')[0]
                 var html = $('#epubIframe').contents().find('html').html()
                     			
                 var htmlAttributes = $('#epubIframe').contents().find('html')[0].attributes
