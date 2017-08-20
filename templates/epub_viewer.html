@@ -111,6 +111,8 @@
 			})
 
 			function nextFragment(url) {
+				$('.progress-bar').css('width', '0%');
+				$('header').removeClass('nav-up').addClass('nav-down');
 				$('.epub-prev,.epub-next').removeClass('none')
 				var href = $('#epubIframe').attr('src')
 				$.ajax({
@@ -134,13 +136,13 @@
 			}
 
 			$('.epub-next').click(function() {
-				if ($(this).hasClass('none')) return false
-				nextFragment('/load-epub-fragment/{{.fileName}}/next')
+				if ($(this).hasClass('none')) return false;
+				nextFragment('/load-epub-fragment/{{.fileName}}/next');
 			})
 
 			$('.epub-prev').click(function() {
-				if ($(this).hasClass('none')) return false
-				nextFragment('/load-epub-fragment/{{.fileName}}/prev')
+				if ($(this).hasClass('none')) return false;
+				nextFragment('/load-epub-fragment/{{.fileName}}/prev');
 			})
 
 			function getRandomNumber() {
@@ -326,16 +328,17 @@
         				$('header').removeClass('nav-down').addClass('nav-up');
     				} else {
         				// Scroll Up
-        				if(st + $(iframe.contentWindow).height() < $(iframe.contentDocument).height()) {
-            				$('header').removeClass('nav-up').addClass('nav-down');
-        				}
+        				$('header').removeClass('nav-up').addClass('nav-down');
+        				// if((st + $(iframe.contentWindow).height()) < $(iframe.contentDocument).height()) {
+            				// $('header').removeClass('nav-up').addClass('nav-down');
+        				// }
     				}
     
     				lastScrollTop = st;
 				}
 
 				var getMax = function(){
-    				return $(iframe.contentDocument).height() - $(iframe.contentWindow).height();
+    				return $(iframe.contentDocument).height() - $(window).height();
   				}
     
   				var getValue = function(){
