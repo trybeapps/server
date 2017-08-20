@@ -9,6 +9,11 @@
 	<link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body class="epub-body">
+	<div id="progressBar">
+  		<div class="progress-container">
+    		<span class="progress-bar"></span>
+  		</div>
+	</div>
 	<header>
 		<div class="uploading-progress">Uploading...</div>
 		<div class="header-container">
@@ -70,8 +75,7 @@
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js"
   		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   		crossorigin="anonymous"></script>
-  	<script type="text/javascript" src="/static/js/TextHighlighter.min.js"></script>	
-  	<script src="/static/js/main.js" type="text/javascript"></script>
+  	<script type="text/javascript" src="/static/js/TextHighlighter.min.js"></script>
 	<script type="text/javascript">
 		var query = window.location.href.split('#')[1]
 		var pageChapter, term
@@ -290,6 +294,91 @@
       				if (e.which == '37') nextFragment('/load-epub-fragment/{{.fileName}}/prev')
       				else if (e.which == '39') nextFragment('/load-epub-fragment/{{.fileName}}/next')
       			})
+
+				// Hide Header on on scroll down
+				var didScroll;
+				var lastScrollTop = 0;
+				var delta = 5;
+				var navbarHeight = $('header').outerHeight();
+
+				$(iframe.contentWindow).scroll(function(event){
+    				didScroll = true;
+				});
+
+				setInterval(function() {
+    				if (didScroll) {
+        				hasScrolled();
+        				didScroll = false;
+    				}
+				}, 250);
+
+				function hasScrolled() {
+    				var st = $(iframe.contentDocument).scrollTop();
+    
+    				// Make sure they scroll more than delta
+    				if(Math.abs(lastScrollTop - st) <= delta)
+        				return;
+    
+    				// If they scrolled down and are past the navbar, add class .nav-up.
+    				// This is necessary so you never see what is "behind" the navbar.
+    				if (st > lastScrollTop && st > navbarHeight){
+        				// Scroll Down
+        				$('header').removeClass('nav-down').addClass('nav-up');
+    				} else {
+        				// Scroll Up
+        				if(st + $(iframe.contentWindow).height() < $(iframe.contentDocument).height()) {
+            				$('header').removeClass('nav-up').addClass('nav-down');
+        				}
+    				}
+    
+    				lastScrollTop = st;
+				}
+
+
+
+
+var getMax = function(){
+    return $(iframe.contentDocument).height() - $(window).height();
+  }
+    
+  var getValue = function(){
+    return $(iframe.contentDocument).scrollTop();
+  }
+console.log(getMax())
+    var progressBar = $('.progress-bar'), 
+        max = getMax(), 
+        value, width;
+        
+    var getWidth = function() {
+      // Calculate width in percentage
+      value = getValue();
+      console.log(value)
+      console.log($(window).height())          
+      width = (value/max) * 100;
+      width = width + '%';
+      return width;
+    }
+        
+    var setWidth = function(){
+    	//console.log(getWidth())
+      progressBar.css({ width: getWidth() });
+    }
+        
+    $(iframe.contentDocument).on('scroll', setWidth);
+    $(window).on('resize', function(){
+      // Need to reset the Max attr
+      max = getMax();
+      setWidth();
+    });
+
+
+
+
+
+
+
+
+
 			}
 
       		$(document).on('keyup', function(e) {

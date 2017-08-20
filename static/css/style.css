@@ -23,7 +23,7 @@ body {
 	background: #FFFFF8;
 }
 
-* {
+*, *::after, *::before {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
@@ -47,14 +47,61 @@ body {
   overflow: hidden;
 }
 
+#progressBar {
+  /* Positioning */
+  position: fixed;
+  left: 0;
+  top: 0;
+
+  /* Dimensions */
+  width: 100%;
+  height: .25em;
+
+  /* Reset the apperance */  
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+
+  /* Get rid of the default border in Firefox/Opera. */
+  border: none;
+
+  /* For Firefox/IE10+ */
+  background-color: transparent;
+
+  /* For IE10+, color of the progress bar */
+  color: #FF4848;
+
+  z-index: 999999;
+}
+
+#progressBar::-webkit-progress-bar {
+  background-color: transparent;
+}
+
+.progress-container {
+  width: 100%;
+  background-color: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: .25em;
+  display: block;
+}
+
+.progress-bar {
+  background-color: #FF4848;
+  width: 0%;
+  display: block;
+  height: inherit;
+}
+
 #epubIframe {
-      position: absolute;
-    top: 60px;
-    left: 0;
-    background: #FFFFF8;
-    z-index: 1;
-    overflow-x: hidden;
-    padding-bottom: 60px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #FFFFF8;
+  z-index: 1;
+  overflow-x: hidden;
 }
 
 .epub-prev, .epub-next {
