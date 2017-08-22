@@ -33,6 +33,7 @@ body {
   background: #FF4848;
   color: white;
 }
+
 ::-moz-selection {
   background: #FF4848;
   color: white;
@@ -115,6 +116,14 @@ body {
 .epub-next {
   left: inherit;
   right: 50px;
+}
+
+.epub-body .total-pages {
+  position: fixed;
+  bottom: 20px;
+  z-index: 2;
+  left: 50px;
+  color: #161616;
 }
 
 .edit-metadata-wrapper {

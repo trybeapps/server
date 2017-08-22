@@ -418,6 +418,7 @@ func (e *Env) SendBook(c *gin.Context) {
 		packagePath = "/uploads" + filePathSplit[1]
 
 		var idRef, hrefPath string
+		var totalPages int64
 		if format == "epub" {
 			val, err := e.RedisClient.Get(name).Result()
 			CheckError(err)
@@ -430,6 +431,12 @@ func (e *Env) SendBook(c *gin.Context) {
 			href := opfMetadata.Manifest.Item.Href
 
 			hrefPath = _GetManifestId(id, href, idRef, packagePath)
+
+			val, err = e.RedisClient.Get(name + "...total_pages...").Result()
+			CheckError(err)
+
+			totalPages, err = strconv.ParseInt(val, 10, 64)
+			CheckError(err)
 		}
 
 		// Get current time for date read to be used for currently reading feature
@@ -451,6 +458,7 @@ func (e *Env) SendBook(c *gin.Context) {
 				"idRef":       idRef,
 				"packagePath": packagePath,
 				"filePath":    hrefPath,
+				"totalPages":  totalPages,
 			})
 		}
 	}
@@ -1564,6 +1572,10 @@ func (e *Env) UploadBook(c *gin.Context) {
 				CheckError(err)
 
 				err = e.RedisClient.Set(fileName, string(opfJSON), 0).Err()
+				CheckError(err)
+
+				totalPages := len(opfMetadata.Spine.ItemRef.IdRef)
+				err = e.RedisClient.Set(fileName+"...total_pages...", totalPages, 0).Err()
 				CheckError(err)
 
 				// Remove dot from ./uploads
