@@ -774,7 +774,7 @@ func (e *Env) GetHomePage(c *gin.Context) {
 	email := _GetEmailFromSession(c)
 	if email != nil {
 		q := QuoteStruct{}
-		GetJSON("http://localhost:3000/quote-of-the-day", q)
+		GetJSON("https://qotd.libreread.org", q)
 
 		if q.Quote == "" {
 			q.Quote = "So many things are possible just as long as you don't know they're impossible."
