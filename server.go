@@ -28,7 +28,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"math/rand"
 	"mime"
 	"net/http"
@@ -269,7 +268,7 @@ func main() {
 
 func CheckError(err error) {
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 }
 
@@ -965,7 +964,7 @@ func _SendEmail(token string, email string, name string) {
 
 	// Send the confirmation email
 	if err := d.DialAndSend(m); err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 }
 
