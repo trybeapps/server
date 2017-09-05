@@ -26,11 +26,8 @@ import (
 func main() {
 	r := gin.Default()
 
-	// Serve static files
-	r.Static("/static", "./static")
-
 	// Router
-	r.GET("/quote-of-the-day", GetQuote)
+	r.GET("/", GetQuote)
 
 	// Listen and serve on 0.0.0.0:8080
 	r.Run(":3000")
