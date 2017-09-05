@@ -275,7 +275,8 @@ func CheckError(err error) {
 var myClient = &http.Client{Timeout: 10 * time.Second}
 
 func GetJSON(url string, target interface{}) error {
-	r, _ := myClient.Get(url)
+	r, err := myClient.Get(url)
+	CheckError(err)
 	if r != nil {
 		defer r.Body.Close()
 		return json.NewDecoder(r.Body).Decode(target)
@@ -618,12 +619,12 @@ func SendBookCover(c *gin.Context) {
 }
 
 type QuoteStruct struct {
-	Author      string
-	AuthorURL   string
-	FromBook    string
-	FromBookURL string
-	Image       string
-	Quote       string
+	Author      string `json:"author" binding:"required"`
+	AuthorURL   string `json:"authorURL" binding:"required"`
+	FromBook    string `json:"fromBook" binding:"required"`
+	FromBookURL string `json:"fromBookURL" binding:"required"`
+	Image       string `json:"image" binding:"required"`
+	Quote       string `json:"quote" binding:"required"`
 }
 
 type BookStruct struct {
@@ -774,7 +775,7 @@ func (e *Env) GetHomePage(c *gin.Context) {
 	email := _GetEmailFromSession(c)
 	if email != nil {
 		q := QuoteStruct{}
-		GetJSON("https://qotd.libreread.org", q)
+		GetJSON("https://qotd.libreread.org/", &q)
 
 		if q.Quote == "" {
 			q.Quote = "So many things are possible just as long as you don't know they're impossible."
