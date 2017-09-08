@@ -477,10 +477,46 @@ header .header-container {
   display: none;
 }
 
-.page-container {
+.page-container,.book-info-container {
 	width: 100%;
 	margin-top: 60px;
 	overflow: hidden;
+}
+
+.book-info-container {
+  width: 1440px;
+  margin: 110px auto 60px;
+  padding: 0 30px;
+  overflow: hidden;
+}
+
+.bic-fl {
+  float: left;
+}
+
+.bic-fr {
+  float: right;
+  width: 985px;
+  overflow: hidden;
+}
+
+.bic-item {
+  display: block;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.bic-item label {
+  float: left;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.bic-item .text {
+  float: left;
+  line-height: 24px;
+  width: 867px;
+  margin-left: 10px;
 }
 
 .sign-form {
@@ -1016,7 +1052,7 @@ footer {
 @media screen
   and (max-width: 1440px) { 
   	
-  	header .header-container {
+  	header .header-container, .book-info-container {
   		width: 1290px;
   	}
 

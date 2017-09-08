@@ -26,6 +26,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"html/template"
 	"io"
 	"io/ioutil"
 	"math/rand"
@@ -417,6 +418,17 @@ func (e *Env) SendBook(c *gin.Context) {
 		filePathSplit := strings.Split(packagePath, "./uploads")
 		packagePath = "/uploads" + filePathSplit[1]
 
+		// Get Google Book info from Redis
+		val, err := e.RedisClient.Get(name + "...gbInfo...").Result()
+		CheckError(err)
+
+		googleBookInfo := GBItems{}
+		json.Unmarshal([]byte(val), &googleBookInfo)
+
+		// Get Goodreads reviews from Redis
+		goodreadsReviews, err := e.RedisClient.Get(name + "...grReviews...").Result()
+		CheckError(err)
+
 		var idRef, hrefPath string
 		var totalPages int64
 		if format == "epub" {
@@ -452,14 +464,21 @@ func (e *Env) SendBook(c *gin.Context) {
 			// Return viewer.html for PDF viewer
 			c.HTML(200, "viewer.html", "")
 		} else {
-			// Return epub file xhtml file path
-			c.HTML(200, "epub_viewer.html", gin.H{
-				"fileName":    name,
-				"idRef":       idRef,
-				"packagePath": packagePath,
-				"filePath":    hrefPath,
-				"totalPages":  totalPages,
+			c.HTML(200, "book_info.html", gin.H{
+				"fileName": name,
+				"info":     googleBookInfo,
+				"reviews":  template.HTML(goodreadsReviews),
 			})
+			fmt.Println(hrefPath)
+			fmt.Println(totalPages)
+			// Return epub file xhtml file path
+			// c.HTML(200, "epub_viewer.html", gin.H{
+			// 	"fileName":    name,
+			// 	"idRef":       idRef,
+			// 	"packagePath": packagePath,
+			// 	"filePath":    hrefPath,
+			// 	"totalPages":  totalPages,
+			// })
 		}
 	}
 
@@ -618,6 +637,50 @@ func SendBookCover(c *gin.Context) {
 	c.File(filePath)
 }
 
+// Struct for Google Books Info
+
+type GoogleBooksInfo struct {
+	Items []GBItems `json:"items"`
+}
+
+type GBItems struct {
+	VolumeInfo GBVolumeInfo `json:"volumeInfo"`
+}
+
+type GBVolumeInfo struct {
+	Title               string       `json:"title"`
+	Subtitle            string       `json:"subtitle"`
+	Authors             []string     `json:"authors"`
+	Publisher           string       `json:"publisher"`
+	PublishedDate       string       `json:"publishedDate"`
+	Description         string       `json:"description"`
+	IndustryIdentifiers []GBISBN     `json:"industryIdentifiers"`
+	PageCount           int64        `json:"pageCount"`
+	Categories          []string     `json:"categories"`
+	AverageRating       float64      `json:"averageRating"`
+	RatingsCount        int64        `json:"ratingsCount"`
+	ImageLinks          GBImageLinks `json:"imageLinks"`
+	Language            string       `json:"language"`
+}
+
+type GBISBN struct {
+	Type       string `json:"type"`
+	Identifier string `json:"identifier"`
+}
+
+type GBImageLinks struct {
+	SmallThumbnail string `json:"smallThumbnail"`
+	Thumbnail      string `json:"thumbnail"`
+}
+
+// Struct for Goodreads Reviews
+
+type GoodreadsReviews struct {
+	ReviewsWidget string `json:"reviews_widget"`
+}
+
+// Quotation Struct
+
 type QuoteStruct struct {
 	Author      string `json:"author" binding:"required"`
 	AuthorURL   string `json:"authorURL" binding:"required"`
@@ -626,6 +689,8 @@ type QuoteStruct struct {
 	Image       string `json:"image" binding:"required"`
 	Quote       string `json:"quote" binding:"required"`
 }
+
+// Book Struct
 
 type BookStruct struct {
 	Title string
@@ -1518,6 +1583,15 @@ func (e *Env) UploadBook(c *gin.Context) {
 
 				fmt.Println("Book cover: " + cover)
 
+				// Fetch Book Summary from Google Books
+				googleBooksQuery := strings.Join(strings.Split(title, " "), "+")
+				googleBooksInfo := GoogleBooksInfo{}
+				googleBooksAPIKey := os.Getenv("GOOGLE_BOOKS_API_KEY")
+				GetJSON("https://www.googleapis.com/books/v1/volumes?q="+googleBooksQuery+"&key="+googleBooksAPIKey+"&fields=items(volumeInfo(title,subtitle,authors,publisher,publishedDate,description,industryIdentifiers,pageCount,categories,averageRating,ratingsCount,imageLinks,language))", &googleBooksInfo)
+
+				fmt.Println("\n\n\n")
+				fmt.Println(googleBooksInfo)
+
 				// Insert new book in `book` table
 				bookId := e._InsertBookRecord(title, fileName, filePath, author, url, cover, pagesInt, "pdf", uploadedOn, userId)
 
@@ -1568,6 +1642,32 @@ func (e *Env) UploadBook(c *gin.Context) {
 				author := opfMetadata.Metadata.Author
 				cover := opfMetadata._FetchEPUBCover(packagePath, opfFilePath)
 
+				// Fetch Book Summary from Google Books
+				bookTitleQuery := strings.Join(strings.Split(title, " "), "+")
+				googleBooksInfo := GoogleBooksInfo{}
+				googleBooksAPIKey := os.Getenv("GOOGLE_BOOKS_API_KEY")
+				GetJSON("https://www.googleapis.com/books/v1/volumes?q="+bookTitleQuery+"&key="+googleBooksAPIKey+"&fields=items(volumeInfo(title,subtitle,authors,publisher,publishedDate,description,industryIdentifiers,pageCount,categories,averageRating,ratingsCount,imageLinks,language))", &googleBooksInfo)
+
+				googleBookItem, err := json.Marshal(googleBooksInfo.Items[0])
+				CheckError(err)
+
+				err = e.RedisClient.Set(fileName+"...gbInfo...", string(googleBookItem), 0).Err()
+				CheckError(err)
+
+				// Fetch Book Reviews from Goodreads
+				goodreadsReviews := GoodreadsReviews{}
+				goodreadsAPIKey := os.Getenv("GOODREADS_API_KEY")
+				GetJSON("https://www.goodreads.com/book/title.json?key="+goodreadsAPIKey+"&title="+bookTitleQuery, &goodreadsReviews)
+
+				//Parse the XMLContent to grab just the widget element
+				strContent := string(goodreadsReviews.ReviewsWidget)
+				widgetLoc := strings.Index(strContent, "<div id=\"goodreads-widget\">")
+				prefixRem := strContent[widgetLoc:]
+
+				err = e.RedisClient.Set(fileName+"...grReviews...", prefixRem, 0).Err()
+				CheckError(err)
+
+				// Store opfMetadata in Redis
 				opfJSON, err := json.Marshal(opfMetadata)
 				CheckError(err)
 
