@@ -479,58 +479,10 @@ header .header-container {
   display: none;
 }
 
-.page-container,.book-info-container {
+.page-container {
 	width: 100%;
 	margin-top: 60px;
 	overflow: hidden;
-}
-
-.book-info-container {
-  width: 1440px;
-  margin: 110px auto 60px;
-  padding: 0 30px;
-  overflow: hidden;
-}
-
-.bic-fl {
-  float: left;
-}
-
-.bic-fr {
-  float: right;
-  width: 985px;
-  overflow: hidden;
-}
-
-.bic-item {
-  display: block;
-  margin-bottom: 20px;
-  overflow: hidden;
-}
-
-.bic-item label {
-  float: left;
-  line-height: 24px;
-  font-weight: 600;
-}
-
-.bic-item .text {
-  float: left;
-  line-height: 24px;
-  width: 867px;
-  margin-left: 10px;
-}
-
-#gr_header {
-  display: none;
-}
-
-#the_iframe {
-  width: 100%!important;
-}
-
-.gr_branding {
-  color: #161616;
 }
 
 .sign-form {
@@ -1066,7 +1018,7 @@ footer {
 @media screen
   and (max-width: 1440px) { 
   	
-  	header .header-container, .book-info-container {
+  	header .header-container {
   		width: 1290px;
   	}
 
