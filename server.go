@@ -933,6 +933,7 @@ func (e *Env) PostSignUp(c *gin.Context) {
 var letters = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func RandSeq(n int64) string {
+	rand.Seed(time.Now().UTC().UnixNano())
 	b := make([]rune, n)
 	for i := range b {
 		b[i] = letters[rand.Intn(len(letters))]
