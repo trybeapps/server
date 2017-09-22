@@ -699,16 +699,16 @@ func _GetTotalPages(booksCount int64) int64 {
 
 	var totalPages int64
 	if strings.Split(totalPagesDecimal, ".")[1] == "0" {
-		totalPages = int64(totalPages)
+		totalPages = int64(totalPagesFloat)
 	} else {
-		totalPages = int64(totalPages) + 1
+		totalPages = int64(totalPagesFloat) + 1
 	}
 
 	return totalPages
 }
 
-func (e *Env) _GetPaginatedBooks(userId int64, startIndex int64, endIndex int64) *BookStructList {
-	rows, err := e.db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ?, ?", userId, startIndex, endIndex)
+func (e *Env) _GetPaginatedBooks(userId int64, limit int64, offset int64) *BookStructList {
+	rows, err := e.db.Query("SELECT `title`, `url`, `cover` FROM `book` WHERE `user_id` = ? ORDER BY `id` DESC LIMIT ? OFFSET ?", userId, limit, offset)
 	CheckError(err)
 
 	books := BookStructList{}
@@ -751,15 +751,15 @@ func _ConstructBooksWithCount(books *BookStructList, length int64) []BookStructL
 	return booksList
 }
 
-func (e *Env) _ConstructBooksForPagination(userId int64) (int64, *BookStructList, []BookStructList, []BookStructList, []BookStructList) {
+func (e *Env) _ConstructBooksForPagination(userId int64, limit int64, offset int64) (int64, *BookStructList, []BookStructList, []BookStructList, []BookStructList) {
 	// Check total number of rows in book table
 	booksCount := e._GetTotalBooksCount(userId)
 
 	// With Total Books count, Get Total pages required
 	totalPages := _GetTotalPages(booksCount)
 
-	// Get first 18 books for the home page
-	books := e._GetPaginatedBooks(userId, 0, 18)
+	// Get 18 books
+	books := e._GetPaginatedBooks(userId, limit, offset)
 
 	// Construct books of length 6 for large screen size
 	booksList := _ConstructBooksWithCount(books, 6)
@@ -806,7 +806,7 @@ func (e *Env) GetHomePage(c *gin.Context) {
 			})
 		}
 
-		totalPages, books, booksList, booksListMedium, booksListSmall := e._ConstructBooksForPagination(userId)
+		totalPages, books, booksList, booksListMedium, booksListSmall := e._ConstructBooksForPagination(userId, 18, 0)
 
 		c.HTML(302, "index.html", gin.H{
 			"q": q,
@@ -829,7 +829,9 @@ func (e *Env) GetPagination(c *gin.Context) {
 
 		userId := e._GetUserId(email.(string))
 
-		totalPages, books, booksList, booksListMedium, booksListSmall := e._ConstructBooksForPagination(userId)
+		offset := (int64(pagination) - 1) * 18
+
+		totalPages, books, booksList, booksListMedium, booksListSmall := e._ConstructBooksForPagination(userId, 18, offset)
 
 		c.HTML(302, "pagination.html", gin.H{
 			"pagination":         pagination,

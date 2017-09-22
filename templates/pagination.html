@@ -39,33 +39,9 @@ along with LibreRead.  If not, see <http://www.gnu.org/licenses/>.
 			<div class="search-dropdown">
 				<label>Title</label>
 				<div class="sd-title-list">
-					<a href="/">
-						<img src="/static/img/book_1.png">
-						<div class="sdtl-title">A Great Emergency</div>
-						<div class="sdtl-author">Juliana Horatia Ewing</div>
-						<div class="sdtl-description">Lorem Ipsum is simply dummy text of the printing and typesetting industry. <em>Lorem Ipsum has been</em> the industry's standard dummy...</div>
-					</a>
-					<a href="/">
-						<img src="/static/img/book_1.png">
-						<div class="sdtl-title">A Great Emergency</div>
-						<div class="sdtl-author">Juliana Horatia Ewing</div>
-						<div class="sdtl-description">Lorem Ipsum is simply dummy text of the printing and typesetting industry. <em>Lorem Ipsum has been</em> the industry's standard dummy...</div>
-					</a>
 				</div>
 				<label>Content</label>
 				<div class="sd-content-list">
-					<a href="/">
-						<img src="/static/img/book_1.png">
-						<div class="sdtl-title">A Great Emergency</div>
-						<div class="sdtl-author">Juliana Horatia Ewing</div>
-						<div class="sdtl-description">Lorem Ipsum is simply dummy text of the printing and typesetting industry. <em>Lorem Ipsum has been</em> the industry's standard dummy...</div>
-					</a>
-					<a href="/">
-						<img src="/static/img/book_1.png">
-						<div class="sdtl-title">A Great Emergency</div>
-						<div class="sdtl-author">Juliana Horatia Ewing</div>
-						<div class="sdtl-description">Lorem Ipsum is simply dummy text of the printing and typesetting industry. <em>Lorem Ipsum has been</em> the industry's standard dummy...</div>
-					</a>
 				</div>
 			</div>
 			<svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 48 48"><g fill="none" stroke="#676767" stroke-width="4" stroke-linecap="square" stroke-miterlimit="10"><path data-color="color-2" d="M2 21h44v6H2z"/><path d="M2 5h44v6H2zm0 32h44v6H2z"/></g></svg>
@@ -118,7 +94,7 @@ along with LibreRead.  If not, see <http://www.gnu.org/licenses/>.
 					<div>
 						{{ range . }}
 							<a href="{{.URL}}" title="{{ .Title }}">
-								<img src="{{.Cover}}" width="205">
+								<img src="/{{.Cover}}" width="205">
 							</a>
 						{{ end }}
 					</div>
@@ -129,7 +105,7 @@ along with LibreRead.  If not, see <http://www.gnu.org/licenses/>.
 					<div>
 					{{ range .}}
 						<a href="{{.URL}}" title="{{ .Title }}">
-							<img src="{{.Cover}}" width="205">
+							<img src="/{{.Cover}}" width="205">
 						</a>
 					{{ end }}
 					</div>
@@ -140,7 +116,7 @@ along with LibreRead.  If not, see <http://www.gnu.org/licenses/>.
 					<div>
 					{{ range .}}
 						<a href="{{.URL}}" title="{{ .Title }}">
-							<img src="{{.Cover}}" width="205">
+							<img src="/{{.Cover}}" width="205">
 						</a>
 					{{ end }}
 					</div>
@@ -149,7 +125,7 @@ along with LibreRead.  If not, see <http://www.gnu.org/licenses/>.
 			<div class="bc-books-list-xtra-small">
 				{{ range .booksListXtraSmall }}
 					<a href="{{.URL}}" title="{{ .Title }}">
-						<img src="{{.Cover}}" width="205">
+						<img src="/{{.Cover}}" width="205">
 					</a>
 				{{ end }}
 			</div>
