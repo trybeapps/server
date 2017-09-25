@@ -58,6 +58,9 @@ $(function() {
     	lastScrollTop = st;
 	}
 
+	// For footer to stay at the bottom
+	$('.page-container').css('min-height', $(window).height() - 140 + 'px')
+
 	$('.menu-icon').click(function() {
 		$('.header-nav-small').show()
 		$('body').css('overflow-y', 'hidden')
