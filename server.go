@@ -529,9 +529,10 @@ func (e *Env) EditBook(c *gin.Context) {
 }
 
 type HrefDataStruct struct {
-	HrefPath  string `json:"href_path"`
-	LeftNone  bool   `json:"left_none"`
-	RightNone bool   `json:"right_none"`
+	CurrentPage int64  `json:"current_page"`
+	HrefPath    string `json:"href_path"`
+	LeftNone    bool   `json:"left_none"`
+	RightNone   bool   `json:"right_none"`
 }
 
 func (e *Env) SendEPUBFragment(c *gin.Context) {
@@ -568,6 +569,8 @@ func (e *Env) SendEPUBFragment(c *gin.Context) {
 		var leftNone bool = false
 		var rightNone bool = false
 
+		var currentPage int64
+
 		for i, e := range href {
 			if e == currentFragment {
 				currentId := id[i]
@@ -576,6 +579,7 @@ func (e *Env) SendEPUBFragment(c *gin.Context) {
 					if f == currentId {
 						if flowType == "next" {
 							nextIdRef := idRef[j+1]
+							currentPage = (int64(j) + 1) + 1
 							fmt.Println("Next Fragment: " + nextIdRef)
 							hrefPath = _GetManifestId(id, href, nextIdRef, packagePath)
 
@@ -584,6 +588,7 @@ func (e *Env) SendEPUBFragment(c *gin.Context) {
 							}
 						} else {
 							prevIdRef := idRef[j-1]
+							currentPage = (int64(j) + 1) - 1
 							fmt.Println("Previous Fragment: " + prevIdRef)
 							hrefPath = _GetManifestId(id, href, prevIdRef, packagePath)
 
@@ -599,9 +604,10 @@ func (e *Env) SendEPUBFragment(c *gin.Context) {
 		}
 
 		hrefData := HrefDataStruct{
-			HrefPath:  hrefPath,
-			LeftNone:  leftNone,
-			RightNone: rightNone,
+			CurrentPage: currentPage,
+			HrefPath:    hrefPath,
+			LeftNone:    leftNone,
+			RightNone:   rightNone,
 		}
 
 		c.JSON(200, hrefData)
