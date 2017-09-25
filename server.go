@@ -418,13 +418,19 @@ func (e *Env) SendBook(c *gin.Context) {
 		packagePath = "/uploads" + filePathSplit[1]
 
 		var idRef, hrefPath string
-		var totalPages int64
+		var currentPage, totalPages int64
 		if format == "epub" {
 			val, err := e.RedisClient.Get(name).Result()
 			CheckError(err)
 
 			opfMetadata := OPFMetadataStruct{}
 			json.Unmarshal([]byte(val), &opfMetadata)
+
+			val, err = e.RedisClient.Get(name + "...current_page...").Result()
+			CheckError(err)
+
+			currentPage, err = strconv.ParseInt(val, 10, 64)
+			CheckError(err)
 
 			val, err = e.RedisClient.Get(name + "...current_fragment...").Result()
 			CheckError(err)
@@ -464,6 +470,7 @@ func (e *Env) SendBook(c *gin.Context) {
 				"idRef":       idRef,
 				"packagePath": packagePath,
 				"filePath":    hrefPath,
+				"currentPage": currentPage,
 				"totalPages":  totalPages,
 			})
 		}
@@ -588,6 +595,9 @@ func (e *Env) SendEPUBFragment(c *gin.Context) {
 
 							currentPage = (int64(j) + 1) + 1
 
+							err = e.RedisClient.Set(fileName+"...current_page...", currentPage, 0).Err()
+							CheckError(err)
+
 							err = e.RedisClient.Set(fileName+"...current_fragment...", j+1, 0).Err()
 							CheckError(err)
 
@@ -601,6 +611,9 @@ func (e *Env) SendEPUBFragment(c *gin.Context) {
 							prevIdRef := idRef[j-1]
 
 							currentPage = (int64(j) + 1) - 1
+
+							err = e.RedisClient.Set(fileName+"...current_page...", currentPage, 0).Err()
+							CheckError(err)
 
 							err = e.RedisClient.Set(fileName+"...current_fragment...", j-1, 0).Err()
 							CheckError(err)
@@ -1606,6 +1619,9 @@ func (e *Env) UploadBook(c *gin.Context) {
 
 				totalPages := len(opfMetadata.Spine.ItemRef.IdRef)
 				err = e.RedisClient.Set(fileName+"...total_pages...", totalPages, 0).Err()
+				CheckError(err)
+
+				err = e.RedisClient.Set(fileName+"...current_page...", 1, 0).Err()
 				CheckError(err)
 
 				err = e.RedisClient.Set(fileName+"...current_fragment...", 0, 0).Err()
