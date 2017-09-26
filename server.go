@@ -343,22 +343,23 @@ func (e *Env) _GetBookInfo(fileName string) (int64, string, string) {
 	return bookId, format, filePath
 }
 
-func (e *Env) _GetBookMetaData(fileName string) (string, string, string) {
-	rows, err := e.db.Query("SELECT `title`, `author`, `cover` FROM `book` WHERE `filename` = ?", fileName)
+func (e *Env) _GetBookMetaData(fileName string) (string, string, string, string) {
+	rows, err := e.db.Query("SELECT `title`, `author`, `cover`, `format` FROM `book` WHERE `filename` = ?", fileName)
 	CheckError(err)
 
 	var (
 		title  string
 		author string
 		cover  string
+		format string
 	)
 	if rows.Next() {
-		err := rows.Scan(&title, &author, &cover)
+		err := rows.Scan(&title, &author, &cover, &format)
 		CheckError(err)
 	}
 	rows.Close()
 
-	return title, author, cover
+	return title, author, cover, format
 }
 
 func (e *Env) _CheckCurrentlyReading(bookId int64) int64 {
@@ -504,10 +505,12 @@ func (e *Env) GetBookMetaData(c *gin.Context) {
 	name := q["fileName"][0]
 
 	// Get book metadata
-	title, author, cover := e._GetBookMetaData(name)
+	title, author, cover, format := e._GetBookMetaData(name)
 
-	// Remove dot from cover
-	cover = "/uploads" + strings.Split(cover, "./uploads")[1]
+	if format == "epub" {
+		// Remove dot from cover
+		cover = "/uploads" + strings.Split(cover, "./uploads")[1]
+	}
 
 	bookMetadata := GetBookMetadataStruct{
 		Title:  title,

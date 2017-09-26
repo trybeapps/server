@@ -177,6 +177,7 @@ See https://github.com/adobe-type-tools/cmap-resources
                 <span id="numPages" class="toolbarLabel"></span>
               </div>
               <div id="toolbarViewerRight">
+                <a href="" id="editBook" class="pdfjs-edit-book">Edit Metadata</a>
               	<a href="/delete-book/{{.fileName}}" id="deleteBook" class="pdfjs-delete-book">Delete book</a>
                 <button id="presentationMode" class="toolbarButton presentationMode hiddenLargeView" title="Switch to Presentation Mode" tabindex="31" data-l10n-id="presentation_mode">
                   <span data-l10n-id="presentation_mode_label">Presentation Mode</span>
@@ -353,6 +354,21 @@ See https://github.com/adobe-type-tools/cmap-resources
       </div>  <!-- overlayContainer -->
 
     </div> <!-- outerContainer -->
+    <div class="edit-metadata-wrapper">
+    <div class="emw-close">Close</div>
+    <div class="emw-dialog">
+      <form enctype="multipart/form-data">
+        <label>Book Metadata</label>
+        <input type="text" name="filename" value="{{.fileName}}" style="display: none;">
+        <input type="text" name="title" class="emwd-title">
+        <input type="text" name="author" class="emwd-author">
+        <img src="/" class="emwd-cover">
+        <input type="file" name="cover" class="emwd-cover-upload" style="display: none;">
+        <input type="button" class="secondary-button emwd-change-cover" value="Change image">
+        <input type="submit" value="Save changes" class="emwd-submit">
+      </form>
+    </div>
+  </div>
     <div id="printContainer"></div>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"
       integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -621,6 +637,70 @@ See https://github.com/adobe-type-tools/cmap-resources
           })
         }
       })
+
+      $(document).on('click', '#editBook', function(e) {
+            e.preventDefault()
+            var fileName = window.location.pathname.split('/').pop();
+            var data = {
+              'fileName': fileName
+            }
+            $.ajax({
+                url: '/get-book-metadata',
+                type: 'GET',
+                data: data,
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                  console.log(data)
+                  $('.emwd-title').val(data.title)
+                  $('.emwd-author').val(data.author)
+                  $('.emwd-cover').attr('src', "/" + data.cover)
+                  $('.edit-metadata-wrapper').show()
+                }
+              })
+          })
+
+          $(document).on('click', '.emw-close', function() {
+            $('.edit-metadata-wrapper').hide()
+          })
+
+          $(document).on('click', '.emwd-change-cover', function() {
+            $('.emwd-cover-upload').click()
+          })
+
+          function showCoverPreview(input) {
+            if (input.files && input.files[0]) {
+              var reader = new FileReader();
+
+              reader.onload = function (e) {
+                  $('.emwd-cover').attr('src', e.target.result);
+              }
+
+              reader.readAsDataURL(input.files[0]);
+            }
+          }
+
+          $('.emwd-cover-upload').change(function() {
+            showCoverPreview(this)
+          })
+
+          $(document).on('click', '.emwd-submit', function(e) {
+            e.preventDefault()
+            var formData = new FormData($('.emw-dialog form')[0]);
+
+            $.ajax({
+              url: '/edit-book/{{.fileName}}',
+              type: 'POST',
+              data: formData,
+              success: function (data) {
+                  alert(data)
+                  $('.edit-metadata-wrapper').hide()
+                  window.location.href = "/"
+              },
+              cache: false,
+              contentType: false,
+              processData: false
+            })
+          })
     })
     </script>
   </body>
