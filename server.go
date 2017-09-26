@@ -473,7 +473,9 @@ func (e *Env) SendBook(c *gin.Context) {
 
 		if format == "pdf" {
 			// Return viewer.html for PDF viewer
-			c.HTML(200, "viewer.html", "")
+			c.HTML(200, "viewer.html", gin.H{
+				"fileName": name,
+			})
 		} else {
 			// Return epub file xhtml file path
 			c.HTML(200, "epub_viewer.html", gin.H{
@@ -658,7 +660,7 @@ func (e *Env) DeleteBook(c *gin.Context) {
 		totalPages, err := strconv.ParseInt(val, 10, 64)
 		CheckError(err)
 
-		for i := 0; i < int(totalPages); i++ {
+		for i := 0; i <= int(totalPages); i++ {
 			indexURL := "http://localhost:9200/lr_index/book_detail/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) + "_" + strconv.Itoa(i)
 			fmt.Println(indexURL)
 
@@ -1678,6 +1680,9 @@ func (e *Env) UploadBook(c *gin.Context) {
 				fmt.Println("Total pages: " + pages)
 
 				pagesInt, err := strconv.ParseInt(pages, 10, 64)
+				CheckError(err)
+
+				err = e.RedisClient.Set(fileName+"...total_pages...", pagesInt, 0).Err()
 				CheckError(err)
 
 				url := "/book/" + fileName
