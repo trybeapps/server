@@ -295,6 +295,17 @@ func PutJSON(url string, message []byte) {
 	fmt.Println(string(content))
 }
 
+func PostJSON(url string, message []byte) {
+	fmt.Println(url)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(message))
+	CheckError(err)
+	res, err := myClient.Do(req)
+	CheckError(err)
+	content, err := ioutil.ReadAll(res.Body)
+	CheckError(err)
+	fmt.Println(string(content))
+}
+
 func _GetEmailFromSession(c *gin.Context) interface{} {
 	session := sessions.Default(c)
 	return session.Get("email")
@@ -505,9 +516,21 @@ func (e *Env) GetBookMetaData(c *gin.Context) {
 	c.JSON(200, bookMetadata)
 }
 
+type BookMetadataEditStruct struct {
+	Doc BMESDoc `json:"doc"`
+}
+
+type BMESDoc struct {
+	Title  string `json:"title"`
+	Author string `json:"author"`
+	Cover  string `json:"cover"`
+}
+
 func (e *Env) EditBook(c *gin.Context) {
 	email := _GetEmailFromSession(c)
 	if email != nil {
+		userId := e._GetUserId(email.(string))
+
 		fileName := c.PostForm("filename")
 		fmt.Println(fileName)
 
@@ -523,18 +546,63 @@ func (e *Env) EditBook(c *gin.Context) {
 		_, err = stmt.Exec(title, author, fileName)
 		CheckError(err)
 
+		var bookId int64
+		var cover string
+		rows, err := e.db.Query("select id, cover from book where filename=?", fileName)
+		CheckError(err)
+
+		for rows.Next() {
+			err = rows.Scan(&bookId, &cover)
+			CheckError(err)
+		}
+		rows.Close()
+
 		file, _ := c.FormFile("cover")
 		if file != nil {
 			fmt.Println(file.Filename)
 			c.SaveUploadedFile(file, "./uploads/img/"+file.Filename)
 
-			cover := "./uploads/img/" + file.Filename
+			cover = "./uploads/img/" + file.Filename
 
 			stmt, err := e.db.Prepare("update book set cover=? where filename=?")
 			CheckError(err)
 
 			_, err = stmt.Exec(cover, fileName)
 			CheckError(err)
+		}
+
+		bms := BookMetadataEditStruct{
+			Doc: BMESDoc{
+				Title:  title,
+				Author: author,
+				Cover:  cover,
+			},
+		}
+
+		fmt.Println(bms)
+
+		indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) + "/_update"
+		fmt.Println(indexURL)
+
+		b, err := json.Marshal(bms)
+		CheckError(err)
+
+		PostJSON(indexURL, b)
+
+		val, err := e.RedisClient.Get(fileName + "...total_pages...").Result()
+		CheckError(err)
+
+		totalPages, err := strconv.ParseInt(val, 10, 64)
+		CheckError(err)
+
+		for i := 0; i < int(totalPages); i++ {
+			indexURL := "http://localhost:9200/lr_index/book_detail/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) + "_" + strconv.Itoa(i) + "/_update"
+			fmt.Println(indexURL)
+
+			b, err := json.Marshal(bms)
+			CheckError(err)
+
+			PostJSON(indexURL, b)
 		}
 
 		c.String(200, "Book metadata saved successfully")
@@ -1573,7 +1641,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 
 				fmt.Println(bookInfo)
 
-				indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(bookId))
+				indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId))
 				fmt.Println(indexURL)
 
 				b, err := json.Marshal(bookInfo)
@@ -1651,7 +1719,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 				fmt.Println(bookInfo)
 
 				// Feed book info to ES
-				indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(bookId))
+				indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId))
 				fmt.Println(indexURL)
 
 				b, err := json.Marshal(bookInfo)
