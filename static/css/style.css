@@ -1246,6 +1246,14 @@ footer {
     background: white;
   }
 
+  .epub-body .total-pages {
+    left: 50%;
+    margin-left: -28px;
+    background: black;
+    color: white;
+    padding: 2px;
+  }
+
 }
 
 @media screen
