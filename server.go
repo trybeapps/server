@@ -247,6 +247,7 @@ func main() {
 	r.GET("/book/:bookname", env.SendBook)
 	r.GET("/get-book-metadata", env.GetBookMetaData)
 	r.POST("/edit-book/:bookname", env.EditBook)
+	r.GET("/delete-book/:bookname", env.DeleteBook)
 	r.GET("/load-epub-fragment/:bookname/:type", env.SendEPUBFragment)
 	r.GET("/cover/:covername", SendBookCover)
 	r.GET("/books/:pagination", env.GetPagination)
@@ -285,7 +286,6 @@ func GetJSON(url string, target interface{}) error {
 }
 
 func PutJSON(url string, message []byte) {
-	fmt.Println(url)
 	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(message))
 	CheckError(err)
 	res, err := myClient.Do(req)
@@ -607,6 +607,67 @@ func (e *Env) EditBook(c *gin.Context) {
 
 		c.String(200, "Book metadata saved successfully")
 	}
+}
+
+func DeleteHTTPRequest(url string) {
+	req, err := http.NewRequest("DELETE", url, nil)
+	CheckError(err)
+	res, err := myClient.Do(req)
+	CheckError(err)
+
+	// Write response.
+	var bufferDelete bytes.Buffer
+	res.Write(&bufferDelete)
+
+	fmt.Println("--- DELETE RESPONSE ---")
+	fmt.Println(string(bufferDelete.Bytes()))
+}
+
+func (e *Env) DeleteBook(c *gin.Context) {
+	email := _GetEmailFromSession(c)
+	if email != nil {
+		userId := e._GetUserId(email.(string))
+
+		fileName := c.Param("bookname")
+		fmt.Println(fileName)
+
+		var bookId int64
+		rows, err := e.db.Query("select id from book where filename=?", fileName)
+		CheckError(err)
+
+		for rows.Next() {
+			err = rows.Scan(&bookId)
+			CheckError(err)
+		}
+		rows.Close()
+
+		stmt, err := e.db.Prepare("delete from book where filename=?")
+		CheckError(err)
+
+		_, err = stmt.Exec(fileName)
+		CheckError(err)
+
+		indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId))
+		fmt.Println(indexURL)
+
+		DeleteHTTPRequest(indexURL)
+
+		val, err := e.RedisClient.Get(fileName + "...total_pages...").Result()
+		CheckError(err)
+
+		totalPages, err := strconv.ParseInt(val, 10, 64)
+		CheckError(err)
+
+		for i := 0; i < int(totalPages); i++ {
+			indexURL := "http://localhost:9200/lr_index/book_detail/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) + "_" + strconv.Itoa(i)
+			fmt.Println(indexURL)
+
+			DeleteHTTPRequest(indexURL)
+		}
+
+		c.Redirect(302, "/")
+	}
+	c.Redirect(302, "/signin")
 }
 
 type HrefDataStruct struct {
