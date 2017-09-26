@@ -1047,7 +1047,10 @@ footer {
   	}
 
   	.crcb-book-list a img, .bc-books-list a img {
+      float: left;
   		width: 180px;
+      min-height: 50px;
+      background: gray;
   	}
 
   	.bc-pagination a, .bc-pagination .dots {
