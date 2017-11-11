@@ -52,6 +52,8 @@ type Env struct {
 	RedisClient *redis.Client
 }
 
+var ES_PATH = os.Getenv("ES_PATH")
+
 func main() {
 	r := gin.Default()
 
@@ -200,7 +202,7 @@ func main() {
 	CheckError(err)
 	fmt.Println(b)
 
-	PutJSON("http://localhost:9200/_ingest/pipeline/attachment", b)
+	PutJSON(ES_PATH + "_ingest/pipeline/attachment", b)
 
 	type Settings struct {
 		NumberOfShards   int64 `json:"number_of_shards"`
@@ -223,7 +225,7 @@ func main() {
 	CheckError(err)
 	fmt.Println(b)
 
-	PutJSON("http://localhost:9200/lr_index", b)
+	PutJSON(ES_PATH + "lr_index", b)
 
 	// Initiate redis
 	client := redis.NewClient(&redis.Options{
@@ -586,7 +588,7 @@ func (e *Env) EditBook(c *gin.Context) {
 
 		fmt.Println(bms)
 
-		indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) + "/_update"
+		indexURL := ES_PATH + "lr_index/book_info/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) + "/_update"
 		fmt.Println(indexURL)
 
 		b, err := json.Marshal(bms)
@@ -601,7 +603,7 @@ func (e *Env) EditBook(c *gin.Context) {
 		CheckError(err)
 
 		for i := 0; i < int(totalPages); i++ {
-			indexURL := "http://localhost:9200/lr_index/book_detail/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) + "_" + strconv.Itoa(i) + "/_update"
+			indexURL := ES_PATH + "lr_index/book_detail/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) + "_" + strconv.Itoa(i) + "/_update"
 			fmt.Println(indexURL)
 
 			b, err := json.Marshal(bms)
@@ -652,7 +654,7 @@ func (e *Env) DeleteBook(c *gin.Context) {
 		_, err = stmt.Exec(fileName)
 		CheckError(err)
 
-		indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId))
+		indexURL := ES_PATH + "lr_index/book_info/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId))
 		fmt.Println(indexURL)
 
 		DeleteHTTPRequest(indexURL)
@@ -664,7 +666,7 @@ func (e *Env) DeleteBook(c *gin.Context) {
 		CheckError(err)
 
 		for i := 0; i <= int(totalPages); i++ {
-			indexURL := "http://localhost:9200/lr_index/book_detail/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) + "_" + strconv.Itoa(i)
+			indexURL := ES_PATH + "lr_index/book_detail/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) + "_" + strconv.Itoa(i)
 			fmt.Println(indexURL)
 
 			DeleteHTTPRequest(indexURL)
@@ -1357,7 +1359,7 @@ func _PDFSeparate(path string, filePath string, wg *sync.WaitGroup) error {
 }
 
 func _ConstructPDFIndexURL(userId int64, bookId int64, i int64, pageJSON []byte) {
-	indexURL := "http://localhost:9200/lr_index/book_detail/" +
+	indexURL := ES_PATH + "lr_index/book_detail/" +
 		strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) +
 		"_" + strconv.Itoa(int(i)) + "?pipeline=attachment"
 	fmt.Println("Index URL: " + indexURL)
@@ -1613,7 +1615,7 @@ func (opfMetadata *OPFMetadataStruct) _FeedEPUBContent(packagePath string, title
 				pageJSON, err := json.Marshal(bookDetail)
 				CheckError(err)
 
-				indexURL := "http://localhost:9200/lr_index/book_detail/" +
+				indexURL := ES_PATH + "lr_index/book_detail/" +
 					strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId)) +
 					"_" + strconv.Itoa(int(i)) + "?pipeline=attachment"
 				fmt.Println("Index URL: " + indexURL)
@@ -1710,7 +1712,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 
 				fmt.Println(bookInfo)
 
-				indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId))
+				indexURL := ES_PATH + "lr_index/book_info/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId))
 				fmt.Println(indexURL)
 
 				b, err := json.Marshal(bookInfo)
@@ -1788,7 +1790,7 @@ func (e *Env) UploadBook(c *gin.Context) {
 				fmt.Println(bookInfo)
 
 				// Feed book info to ES
-				indexURL := "http://localhost:9200/lr_index/book_info/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId))
+				indexURL := ES_PATH + "lr_index/book_info/" + strconv.Itoa(int(userId)) + "_" + strconv.Itoa(int(bookId))
 				fmt.Println(indexURL)
 
 				b, err := json.Marshal(bookInfo)
@@ -1929,7 +1931,7 @@ func GetAutocomplete(c *gin.Context) {
 	b, err := json.Marshal(payloadInfo)
 	CheckError(err)
 
-	indexURL := "http://localhost:9200/lr_index/book_info/_search"
+	indexURL := ES_PATH + "lr_index/book_info/_search"
 
 	res := GetJSONPassPayload(indexURL, b)
 
@@ -1967,7 +1969,7 @@ func GetAutocomplete(c *gin.Context) {
 	b, err = json.Marshal(payloadDetail)
 	CheckError(err)
 
-	indexURL = "http://localhost:9200/lr_index/book_detail/_search"
+	indexURL = ES_PATH + "lr_index/book_detail/_search"
 
 	res = GetJSONPassPayload(indexURL, b)
 

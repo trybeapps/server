@@ -4,3 +4,4 @@ uploads
 *.js.map
 server
 quote
+dump.rdb
