@@ -555,6 +555,12 @@ input[type="submit"] {
   padding: 6px 8px;
 }
 
+@-moz-document url-prefix() {
+  .quote-of-the-day label {
+      margin-left: -105px;
+  }
+}
+
 .quote-of-the-day img {
 	float: left;
 	margin-right: 20px;
