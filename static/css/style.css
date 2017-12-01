@@ -237,7 +237,7 @@ header .uploading-progress {
 }
 
 header .header-container {
-	width: 1440px;
+	width: 1290px;
 	margin: 0 auto;
 	padding: 0 30px;
 	overflow: hidden;
@@ -568,7 +568,7 @@ input[type="submit"] {
 }
 
 .quote-of-the-day .quote {
-	font-size: 19px;
+	font-size: 17px;
 	line-height: 27px;
 }
 
@@ -594,7 +594,7 @@ input[type="submit"] {
 }
 
 .currently-reading-container .crc-bg, .books-container {
-	width: 1440px;
+	width: 1290px;
 	margin: 0 auto;
 	padding: 30px;
 	overflow: hidden;
@@ -607,7 +607,7 @@ input[type="submit"] {
 
 .crc-bg label {
 	float: left;
-	font-size: 24px;
+	font-size: 21px;
 	font-weight: 600;
 	color: #333333;
 	background: white;
@@ -620,7 +620,7 @@ input[type="submit"] {
 
 .crcb-arrow .left, .crcb-arrow .right, .epub-prev, .epub-next {
 	float: left;
-	width: 60px;
+	width: 56px;
 	height: 47px;
 	border: 4px solid white;
 	cursor: pointer;
@@ -650,7 +650,8 @@ input[type="submit"] {
 }
 
 .crcb-arrow .left svg, .crcb-arrow .right svg, .epub-prev svg, .epub-next svg {
-	display: block;
+  display: block;
+  width: 29px;
 	margin: 10px auto;
 }
 
@@ -673,8 +674,8 @@ input[type="submit"] {
 .crcb-book-list {
 	position: relative;
 	float: left;
-	width: 1380px;
-	min-height: 300px;
+	width: 1230px;
+  min-height: 270px;
 	margin: 50px 0 30px;
   clear: both;
   overflow: hidden;
@@ -684,6 +685,13 @@ input[type="submit"] {
 	position: absolute;
 	top: 0;
 	transition: left 0.2s ease-in-out;
+}
+
+.crcb-book-list a img {
+  float: left;
+  width: 180px;
+  min-height: 50px;
+  background: gray;
 }
 
 .bc-books-list, .bc-books-list div, 
@@ -701,6 +709,7 @@ input[type="submit"] {
 	display: none;
 }
 
+.bc-books-list a img,
 .bc-books-list-medium a img,
 .bc-books-list-small a img, 
 .bc-books-list-xtra-small a img {
@@ -720,7 +729,7 @@ input[type="submit"] {
 }
 
 .bc-books-list-medium {
-	width: 600px;
+	width: 100%;
 	margin: 0 auto;
 }
 
@@ -754,17 +763,19 @@ input[type="submit"] {
 }
 
 .bc-pagination a {
+  font-size: 21px;
 	color: #161616;
 	text-decoration: none;
 }
 
 .bc-pagination .num {
-	margin-top: 8px;
+	margin-top: 9px;
 	font-weight: 600;
 }
 
 .bc-pagination .dots {
-	margin-top: 8px;
+  font-size: 21px;
+	margin-top: 9px;
 	font-weight: 600;
 	cursor: default;
 	color: #BEBEBE;
@@ -784,16 +795,16 @@ input[type="submit"] {
 }
 
 .bc-pagination .num.none {
-	font-size: 20px;
-    margin-top: 10px;
+  font-size: 18px;
+  margin-top: 10px;
 }
 
 .bc-pagination .left, .bc-pagination .right {
-	width: 60px;
+	width: 56px;
   height: 47px;
   text-align: center;
   border: 4px solid #FF4848;
-  padding-top: 5px;
+  padding-top: 8px;
   cursor: pointer;
 }
 
@@ -803,6 +814,10 @@ input[type="submit"] {
 
 .bc-pagination .left:hover, .bc-pagination .right:hover {
 	background: #FF4848;
+}
+
+.bc-pagination .left svg, .bc-pagination .right svg {
+  width: 29px;
 }
 
 .bc-pagination .left:hover svg g, .bc-pagination .right:hover svg g {
@@ -876,7 +891,7 @@ footer {
 }
 
 .collections-list {
-  width: 1440px;
+  width: 1290px;
   margin: 50px 0;
   padding: 0 30px;
 }
@@ -1014,69 +1029,6 @@ footer {
   line-height: 24px;
 }
 
-@media screen
-  and (max-width: 1440px) { 
-  	
-  	header .header-container {
-  		width: 1290px;
-  	}
-
-  	.quote-of-the-day .quote {
-  		font-size: 17px;
-  	}
-
-  	.crc-bg label {
-  		font-size: 21px;
-  	}
-
-  	.crcb-arrow .left, .crcb-arrow .right {
-  		width: 56px;
-  	}
-
-  	.crcb-arrow .left svg, .crcb-arrow .right svg {
-  		width: 29px;
-  	}
-
-  	.currently-reading-container .crc-bg, .books-container {
-  		width: 1290px;
-  	}
-
-  	.crcb-book-list {
-  		width: 1230px;
-  		min-height: 270px;
-  	}
-
-  	.crcb-book-list a img, .bc-books-list a img {
-      float: left;
-  		width: 180px;
-      min-height: 50px;
-      background: gray;
-  	}
-
-  	.bc-pagination a, .bc-pagination .dots {
-  		font-size: 21px;
-  	}
-
-  	.bc-pagination .dots, .bc-pagination .num {
-  		margin-top: 9px;
-  	}
-
-  	.bc-pagination .num.none {
-  		font-size: 18px;
-  		margin-top: 10px;
-  	}
-
-  	.bc-pagination .left, .bc-pagination .right {
-  		width: 56px;
-  		padding-top: 8px;
-  	}
-
-  	.bc-pagination .left svg, .bc-pagination .right svg {
-  		width: 29px;
-  	}
-
-}
-
 @media screen 
   and (max-width: 1300px) {
 
@@ -1139,7 +1091,7 @@ footer {
   	}
 
   	.bc-books-list-medium {
-  		display: block;
+      display: block;
   	}
 }
 
