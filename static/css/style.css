@@ -1084,6 +1084,10 @@ footer {
       cursor: pointer;
     }
 
+    .menu-icon.mi2 {
+      margin-top: 18px;
+    }
+
     .page-container {
       margin-top: 108px;
     }
