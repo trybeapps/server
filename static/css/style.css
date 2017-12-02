@@ -1012,8 +1012,9 @@ input[type="submit"] {
 
 .books-container .info {
   display: block;
+  width: 700px;
   text-align: center;
-  margin-top: 50px;
+  margin: 50px auto 0;
 }
 
 .books-container .info .title {
