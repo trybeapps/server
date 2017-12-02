@@ -91,9 +91,10 @@
 		}
 
 		var iframe = document.getElementById('epubIframe');
-		var iframe2 = document.getElementById('epubIframe2');
 
   		$(function() {
+			$('#epubIframe').attr('src', '{{.filePath}}')
+			
 			$('#epubIframe').bind('load', function() {
 				if (term) {
 					$('#epubIframe')[0].contentWindow.find(term)
