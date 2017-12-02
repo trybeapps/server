@@ -127,7 +127,7 @@
 				$('.epub-next').addClass('none')
 			}
 
-			$('#epubIframe').attr('src', '{{.filePath}}')
+			$('#epubIframe').attr('src', '{{.filePath}}' + '?random=' + (new Date()).getTime() + Math.floor(Math.random() * 1000000))
 
 			$('#epubIframe').bind('load', function() {
 				var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
@@ -164,14 +164,14 @@
 						href: href
 					},
 					contentType: 'application/json',
-          success: function(data) {
-            console.log(data)
-            $('#epubIframe').hide()
-            $('#epubIframe').attr('src', data.href_path + '?random=' + (new Date()).getTime() + Math.floor(Math.random() * 1000000))
-            $('.total-pages').html(data.current_page + ' of {{.totalPages}}')
-            if (data.left_none == true) $('.epub-prev').addClass('none')
-            if (data.right_none == true) $('.epub-next').addClass('none')
-          }
+          			success: function(data) {
+            			console.log(data)
+            			$('#epubIframe').hide()
+            			$('#epubIframe').attr('src', data.href_path + '?random=' + (new Date()).getTime() + Math.floor(Math.random() * 1000000))
+            			$('.total-pages').html(data.current_page + ' of {{.totalPages}}')
+            			if (data.left_none == true) $('.epub-prev').addClass('none')
+            			if (data.right_none == true) $('.epub-next').addClass('none')
+          			}
 				})
 			}
 
