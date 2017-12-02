@@ -844,13 +844,6 @@ input[type="submit"] {
 	background: transparent;
 }
 
-footer {
-  position: absolute;
-	width: 100%;
-	height: 80px;
-	background: #222222;
-}
-
 .collections-banner {
 	position: relative;
 	width: 100%;
@@ -1034,6 +1027,28 @@ footer {
 
 .books-container .info .description {
   line-height: 24px;
+}
+
+footer {
+  position: absolute;
+	width: 100%;
+	height: 60px;
+	background: #222222;
+}
+
+.social-media {
+  width: 150px;
+  margin: 20px auto;
+}
+
+.social-media a {
+  float: left;
+  text-decoration: none;
+  margin-right: 20px;
+}
+
+.social-media a:last-child {
+  margin-right: 0;
 }
 
 @media screen 

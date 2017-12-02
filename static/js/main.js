@@ -59,7 +59,7 @@ $(function() {
 	}
 
 	// For footer to stay at the bottom
-	$('.page-container').css('min-height', $(window).height() - 140 + 'px')
+	$('.page-container').css('min-height', $(window).height() - 120 + 'px')
 
 	$('.menu-icon').click(function() {
 		$('.header-nav-small').show()
