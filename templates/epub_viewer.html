@@ -93,8 +93,16 @@
 		var iframe = document.getElementById('epubIframe');
 
   		$(function() {
+			if ('{{.currentPage}}' != '1') {
+				$('.epub-prev').removeClass('none')
+			}
+
+			if ('{{.currentPage}}' == '{{.totalPages}}') {
+				$('.epub-next').addClass('none')
+			}
+
 			$('#epubIframe').attr('src', '{{.filePath}}')
-			
+
 			$('#epubIframe').bind('load', function() {
 				if (term) {
 					$('#epubIframe')[0].contentWindow.find(term)
