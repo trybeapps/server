@@ -104,7 +104,9 @@
 			$('#epubIframe').attr('src', '{{.filePath}}')
 
 			$('#epubIframe').bind('load', function() {
-				if (term) {
+				var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+				
+				if (term && !isFirefox) {
 					$('#epubIframe')[0].contentWindow.find(term)
 				}
 
