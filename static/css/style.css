@@ -121,7 +121,7 @@ body {
 
 .epub-body .total-pages {
   position: fixed;
-  bottom: 20px;
+  bottom: 27px;
   z-index: 2;
   left: 50px;
   color: #161616;
@@ -1231,8 +1231,12 @@ footer {
 
   .epub-prev, .epub-next {
     top: 90%;
-    background: white;
+    background: #676767;
     transition: top 0.2s ease-in-out;
+  }
+
+  .epub-prev svg g, .epub-next svg g {
+    stroke: white;
   }
 
   .epub-prev.down, .epub-next.down {
@@ -1241,10 +1245,10 @@ footer {
 
   .epub-body .total-pages {
     left: 50%;
-    margin-left: -28px;
+    margin-left: -30px;
     background: black;
     color: white;
-    padding: 2px;
+    padding: 4px;
     transition: bottom 0.2s ease-in-out;
   }
 
