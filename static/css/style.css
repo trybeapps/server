@@ -892,19 +892,24 @@ input[type="submit"] {
 
 .collections-list {
   width: 1290px;
-  margin: 50px 0;
+  margin: 50px auto 0;
   padding: 0 30px;
+  overflow: hidden;
 }
 
 .collections-list a {
   position: relative;
   float: left;
-  width: 315px;
+  width: 285px;
   height: 360px;
   margin-right: 30px;
   margin-bottom: 50px;
   overflow: hidden;
   cursor: pointer;
+}
+
+.collections-list a:nth-child(4n) {
+  margin-right: 0;
 }
 
 .collections-list a::after {
