@@ -1064,6 +1064,10 @@ footer {
       height: 108px;
     }
 
+    .epub-body header {
+      height: 60px;
+    }
+
     .nav-up {
       top: -108px;
     }
@@ -1228,6 +1232,11 @@ footer {
   .epub-prev, .epub-next {
     top: 90%;
     background: white;
+    transition: top 0.2s ease-in-out;
+  }
+
+  .epub-prev.down, .epub-next.down {
+    top: 102%;
   }
 
   .epub-body .total-pages {
@@ -1236,6 +1245,11 @@ footer {
     background: black;
     color: white;
     padding: 2px;
+    transition: bottom 0.2s ease-in-out;
+  }
+
+  .epub-body .total-pages.down {
+    bottom: -40px;
   }
 
 }
